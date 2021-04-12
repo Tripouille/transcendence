@@ -1,0 +1,8 @@
+services:
+  www:
+    build: .
+    command: sh launch.sh
+    volumes:
+      - C:\Users\jean-\Documents\42\transcendence\www:/www
+    ports:
+      - "80:80"
