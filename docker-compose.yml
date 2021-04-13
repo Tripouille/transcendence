@@ -1,8 +1,10 @@
 services:
   www:
     build: .
-    command: sh launch.sh
+    user: "root:root"
+    command: sh /launch.sh
     volumes:
-      - C:\Users\jean-\Documents\42\transcendence\www:/www
+      - C:\Users\jean-\Documents\42\transcendence\www:/www #
+      - C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
     ports:
       - "80:80"
