@@ -2,7 +2,7 @@ services:
   www:
     build: .
     user: "root:root"
-    command: sh /launch.sh
+    command: sh /www/launch.sh
     volumes:
       - C:\Users\jean-\Documents\42\transcendence\www:/www #
       - C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
