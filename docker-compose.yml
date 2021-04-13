@@ -10,3 +10,4 @@ services:
       - /root/transcendence/data:/var/lib/postgresql/data #
     ports:
       - "80:80"
+      - "81:81"
