@@ -8,15 +8,39 @@ import Turbolinks from "turbolinks"
 import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 
-import 'jquery';
+import Backbone from 'backbone'
 
 Rails.start()
 Turbolinks.start()
 ActiveStorage.start()
 
-console.log('Loaded Application')
+Backbone._sync = Backbone.sync;
+Backbone.sync = function(method, model, options) {
+  if (!options.noCSRF) {
+    var beforeSend = options.beforeSend;
 
-require('test')
-$(document).ready(function() {
-	console.log('ready from application.js')
-})
+    // Set X-CSRF-Token HTTP header
+    options.beforeSend = function(xhr) {
+      var token = $('meta[name="csrf-token"]').attr('content');
+      if (token) { xhr.setRequestHeader('X-CSRF-Token', token); }
+      if (beforeSend) { return beforeSend.apply(this, arguments); }
+    };
+  }
+  return Backbone._sync(method, model, options);
+};
+
+import { Users } from 'collections/users';
+
+$(function() {
+	let userCollection = new Users();
+	userCollection.fetch({
+		success: function(collection, response) {
+			//fetch successful, lets iterate and update the values here
+			collection.each(function (item, index, all) {
+				item.set("name", item.get("name") + "_"); // lets update all book names here
+				item.save();
+			});
+			console.log(userCollection);
+		}
+	});
+});
