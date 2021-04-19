@@ -4,10 +4,10 @@ services:
     user: "root:root"
     command: sh /www/launch.sh
     volumes:
-      # - C:\Users\jean-\Documents\42\transcendence\www:/www #
-      # - C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
-      - /root/transcendence/www:/www #
-      - /root/transcendence/data:/var/lib/postgresql/data #
+       - C:\Users\jean-\Documents\42\transcendence\www:/www #
+       - C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
+       #- /root/transcendence/www:/www #
+       #- /root/transcendence/data:/var/lib/postgresql/data #
     ports:
       - "80:80"
       - "81:81"
