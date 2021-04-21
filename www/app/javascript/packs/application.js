@@ -30,6 +30,7 @@ Backbone.sync = function(method, model, options) {
 };
 
 import { Users } from 'collections/users';
+import { UsersView } from 'views/users';
 
 $(function() {
 	let userCollection = new Users();
@@ -41,6 +42,7 @@ $(function() {
 				item.save();
 			});
 			console.log(userCollection);
+			let usersView = new UsersView({el: $('#UsersView'), model: userCollection});
 		}
 	});
 });
