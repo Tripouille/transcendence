@@ -1,12 +1,13 @@
 export const UserView = Backbone.View.extend({
-	tagname: "li",
+	tagName: "li",
+	template: _.template($('#userTemplate').html()),
 
 	initialize: function() {
 		console.log('User view has been initialized');
 		this.render();
 	},
 	render: function() {
-		this.$el.html(`<li>${this.model.get('name')}</li>`);
+		this.$el.text(this.template(this.model.attributes));
 		return this;
 	}
 });

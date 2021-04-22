@@ -29,20 +29,4 @@ Backbone.sync = function(method, model, options) {
   return Backbone._sync(method, model, options);
 };
 
-import { Users } from 'collections/users';
-import { UsersView } from 'views/users';
-
-$(function() {
-	let userCollection = new Users();
-	userCollection.fetch({
-		success: function(collection, response) {
-			//fetch successful, lets iterate and update the values here
-			collection.each(function (item, index, all) {
-				item.set("name", item.get("name") + "_"); // lets update all book names here
-				item.save();
-			});
-			console.log(userCollection);
-			let usersView = new UsersView({el: $('#UsersView'), model: userCollection});
-		}
-	});
-});
+require('router');
