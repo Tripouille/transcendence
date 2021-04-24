@@ -1,31 +1,34 @@
-import { Users } from 'collections/users';
+import { HomepageView } from 'views/homepage';
 import { UsersView } from 'views/users';
-import { User } from "models/user";
-import { View1, View2, View3 } from "views/general";
 
 $(function() {
-	const viewOptions = {el: $('#GeneralView')};
-	let view1 = new View1(viewOptions);
-	let view2 = new View2(viewOptions);
-	let view3 = new View3(viewOptions);
+	const $main = $('main');
+	const myRouter = Backbone.Router.extend({
+		homepageView: new HomepageView({el: $main}),
+		usersView: new UsersView(),
 
-	function showView1() {
-		view1.render();
-	}
-	function showView2() {
-		view2.render();
-	}
-	function showView3() {
-		view3.render();
-	}
+		routes: {
+			"": "homepage",
+			"homepage": "homepage",
+			"users": "users"
+		},
 
-	let userCollection = new Users();
-	userCollection.fetch({
-		success: function(collection, response) {
-			let usersView = new UsersView({el: $('#UsersView'), model: userCollection});
-		}
+		execute: function(callback, args, name) {
+			$main.empty();
+			callback.apply(this, args);
+		},
+
+		homepage: function() {this.homepageView.render();},
+		users: function() {this.usersView.render($main);},
+		/*handleRouteAll: function(viewid, msg) {
+			if (viewid == 1)
+				this.handleRoute1();
+			else if (viewid == 2)
+				this.handleRoute2();
+			else if (viewid == 3)
+				this.handleRoute3();
+		}*/
 	});
-	$('#view1button').on('click', showView1);
-	$('#view2button').on('click', showView2);
-	$('#view3button').on('click', showView3);
+	const router = new myRouter();
+	Backbone.history.start();
 });
