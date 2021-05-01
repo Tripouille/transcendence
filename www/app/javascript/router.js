@@ -1,15 +1,15 @@
-import { HomepageView } from 'views/homepage';
-import { UsersView } from 'views/users';
+import UsersView from 'views/users';
+import GameView from 'views/game';
 
 $(function() {
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
-		homepageView: new HomepageView({el: $main}),
 		usersView: new UsersView(),
+		gameView: new GameView({el: $main}),
 
 		routes: {
-			"": "homepage",
-			"homepage": "homepage",
+			"": "game",
+			"game": "game",
 			"users": "users"
 		},
 
@@ -18,8 +18,12 @@ $(function() {
 			callback.apply(this, args);
 		},
 
-		homepage: function() {this.homepageView.render();},
-		users: function() {this.usersView.render($main);},
+		users: function() {
+			this.usersView.render($main);
+		},
+		game: function() {
+			this.gameView.render();
+		}
 		/*handleRouteAll: function(viewid, msg) {
 			if (viewid == 1)
 				this.handleRoute1();

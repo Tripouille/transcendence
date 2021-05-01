@@ -1,7 +1,7 @@
 import { Users } from '../collections/users';
 import { UserView } from '../views/user';
 
-export const UsersView = Backbone.View.extend({
+const UsersView = Backbone.View.extend({
 	tagName: "ul",
 	collection: new Users(),
 
@@ -25,3 +25,5 @@ export const UsersView = Backbone.View.extend({
 		return this;
 	}
 });
+
+export default UsersView;
