@@ -1,3 +1,4 @@
+version: '3'
 services:
   www:
     build: .
@@ -6,8 +7,10 @@ services:
     volumes:
        #- C:\Users\jean-\Documents\42\transcendence\www:/www #
        #- C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
-       - /root/transcendence/www:/www #
-       - /root/transcendence/data:/var/lib/postgresql/data #
+       #- /root/transcendence/www:/www #
+       #- /root/transcendence/data:/var/lib/postgresql/data #
+       - /Users/aalleman/transcendence/www:/www #
+       - /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
     ports:
       - "80:80"
       - "81:81"

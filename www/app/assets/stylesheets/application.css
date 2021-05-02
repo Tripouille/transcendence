@@ -36,7 +36,7 @@ p {
 }
 
 html, body {
-	height: 100%;
+	height: 99%;
 	margin: 0;
 }
 
@@ -45,6 +45,7 @@ main {
 	font-size: 1rem;
 	font-family: 'screen';
 	background-color: var(--bg-color);
+	color: white;
 }
 
 #game {
@@ -97,8 +98,7 @@ main {
 	box-sizing: border-box;
 	height: 75%;
 	width: 75%;
-	border: 2vw ridge var(--border-color);
-	border-style: ridge groove groove ridge;
+	border: 1vw solid var(--border-color);
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -133,11 +133,11 @@ main {
 }
 
 #paddle_left_container {
-	left: 0;
+	left: 1%;
 }
 
 #paddle_right_container {
-	right: 0;
+	right: 1%;
 }
 
 .paddle {

@@ -1,10 +1,13 @@
+import pong from './animations/game';
+
 const GameView = Backbone.View.extend({
 	template: _.template($('#gameTemplate').html()),
 
     render: function() {
+		console.log('render');
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
-		require('./animations/game');
+		pong();
         return this;
     }
 });

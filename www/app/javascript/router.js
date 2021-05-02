@@ -1,5 +1,9 @@
 import UsersView from 'views/users';
 import GameView from 'views/game';
+import * as GC from 'views/animations/garbage_collector';
+
+window.intervals = new Array();
+window.timeouts = new Array();
 
 $(function() {
 	const $main = $('main');
@@ -15,6 +19,9 @@ $(function() {
 
 		execute: function(callback, args, name) {
 			$main.empty();
+			GC.clearTimeoutsIntervals();
+			$(document).off("keydown");
+			$(document).off("keyup");
 			callback.apply(this, args);
 		},
 
@@ -24,14 +31,6 @@ $(function() {
 		game: function() {
 			this.gameView.render();
 		}
-		/*handleRouteAll: function(viewid, msg) {
-			if (viewid == 1)
-				this.handleRoute1();
-			else if (viewid == 2)
-				this.handleRoute2();
-			else if (viewid == 3)
-				this.handleRoute3();
-		}*/
 	});
 	const router = new myRouter();
 	Backbone.history.start();
