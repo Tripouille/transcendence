@@ -1,3 +1,4 @@
+import consumer from "../../channels/consumer"
 import * as GC from './garbage_collector';
 
 const LEFT_UP_KEY = "z";
@@ -57,6 +58,8 @@ let $gameArea, $ball, $leftPoints, $rightPoints, $timer;
 let paddleHeight, paddleTopLimit, paddleBottomLimit, leftPaddleLimit, rightPaddleLimit;
 let ballRadius, ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
 
+let pongSubscription;
+
 function resetAllKeys() {
 	resetKey(leftPaddleHandler, 'up');
 	resetKey(leftPaddleHandler, 'down');
@@ -65,43 +68,39 @@ function resetAllKeys() {
 }
 
 function resetKey(paddleHandler, direction) {
-	GC.cleanInterval(paddleHandler[direction].interval);
-	paddleHandler[direction].interval = null;
-	$.ajax('/pong', {
-		method: 'PUT',
-		headers: {
-			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-		},
-		data: {
-			'act': 'release',
-			'dir': direction
-		}
+	pongSubscription.send({
+		'act': 'release',
+		'dir': direction,
+		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
 	});
-}
-
-function activateKey(paddleHandler, direction) {
-	paddleHandler[direction].interval = GC.addInterval(function() {
-		paddleHandler[direction].handler(paddleHandler.$paddle);
-	}, 1);
 }
 
 function switchKey(e, paddleHandler, oldDir, newDir) {
 	e.preventDefault();
 	if (!paddleIsActive || paddleHandler[newDir].interval != null)
 		return ;
-	$.ajax('/pong', {
-		method: 'PUT',
-		headers: {
-			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-		},
-		data: {
-			'act': 'press',
-			'dir': newDir
-		}
+	pongSubscription.send({
+		'act': 'press',
+		'dir': newDir,
+		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
 	});
-	resetKey(paddleHandler, oldDir);
-	activateKey(paddleHandler, newDir);
+	pongSubscription.send({
+		'act': 'release',
+		'dir': oldDir,
+		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
+	});
 }
+
+function resetPaddle(paddleHandler, direction) {
+	GC.cleanInterval(paddleHandler[direction].interval);
+	paddleHandler[direction].interval = null;
+}
+
+function activatePaddle(paddleHandler, direction) {
+	paddleHandler[direction].interval = GC.addInterval(function() {
+		paddleHandler[direction].handler(paddleHandler.$paddle);
+	}, 1);
+}s
 
 function keyDownHandler(e) {
 	if (e.key == RIGHT_UP_KEY)
@@ -177,7 +176,6 @@ function moveBall() {
 }
 
 function timer() {
-	console.log($timer);
 	$timer.show();
 	$timer.text('3');
 	$timer.css({color: 'green'});
@@ -188,7 +186,6 @@ function timer() {
 }
 
 function reset() {
-	console.log('reseting');
 	lastPreviousBallUpdate = (new Date()).getTime();
 	const interval = timer();
 	GC.addTimeout(function() {
@@ -209,7 +206,7 @@ function reset() {
 			top: '50%',
 			left: '50%'
 		});
-		//ballHandler.interval = GC.addInterval(moveBall, 1);
+		ballHandler.interval = GC.addInterval(moveBall, 1);
 		ballSpeed = baseBallSpeed;
 	}, 3000);
 }
@@ -283,9 +280,39 @@ export function start() {
 	defineJqueryObjects();
 	$(document).keydown(keyDownHandler);
 	$(document).keyup(keyUpHandler);
-	reset();
+
+	pongSubscription = consumer.subscriptions.create("PongChannel", {
+		connected() {
+			// Called when the subscription is ready for use on the server
+			console.log('connected to pong channel');
+			pongSubscription.send({message: "connected to PongChannel (from client)"});
+			reset();
+		},
+	
+		disconnected() {
+			// Called when the subscription has been terminated by the server
+			console.log('disconnected from pong channel');
+		},
+	
+		received(data) {
+			// Called when there's incoming data on the websocket for this channel
+			enemyMove(data.content);
+		}
+	});
 }
 
-export function test() {
-	console.log('I am the function test() from pong');
+export function enemyMove(data) {
+	const paddleHandler = data.side == 'left' ? leftPaddleHandler : rightPaddleHandler;
+	if (data.act == 'press') {
+		resetPaddle(paddleHandler, data.dir == 'up' ? 'down' : 'up');
+		activatePaddle(paddleHandler, data.dir);
+	}
+	else if (data.act == 'release')
+		resetPaddle(paddleHandler, data.dir);
+}
+
+function getBallPosition() {
+	pongSubscription.send({
+		"request": "ballPosition"
+	});
 }

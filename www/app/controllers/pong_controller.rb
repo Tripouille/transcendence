@@ -7,7 +7,8 @@ class PongController < ApplicationController
 		puts session[:pong].inspect
 		ActionCable.server.broadcast "pong_channel", content: {
 			dir: params[:dir],
-			act: params[:act]
+			act: params[:act],
+			side: params[:side]
 		}
 	end
 end
