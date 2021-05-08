@@ -1,7 +1,7 @@
 import consumer from "../../channels/consumer"
 import * as GC from './garbage_collector';
 
-const LEFT_UP_KEY = "z";
+const LEFT_UP_KEY = "w";
 const LEFT_DOWN_KEY = "s";
 const RIGHT_UP_KEY = "ArrowUp";
 const RIGHT_DOWN_KEY = "ArrowDown";
@@ -100,7 +100,7 @@ function activatePaddle(paddleHandler, direction) {
 	paddleHandler[direction].interval = GC.addInterval(function() {
 		paddleHandler[direction].handler(paddleHandler.$paddle);
 	}, 1);
-}s
+}
 
 function keyDownHandler(e) {
 	if (e.key == RIGHT_UP_KEY)
@@ -175,39 +175,18 @@ function moveBall() {
 	}
 }
 
-function timer() {
+function timerAndStart() {
 	$timer.show();
 	$timer.text('3');
 	$timer.css({color: 'green'});
-	return GC.addInterval(function() {
-		$timer.text(Number($timer.text()) - 1);
+	const interval = GC.addInterval(function() {
+		$timer.text(Math.max(Number($timer.text()) - 1, 1));
 		$timer.css({color: timerColors[$timer.text()]});
 	}, 1000);
-}
-
-function reset() {
-	lastPreviousBallUpdate = (new Date()).getTime();
-	const interval = timer();
 	GC.addTimeout(function() {
 		GC.cleanInterval(interval);
 		$timer.hide();
-		paddleIsActive = true;
-		leftPaddleHandler.$paddle.css({top: '50%'});
-		rightPaddleHandler.$paddle.css({top: '50%'});
-		$ball.show();
-		const randIncrement = Math.random() * 100;
-		ballHandler.direction = {
-			x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-				* (minAngle.x - angleIncrement.x * randIncrement),
-			y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-				* (minAngle.y + angleIncrement.y * randIncrement)
-		};
-		$ball.css({
-			top: '50%',
-			left: '50%'
-		});
-		ballHandler.interval = GC.addInterval(moveBall, 1);
-		ballSpeed = baseBallSpeed;
+		start();
 	}, 3000);
 }
 
@@ -276,7 +255,40 @@ function defineJqueryObjects() {
 	ballRightLimit = 1.0 - ballRadius;
 }
 
-export function start() {
+function start() {
+	leftPaddleHandler.$paddle.css({top: '50%'});
+	rightPaddleHandler.$paddle.css({top: '50%'});
+	paddleIsActive = true;
+	$ball.show();
+	const randIncrement = Math.random() * 100;
+	ballHandler.direction = {
+		x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+			* (minAngle.x - angleIncrement.x * randIncrement),
+		y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+			* (minAngle.y + angleIncrement.y * randIncrement)
+	};
+	$ball.css({
+		top: '50%',
+		left: '50%'
+	});
+	lastPreviousBallUpdate = (new Date()).getTime();
+	//ballHandler.interval = GC.addInterval(moveBall, 1);
+	ballSpeed = baseBallSpeed;
+	GC.addInterval(function() {
+		pongSubscription.send({
+			"request": "ballPosition"
+		});
+	}, 100);
+}
+
+function updateBallFromServer(ball) {
+	$ball.css({
+		top: ball.top + '%',
+		left: ball.left + '%'
+	});
+}
+
+export function connect() {
 	defineJqueryObjects();
 	$(document).keydown(keyDownHandler);
 	$(document).keyup(keyUpHandler);
@@ -286,7 +298,7 @@ export function start() {
 			// Called when the subscription is ready for use on the server
 			console.log('connected to pong channel');
 			pongSubscription.send({message: "connected to PongChannel (from client)"});
-			reset();
+			//reset();
 		},
 	
 		disconnected() {
@@ -296,12 +308,20 @@ export function start() {
 	
 		received(data) {
 			// Called when there's incoming data on the websocket for this channel
-			enemyMove(data.content);
+			console.log('Received data from pong channel : ', data.content);
+			if (data.content['act'] == "start")
+				timerAndStart();
+			else if (data.content['act'] == 'press' || data.content['act'] == 'release')
+				enemyMove(data.content);
+			else if (data.content['ball'])
+				updateBallFromServer(data.content['ball']);
+			else
+				console.log('Error: unrecognized data');
 		}
 	});
 }
 
-export function enemyMove(data) {
+function enemyMove(data) {
 	const paddleHandler = data.side == 'left' ? leftPaddleHandler : rightPaddleHandler;
 	if (data.act == 'press') {
 		resetPaddle(paddleHandler, data.dir == 'up' ? 'down' : 'up');

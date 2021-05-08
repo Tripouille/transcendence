@@ -6,7 +6,7 @@ const GameView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
-		Pong.start();
+		Pong.connect();
         return this;
     }
 });

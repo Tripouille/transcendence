@@ -6,4 +6,6 @@ chmod -R 700 /var/lib/postgresql/data
 /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
 cd /www
 rm -rf /www/tmp/pids/server.pid
+bundle install
+echo "n" | rails webpacker:install
 /usr/bin/rails s -b '0.0.0.0' -p 80
