@@ -69,7 +69,9 @@ function resetAllKeys() {
 	resetKey(rightPaddleHandler, 'down');
 }
 
-function resetKey(paddleHandler, direction) {
+function resetKey(e, paddleHandler, direction) {
+	if (e.key == activeKey)
+		activeKey = null;
 	pongSubscription.send({
 		'act': 'release',
 		'dir': direction,
@@ -79,18 +81,13 @@ function resetKey(paddleHandler, direction) {
 
 function switchKey(e, paddleHandler, oldDir, newDir) {
 	e.preventDefault();
-	if (!paddleIsActive || paddleHandler[newDir].interval != null)
+	if (!paddleIsActive)
 		return ;
 	pongSubscription.send({
 		'act': 'press',
 		'dir': newDir,
 		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
 	});
-	// pongSubscription.send({
-	// 	'act': 'release',
-	// 	'dir': oldDir,
-	// 	'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
-	// });
 }
 
 function resetPaddle(paddleHandler, direction) {
@@ -121,14 +118,13 @@ function keyDownHandler(e) {
 
 function keyUpHandler(e) {
 	if (e.key == RIGHT_UP_KEY)
-		resetKey(rightPaddleHandler, 'up');
+		resetKey(e, rightPaddleHandler, 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
-		resetKey(rightPaddleHandler, 'down');
+		resetKey(e, rightPaddleHandler, 'down');
 	else if (e.key == LEFT_UP_KEY)
-		resetKey(leftPaddleHandler, 'up');
+		resetKey(e, leftPaddleHandler, 'up');
 	else if (e.key == LEFT_DOWN_KEY)
-		resetKey(leftPaddleHandler, 'down');
-	activeKey = null;
+		resetKey(e, leftPaddleHandler, 'down');
 }
 
 function movePaddleUp(paddleHandler) {
@@ -272,6 +268,7 @@ function defineJqueryObjects() {
 function start() {
 	leftPaddleHandler.$paddle.css({top: '50%'});
 	rightPaddleHandler.$paddle.css({top: '50%'});
+	activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
 	const randIncrement = Math.random() * 100;
@@ -286,7 +283,7 @@ function start() {
 		left: '50%'
 	});
 	lastPreviousBallUpdate = (new Date()).getTime();
-	//ballHandler.interval = GC.addInterval(moveBall, 1);
+	ballHandler.interval = GC.addInterval(moveBall, 1);
 	ballSpeed = baseBallSpeed;
 	// GC.addInterval(function() {
 	// 	pongSubscription.send({
@@ -341,12 +338,10 @@ function getServerInfos(data) {
 
 function paddleMove(data) {
 	const paddleHandler = data.side == 'left' ? leftPaddleHandler : rightPaddleHandler;
-	//movePaddleUp(paddleHandler)
-	//return
 	paddleHandler.$paddle.css({top: data.top + '%'});
 
 	if (data.act == 'press') {
-		//resetPaddle(paddleHandler, data.dir == 'up' ? 'down' : 'up');
+		resetPaddle(paddleHandler, data.dir == 'up' ? 'down' : 'up');
 		activatePaddle(paddleHandler, data.dir);
 	}
 	else if (data.act == 'release')
