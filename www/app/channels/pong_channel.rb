@@ -13,6 +13,7 @@ class PongChannel < ApplicationCable::Channel
 		@paddles = {
 			speed: 0.08,
 			height: 25,
+			active: false,
 			left: {
 				top: 50,
 				lastUpdate: 0,
@@ -25,6 +26,8 @@ class PongChannel < ApplicationCable::Channel
 			}
 		}
 
+		scheduler = Rufus::Scheduler.new
+
 		sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
 		ActionCable.server.broadcast "pong_channel", content: {
 			act: 'connection',
@@ -33,6 +36,10 @@ class PongChannel < ApplicationCable::Channel
 		ActionCable.server.broadcast "pong_channel", content: {
 			act: 'start'
 		}
+
+		scheduler.in '3s' do
+		  @paddles[:active] = true
+		end
 	end
 
 	def unsubscribed
@@ -40,13 +47,13 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
-		puts @ball.inspect
 		if data["request"] == "ballPosition"
 			updateBall()
 			ActionCable.server.broadcast "pong_channel", content: {
 				ball: @ball
 			}
-		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank?
+		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank? \
+		and @paddles[:active] = true
 			updatePaddles(data)
 		end
 	end
@@ -67,7 +74,6 @@ class PongChannel < ApplicationCable::Channel
 
 		if data["act"] == "release" and @paddles[data["side"].to_sym][:dir] == data["dir"]
 			releaseKey(data, newTime, timeDelta)
-			puts "in if release"
 		end
 	end
 

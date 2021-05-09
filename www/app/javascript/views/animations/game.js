@@ -42,7 +42,8 @@ let leftPaddleHandler = {
 		interval: null,
 		handler: movePaddleDown
 	},
-	lastUpdate: 0.0
+	lastUpdate: 0.0,
+	activeKey: null
 };
 let rightPaddleHandler = {
 	up: {
@@ -53,13 +54,13 @@ let rightPaddleHandler = {
 		interval: null,
 		handler: movePaddleDown
 	},
-	lastUpdate: 0.0
+	lastUpdate: 0.0,
+	activeKey: null
 };
 
 let $gameArea, $ball, $leftPoints, $rightPoints, $timer;
 let paddleHeight, paddleTopLimit, paddleBottomLimit, leftPaddleLimit, rightPaddleLimit;
 let ballRadius, ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
-let activeKey = null;
 let pongSubscription;
 
 function resetAllKeys() {
@@ -70,8 +71,8 @@ function resetAllKeys() {
 }
 
 function resetKey(e, paddleHandler, direction) {
-	if (e.key == activeKey)
-		activeKey = null;
+	if (e.key == paddleHandler.activeKey)
+		paddleHandler.activeKey = null;
 	pongSubscription.send({
 		'act': 'release',
 		'dir': direction,
@@ -81,8 +82,9 @@ function resetKey(e, paddleHandler, direction) {
 
 function switchKey(e, paddleHandler, oldDir, newDir) {
 	e.preventDefault();
-	if (!paddleIsActive)
+	if (e.key == paddleHandler.activeKey)
 		return ;
+	paddleHandler.activeKey = e.key;
 	pongSubscription.send({
 		'act': 'press',
 		'dir': newDir,
@@ -103,9 +105,8 @@ function activatePaddle(paddleHandler, direction) {
 }
 
 function keyDownHandler(e) {
-	if (e.key == activeKey)
-		return;
-	activeKey = e.key;
+	if (!paddleIsActive)
+		return ;
 	if (e.key == RIGHT_UP_KEY)
 		switchKey(e, rightPaddleHandler, 'down', 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
@@ -117,6 +118,8 @@ function keyDownHandler(e) {
 }
 
 function keyUpHandler(e) {
+	if (!paddleIsActive)
+		return ;
 	if (e.key == RIGHT_UP_KEY)
 		resetKey(e, rightPaddleHandler, 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
@@ -268,7 +271,8 @@ function defineJqueryObjects() {
 function start() {
 	leftPaddleHandler.$paddle.css({top: '50%'});
 	rightPaddleHandler.$paddle.css({top: '50%'});
-	activeKey = null;
+	leftPaddleHandler.activeKey = null;
+	rightPaddleHandler.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
 	const randIncrement = Math.random() * 100;
@@ -283,7 +287,7 @@ function start() {
 		left: '50%'
 	});
 	lastPreviousBallUpdate = (new Date()).getTime();
-	ballHandler.interval = GC.addInterval(moveBall, 1);
+	//ballHandler.interval = GC.addInterval(moveBall, 1);
 	ballSpeed = baseBallSpeed;
 	// GC.addInterval(function() {
 	// 	pongSubscription.send({
