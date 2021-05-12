@@ -22,14 +22,13 @@ const angleIncrement = {
 	x: (minAngle.x - maxAngle.x) / 100.0,
 	y: (maxAngle.y - minAngle.y) / 100.0
 };
-const baseBallSpeed = 0.0025;
 let paddleSpeed = 0.0;
 
 let lastPreviousBallUpdate = null;
 let paddleIsActive = false;
-let ballSpeed = baseBallSpeed;
 
 let ballHandler = {
+	speed: 0.0,
 	interval: null,
 	direction: {x: -1, y: -1}
 };
@@ -64,14 +63,14 @@ let ballRadius, ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
 let pongSubscription;
 
 function resetAllKeys() {
-	resetKey(leftPaddleHandler, 'up');
-	resetKey(leftPaddleHandler, 'down');
-	resetKey(rightPaddleHandler, 'up');
-	resetKey(rightPaddleHandler, 'down');
+	resetKey(null, leftPaddleHandler, 'up');
+	resetKey(null, leftPaddleHandler, 'down');
+	resetKey(null, rightPaddleHandler, 'up');
+	resetKey(null, rightPaddleHandler, 'down');
 }
 
-function resetKey(e, paddleHandler, direction) {
-	if (e.key == paddleHandler.activeKey)
+function resetKey(key, paddleHandler, direction) {
+	if (key == paddleHandler.activeKey)
 		paddleHandler.activeKey = null;
 	pongSubscription.send({
 		'act': 'release',
@@ -121,13 +120,13 @@ function keyUpHandler(e) {
 	if (!paddleIsActive)
 		return ;
 	if (e.key == RIGHT_UP_KEY)
-		resetKey(e, rightPaddleHandler, 'up');
+		resetKey(e.key, rightPaddleHandler, 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
-		resetKey(e, rightPaddleHandler, 'down');
+		resetKey(e.key, rightPaddleHandler, 'down');
 	else if (e.key == LEFT_UP_KEY)
-		resetKey(e, leftPaddleHandler, 'up');
+		resetKey(e.key, leftPaddleHandler, 'up');
 	else if (e.key == LEFT_DOWN_KEY)
-		resetKey(e, leftPaddleHandler, 'down');
+		resetKey(e.key, leftPaddleHandler, 'down');
 }
 
 function movePaddleUp(paddleHandler) {
@@ -156,36 +155,45 @@ function moveBall() {
 		left: Number($ball.position().left / $gameArea.width())
 	};
 	const newPosition = {
-		top: oldPosition.top + ballHandler.direction.y * ballSpeed,
-		left: oldPosition.left + ballHandler.direction.x * ballSpeed
+		top: oldPosition.top + ballHandler.direction.y * ballHandler.speed,
+		left: oldPosition.left + ballHandler.direction.x * ballHandler.speed
 	};
 	if (newPosition.top <= ballTopLimit || newPosition.top >= ballBottomLimit)
 		ballHandler.direction.y *= -1.0;
-	else if (ballMeetsPaddle(newPosition))
+	/*else if (ballMeetsPaddle(newPosition))
 		ballSpeed *= 1.15;
 	else if (newPosition.left <= ballLeftLimit || newPosition.left >= ballRightLimit)
-		scorePoint(newPosition.left <= ballLeftLimit);
+		scorePoint(newPosition.left <= ballLeftLimit);*/
+	// else if ((newPosition.left - ballRadius <= leftPaddleLimit && ballHandler.direction.x < 0)
+	// || (newPosition.left + ballRadius >= rightPaddleLimit && ballHandler.direction.x > 0))
+	// 	getBallFromServer();
 	else
 	{
-		if ((new Date()).getTime() - lastPreviousBallUpdate >= 100)
-		{
-			const $previousBall = $ball.clone();
-			$previousBall.css({opacity: 0.6});
-			$gameArea.append($previousBall);
-			const interval = GC.addInterval(function() {
-				$previousBall.css({opacity: $previousBall.css('opacity') - 0.2});
-			}, 100);
-			GC.addTimeout(function() {
-				GC.cleanInterval(interval);
-				$previousBall.remove();
-			}, 300);
-			lastPreviousBallUpdate = (new Date()).getTime();
-		}
+		// if ((new Date()).getTime() - lastPreviousBallUpdate >= 100)
+		// {
+		// 	const $previousBall = $ball.clone();
+		// 	$previousBall.css({opacity: 0.6});
+		// 	$gameArea.append($previousBall);
+		// 	const interval = GC.addInterval(function() {
+		// 		$previousBall.css({opacity: $previousBall.css('opacity') - 0.2});
+		// 	}, 100);
+		// 	GC.addTimeout(function() {
+		// 		GC.cleanInterval(interval);
+		// 		$previousBall.remove();
+		// 	}, 300);
+		// 	lastPreviousBallUpdate = (new Date()).getTime();
+		// }
 		$ball.css({
 			top: (newPosition.top * 100) + '%',
 			left: (newPosition.left * 100) + '%'
 		});
 	}
+}
+
+function getBallFromServer() {
+	pongSubscription.send({
+		"request": "ball"
+	});
 }
 
 function timerAndStart() {
@@ -249,6 +257,7 @@ function ballMeetsPaddle(ballPosition) {
 function defineJqueryObjects() {
 	$gameArea = $('#game_area');
 	$ball = $('#ball_container');
+	$ball.css('width', $ball.height());
 	$leftPoints = $('#player_infos_left .score');
 	$rightPoints = $('#player_infos_right .score');
 	$timer = $('#timer');
@@ -275,31 +284,35 @@ function start() {
 	rightPaddleHandler.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
-	const randIncrement = Math.random() * 100;
-	ballHandler.direction = {
-		x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-			* (minAngle.x - angleIncrement.x * randIncrement),
-		y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-			* (minAngle.y + angleIncrement.y * randIncrement)
-	};
+	//const randIncrement = Math.random() * 100;
+	// ballHandler.direction = {
+	// 	x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+	// 		* (minAngle.x - angleIncrement.x * randIncrement),
+	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+	// 		* (minAngle.y + angleIncrement.y * randIncrement)
+	// };
 	$ball.css({
 		top: '50%',
 		left: '50%'
 	});
 	lastPreviousBallUpdate = (new Date()).getTime();
-	//ballHandler.interval = GC.addInterval(moveBall, 1);
-	ballSpeed = baseBallSpeed;
-	// GC.addInterval(function() {
-	// 	pongSubscription.send({
-	// 		"request": "ballPosition"
-	// 	});
-	// }, 1);
+	ballHandler.interval = GC.addInterval(moveBall, 1);
+	GC.addInterval(function() {
+		pongSubscription.send({
+			"request": "ball"
+		});
+	}, 1000);
 }
 
 function updateBallFromServer(ball) {
+	ballHandler.direction = {
+		x: ball.dx,
+		y: ball.dy
+	};
+	ballHandler.speed = Number(ball.speed) / 100.0;
 	$ball.css({
-		top: ball.top + '%',
-		left: ball.left + '%'
+		top: ball.y + '%',
+		left: ball.x + '%'
 	});
 }
 
@@ -323,7 +336,7 @@ export function connect() {
 			// Called when there's incoming data on the websocket for this channel
 			console.log('Received data from pong channel : ', data.content);
 			if (data.content['act'] == "connection")
-				getServerInfos(data.content);
+				initializeFromServer(data.content);
 			else if (data.content['act'] == "start")
 				timerAndStart();
 			else if (data.content['act'] == 'press' || data.content['act'] == 'release')
@@ -336,8 +349,17 @@ export function connect() {
 	});
 }
 
-function getServerInfos(data) {
-	paddleSpeed = data["paddleSpeed"];
+function initializeFromServer(data) {
+	paddleSpeed = data.paddleSpeed;
+	ballHandler.direction = {
+		x: data.ball.dx,
+		y: data.ball.dy
+	};
+	$ball.css({
+		top: data.ball.y + '%',
+		left: data.ball.x + '%'
+	});
+	ballHandler.speed = Number(data.ball.speed) / 100.0;
 }
 
 function paddleMove(data) {
@@ -350,10 +372,4 @@ function paddleMove(data) {
 	}
 	else if (data.act == 'release')
 		resetPaddle(paddleHandler, data.dir);
-}
-
-function getBallPosition() {
-	pongSubscription.send({
-		"request": "ballPosition"
-	});
 }
