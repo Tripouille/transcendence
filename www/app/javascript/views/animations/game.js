@@ -10,29 +10,13 @@ const timerColors = {
 	2: 'orange',
 	1: 'red'
 };
-const minAngle = {
-	x: 0.984,
-	y: 0.174
-};
-const maxAngle = {
-	x: 0.342,
-	y: 0.939
-};
-const angleIncrement = {
-	x: (minAngle.x - maxAngle.x) / 100.0,
-	y: (maxAngle.y - minAngle.y) / 100.0
-};
 let paddleSpeed = 0.0;
 
 let lastPreviousBallUpdate = null;
 let paddleIsActive = false;
 
-let ballHandler = {
-	speed: 0.0,
-	interval: null,
-	direction: {x: -1, y: -1}
-};
-let leftPaddleHandler = {
+let ball;
+let leftPaddle = {
 	up: {
 		interval: null,
 		handler: movePaddleUp
@@ -42,9 +26,10 @@ let leftPaddleHandler = {
 		handler: movePaddleDown
 	},
 	lastUpdate: 0.0,
-	activeKey: null
+	activeKey: null,
+	y: 50
 };
-let rightPaddleHandler = {
+let rightPaddle = {
 	up: {
 		interval: null,
 		handler: movePaddleUp
@@ -54,118 +39,238 @@ let rightPaddleHandler = {
 		handler: movePaddleDown
 	},
 	lastUpdate: 0.0,
-	activeKey: null
+	activeKey: null,
+	y: 50
 };
 
 let $gameArea, $ball, $leftPoints, $rightPoints, $timer;
-let paddleHeight, paddleTopLimit, paddleBottomLimit, leftPaddleLimit, rightPaddleLimit;
-let ballRadius, ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
+let paddleHeight, paddleTopLimit, paddleBottomLimit;//, leftPaddleLimit, rightPaddleLimit;
+// let ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
+let ballInterval;
 let pongSubscription;
 
-function resetAllKeys() {
-	resetKey(null, leftPaddleHandler, 'up');
-	resetKey(null, leftPaddleHandler, 'down');
-	resetKey(null, rightPaddleHandler, 'up');
-	resetKey(null, rightPaddleHandler, 'down');
-}
-
-function resetKey(key, paddleHandler, direction) {
-	if (key == paddleHandler.activeKey)
-		paddleHandler.activeKey = null;
-	pongSubscription.send({
-		'act': 'release',
-		'dir': direction,
-		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
+export function connect() {
+	defineJqueryObjects();
+	$(window).resize(resizeGameArea);
+	pongSubscription = consumer.subscriptions.create("PongChannel", {
+		connected() {},
+		disconnected() {},
+		received(data) {
+			//console.log('Received data from pong channel : ', data.content);
+			if (data.content['act'] == "connection")
+				initializeFromServer(data.content);
+			else if (data.content['act'] == "start")
+				timerAndStart();
+			else if (data.content['act'] == 'press' || data.content['act'] == 'release')
+				paddleMove(data.content);
+			else if (data.content['act'] == 'ballUpdate')
+				updateBallFromServer(data.content.ball);
+			else
+				console.log('Error: unrecognized data');
+		}
 	});
 }
 
-function switchKey(e, paddleHandler, oldDir, newDir) {
+function resizeGameArea() {
+	const ratio = 2.0;
+	if ($(window).width() < $(window).height() * 0.75 * ratio) {
+		$gameArea.css('width', '100%');
+		$gameArea.css('height', $gameArea.width() / ratio);
+	}
+	else {
+		$gameArea.css('height', '75%');
+		$gameArea.css('width', $gameArea.height() * ratio);
+	}
+}
+
+function defineJqueryObjects() {
+	$gameArea = $('#game_area');
+	$ball = $('#ball_container');
+	$ball.css('width', $ball.height());
+	resizeGameArea();
+	$leftPoints = $('#player_infos_left .score');
+	$rightPoints = $('#player_infos_right .score');
+	$timer = $('#timer');
+	leftPaddle.$paddle = $('#paddle_left_container');
+	rightPaddle.$paddle = $('#paddle_right_container');
+}
+
+function initializeFromServer(data) {
+	ball = data.ball;
+	$ball.css({
+		top: ball.pos.y + '%',
+		left: ball.pos.x + '%'
+	});
+	paddleSpeed = data.paddles.speed;
+	paddleHeight = data.paddles.height;
+	paddleTopLimit = paddleHeight / 2.0;
+	paddleBottomLimit = 100.0 - paddleHeight / 2.0;
+	$(document).keydown(keyDownHandler);
+	$(document).keyup(keyUpHandler);
+}
+
+function timerAndStart() {
+	$timer.show();
+	$timer.text('3');
+	$timer.css({color: 'green'});
+	const interval = GC.addInterval(function() {
+		$timer.text(Math.max(Number($timer.text()) - 1, 1));
+		$timer.css({color: timerColors[$timer.text()]});
+	}, 1000);
+	GC.addTimeout(function() {
+		GC.cleanInterval(interval);
+		$timer.hide();
+		start();
+	}, 3000);
+}
+
+function start() {
+	leftPaddle.$paddle.css({top: '50%'});
+	rightPaddle.$paddle.css({top: '50%'});
+	leftPaddle.y = 50;
+	rightPaddle.y = 50;
+	leftPaddle.activeKey = null;
+	rightPaddle.activeKey = null;
+	paddleIsActive = true;
+	$ball.show();
+	//const randIncrement = Math.random() * 100;
+	// ball.delta = {
+	// 	x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+	// 		* (minAngle.x - angleIncrement.x * randIncrement),
+	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
+	// 		* (minAngle.y + angleIncrement.y * randIncrement)
+	// };
+	$ball.css({
+		top: '50%',
+		left: '50%'
+	});
+	ball.pos.x = 50;
+	ball.pos.y = 50;
+	ball.lastUpdate = (new Date()).getTime();
+	//lastPreviousBallUpdate = (new Date()).getTime();
+	//ballInterval= GC.addInterval(moveBall, 100);
+	GC.addInterval(getBallFromServer, 10);
+}
+
+function switchKey(e, paddle, oldDir, newDir) {
 	e.preventDefault();
-	if (e.key == paddleHandler.activeKey)
+	if (e.key == paddle.activeKey)
 		return ;
-	paddleHandler.activeKey = e.key;
+	paddle.activeKey = e.key;
 	pongSubscription.send({
 		'act': 'press',
 		'dir': newDir,
-		'side': paddleHandler == leftPaddleHandler ? 'left' : 'right'
+		'side': paddle == leftPaddle ? 'left' : 'right'
 	});
 }
 
-function resetPaddle(paddleHandler, direction) {
-	GC.cleanInterval(paddleHandler[direction].interval);
-	paddleHandler[direction].interval = null;
+function resetKey(key, paddle, direction) {
+	if (key == paddle.activeKey)
+		paddle.activeKey = null;
+	pongSubscription.send({
+		'act': 'release',
+		'dir': direction,
+		'side': paddle == leftPaddle ? 'left' : 'right'
+	});
 }
 
-function activatePaddle(paddleHandler, direction) {
-	paddleHandler.lastUpdate = new Date().getTime(); //ms
-	paddleHandler[direction].interval = GC.addInterval(function() {
-		paddleHandler[direction].handler(paddleHandler);
+function resetAllKeys() {
+	resetKey(null, leftPaddle, 'up');
+	resetKey(null, leftPaddle, 'down');
+	resetKey(null, rightPaddle, 'up');
+	resetKey(null, rightPaddle, 'down');
+}
+
+function activatePaddle(paddle, direction) {
+	paddle.lastUpdate = new Date().getTime(); //ms
+	paddle[direction].interval = GC.addInterval(function() {
+		paddle[direction].handler(paddle);
 	}, 1);
 }
 
+function resetPaddle(paddle, direction) {
+	GC.cleanInterval(paddle[direction].interval);
+	paddle[direction].interval = null;
+}
+
 function keyDownHandler(e) {
+	console.log('key down');
 	if (!paddleIsActive)
 		return ;
 	if (e.key == RIGHT_UP_KEY)
-		switchKey(e, rightPaddleHandler, 'down', 'up');
+		switchKey(e, rightPaddle, 'down', 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
-		switchKey(e, rightPaddleHandler, 'up', 'down');
+		switchKey(e, rightPaddle, 'up', 'down');
 	else if (e.key == LEFT_UP_KEY)
-		switchKey(e, leftPaddleHandler, 'down', 'up');
+		switchKey(e, leftPaddle, 'down', 'up');
 	else if (e.key == LEFT_DOWN_KEY)
-		switchKey(e, leftPaddleHandler, 'up', 'down');
+		switchKey(e, leftPaddle, 'up', 'down');
 }
 
 function keyUpHandler(e) {
 	if (!paddleIsActive)
 		return ;
 	if (e.key == RIGHT_UP_KEY)
-		resetKey(e.key, rightPaddleHandler, 'up');
+		resetKey(e.key, rightPaddle, 'up');
 	else if (e.key == RIGHT_DOWN_KEY)
-		resetKey(e.key, rightPaddleHandler, 'down');
+		resetKey(e.key, rightPaddle, 'down');
 	else if (e.key == LEFT_UP_KEY)
-		resetKey(e.key, leftPaddleHandler, 'up');
+		resetKey(e.key, leftPaddle, 'up');
 	else if (e.key == LEFT_DOWN_KEY)
-		resetKey(e.key, leftPaddleHandler, 'down');
+		resetKey(e.key, leftPaddle, 'down');
 }
 
-function movePaddleUp(paddleHandler) {
-	const newTime = new Date().getTime();
-	const timeDelta = newTime - paddleHandler.lastUpdate;
-	paddleHandler.lastUpdate = newTime;
+function paddleMove(data) {
+	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
+	paddle.$paddle.css({top: data.y + '%'});
 
-	const oldPosition = Number(paddleHandler.$paddle.position().top / $gameArea.height());
-	const newPosition = Math.max(oldPosition - timeDelta * (paddleSpeed / 100.0), paddleTopLimit);
-	paddleHandler.$paddle.css({top: (newPosition * 100.0) + '%'});
+	if (data.act == 'press') {
+		resetPaddle(paddle, data.dir == 'up' ? 'down' : 'up');
+		activatePaddle(paddle, data.dir);
+	}
+	else if (data.act == 'release')
+		resetPaddle(paddle, data.dir);
 }
 
-function movePaddleDown(paddleHandler) {
+function getTimeDeltaAndUpdate(handler) {
 	const newTime = new Date().getTime();
-	const timeDelta = newTime - paddleHandler.lastUpdate;
-	paddleHandler.lastUpdate = newTime;
+	const timeDelta = newTime - handler.lastUpdate;
+	handler.lastUpdate = newTime;
+	return (timeDelta);
+}
 
-	const oldPosition = Number(paddleHandler.$paddle.position().top / $gameArea.height());
-	const newPosition = Math.min(oldPosition + timeDelta * (paddleSpeed / 100.0), paddleBottomLimit);
-	paddleHandler.$paddle.css({top: (newPosition * 100.0) + '%'});
+function movePaddleUp(paddle) {
+	const timeDelta = getTimeDeltaAndUpdate(paddle);
+	paddle.y -= Math.min(timeDelta * paddleSpeed, paddle.y - paddleTopLimit);
+	paddle.$paddle.css({top : paddle.y + '%'});
+}
+
+function movePaddleDown(paddle) {
+	const timeDelta = getTimeDeltaAndUpdate(paddle);
+	paddle.y += Math.min(timeDelta * paddleSpeed, paddleBottomLimit - paddle.y);
+	paddle.$paddle.css({top: paddle.y + '%'});
 }
 
 function moveBall() {
-	const oldPosition = {
-		top: Number($ball.position().top / $gameArea.height()),
-		left: Number($ball.position().left / $gameArea.width())
-	};
-	const newPosition = {
-		top: oldPosition.top + ballHandler.direction.y * ballHandler.speed,
-		left: oldPosition.left + ballHandler.direction.x * ballHandler.speed
-	};
-	if (newPosition.top <= ballTopLimit || newPosition.top >= ballBottomLimit)
-		ballHandler.direction.y *= -1.0;
+	const timeDelta = getTimeDeltaAndUpdate(ball);
+	// const oldPosition = {
+	// 	top: Number($ball.position().top / $gameArea.height()),
+	// 	left: Number($ball.position().left / $gameArea.width())
+	// };
+	// const newPosition = {
+	// 	top: oldPosition.top + ball.delta.y * ball.speed,
+	// 	left: oldPosition.left + ball.delta.x * ball.speed
+	// };
+	ball.pos.x += ball.delta.y * ball.speed * timeDelta;
+	ball.pos.y += ball.delta.x * ball.speed * timeDelta;
+	if (ball.pos.y <= ball.topLimit || ball.pos.y >= ball.bottomLimit)
+		ball.delta.y *= -1.0;
 	/*else if (ballMeetsPaddle(newPosition))
 		ballSpeed *= 1.15;
 	else if (newPosition.left <= ballLeftLimit || newPosition.left >= ballRightLimit)
 		scorePoint(newPosition.left <= ballLeftLimit);*/
-	// else if ((newPosition.left - ballRadius <= leftPaddleLimit && ballHandler.direction.x < 0)
-	// || (newPosition.left + ballRadius >= rightPaddleLimit && ballHandler.direction.x > 0))
+	// else if ((newPosition.left - ballRadius <= leftPaddleLimit && ball.delta.x < 0)
+	// || (newPosition.left + ballRadius >= rightPaddleLimit && ball.delta.x > 0))
 	// 	getBallFromServer();
 	else
 	{
@@ -184,8 +289,8 @@ function moveBall() {
 		// 	lastPreviousBallUpdate = (new Date()).getTime();
 		// }
 		$ball.css({
-			top: (newPosition.top * 100) + '%',
-			left: (newPosition.left * 100) + '%'
+			top: ball.pos.y + '%',
+			left: ball.pos.x + '%'
 		});
 	}
 }
@@ -196,180 +301,53 @@ function getBallFromServer() {
 	});
 }
 
-function timerAndStart() {
-	$timer.show();
-	$timer.text('3');
-	$timer.css({color: 'green'});
-	const interval = GC.addInterval(function() {
-		$timer.text(Math.max(Number($timer.text()) - 1, 1));
-		$timer.css({color: timerColors[$timer.text()]});
-	}, 1000);
-	GC.addTimeout(function() {
-		GC.cleanInterval(interval);
-		$timer.hide();
-		start();
-	}, 3000);
-}
+// function scorePoint(leftSide) {
+// 	paddleIsActive = false;
+// 	resetAllKeys();
+// 	GC.cleanInterval(ball.interval);
+// 	reset();
+// 	if (leftSide)
+// 		$rightPoints.text(Number($rightPoints.text()) + 1);
+// 	else
+// 		$leftPoints.text(Number($leftPoints.text()) + 1);
+// }
 
-function scorePoint(leftSide) {
-	paddleIsActive = false;
-	resetAllKeys();
-	GC.cleanInterval(ballHandler.interval);
-	reset();
-	if (leftSide)
-		$rightPoints.text(Number($rightPoints.text()) + 1);
-	else
-		$leftPoints.text(Number($leftPoints.text()) + 1);
-}
+// function changeBallDirection(distBallPaddleCenter, xSign)
+// {
+// 	const oldDirectionWasNegative = ball.delta.y < 0;
+// 	ball.delta = {
+// 		x: xSign * (minAngle.x - angleIncrement.x * distBallPaddleCenter),
+// 		y: minAngle.y + angleIncrement.y * distBallPaddleCenter
+// 	};
+// 	if (oldDirectionWasNegative)
+// 		ball.delta.y *= -1.0;
+// 	return (true);
+// }
 
-function changeBallDirection(distBallPaddleCenter, xSign)
-{
-	const oldDirectionWasNegative = ballHandler.direction.y < 0;
-	ballHandler.direction = {
-		x: xSign * (minAngle.x - angleIncrement.x * distBallPaddleCenter),
-		y: minAngle.y + angleIncrement.y * distBallPaddleCenter
-	};
-	if (oldDirectionWasNegative)
-		ballHandler.direction.y *= -1.0;
-	return (true);
-}
+// function ballMeetsPaddle(ballPosition) {
+// 	const bottomOfBallPosition = ballPosition.top + ballRadius;
+// 	const topOfBallPosition = ballPosition.top - ballRadius;
+// 	const leftPaddlePosition = leftPaddle.$paddle.position().top / $gameArea.height();
+// 	const rightPaddlePosition = rightPaddle.$paddle.position().top / $gameArea.height();
+// 	if (ball.delta.x < 0.0
+// 	&& ballPosition.left - ballRadius <= leftPaddleLimit
+// 	&& bottomOfBallPosition >= leftPaddlePosition - paddleHeight / 2.0
+// 	&& topOfBallPosition <= leftPaddlePosition + paddleHeight / 2.0)
+// 		return (changeBallDirection(100 * Math.abs(leftPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
+// 				1));
+// 	else if (ball.delta.x > 0.0
+// 	&& ballPosition.left + ballRadius >= rightPaddleLimit
+// 	&& bottomOfBallPosition >= rightPaddlePosition - paddleHeight / 2.0
+// 	&& topOfBallPosition <= rightPaddlePosition + paddleHeight / 2.0)
+// 		return (changeBallDirection(100 * Math.abs(rightPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
+// 				-1));
+// 	return (false);
+// }
 
-function ballMeetsPaddle(ballPosition) {
-	const bottomOfBallPosition = ballPosition.top + ballRadius;
-	const topOfBallPosition = ballPosition.top - ballRadius;
-	const leftPaddlePosition = leftPaddleHandler.$paddle.position().top / $gameArea.height();
-	const rightPaddlePosition = rightPaddleHandler.$paddle.position().top / $gameArea.height();
-	if (ballHandler.direction.x < 0.0
-	&& ballPosition.left - ballRadius <= leftPaddleLimit
-	&& bottomOfBallPosition >= leftPaddlePosition - paddleHeight / 2.0
-	&& topOfBallPosition <= leftPaddlePosition + paddleHeight / 2.0)
-		return (changeBallDirection(100 * Math.abs(leftPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
-				1));
-	else if (ballHandler.direction.x > 0.0
-	&& ballPosition.left + ballRadius >= rightPaddleLimit
-	&& bottomOfBallPosition >= rightPaddlePosition - paddleHeight / 2.0
-	&& topOfBallPosition <= rightPaddlePosition + paddleHeight / 2.0)
-		return (changeBallDirection(100 * Math.abs(rightPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
-				-1));
-	return (false);
-}
-
-function defineJqueryObjects() {
-	$gameArea = $('#game_area');
-	$ball = $('#ball_container');
-	$ball.css('width', $ball.height());
-	$leftPoints = $('#player_infos_left .score');
-	$rightPoints = $('#player_infos_right .score');
-	$timer = $('#timer');
-
-	leftPaddleHandler.$paddle = $('#paddle_left_container');
-	rightPaddleHandler.$paddle = $('#paddle_right_container');
-
-	paddleHeight = leftPaddleHandler.$paddle.height() / $gameArea.height();
-	paddleTopLimit = paddleHeight / 2.0;
-	paddleBottomLimit = 1.0 - paddleTopLimit;
-	leftPaddleLimit = leftPaddleHandler.$paddle.width() / $gameArea.width();
-	rightPaddleLimit = 1.0 - leftPaddleLimit;
-	ballRadius = ($ball.width() / $gameArea.width()) / 2.0;
-	ballTopLimit = ballRadius;
-	ballBottomLimit = 1.0 - ballRadius;
-	ballLeftLimit = ballRadius;
-	ballRightLimit = 1.0 - ballRadius;
-}
-
-function start() {
-	leftPaddleHandler.$paddle.css({top: '50%'});
-	rightPaddleHandler.$paddle.css({top: '50%'});
-	leftPaddleHandler.activeKey = null;
-	rightPaddleHandler.activeKey = null;
-	paddleIsActive = true;
-	$ball.show();
-	//const randIncrement = Math.random() * 100;
-	// ballHandler.direction = {
-	// 	x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-	// 		* (minAngle.x - angleIncrement.x * randIncrement),
-	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-	// 		* (minAngle.y + angleIncrement.y * randIncrement)
-	// };
+function updateBallFromServer(serverBall) {
+	ball = serverBall;
 	$ball.css({
-		top: '50%',
-		left: '50%'
+		top: ball.pos.y + '%',
+		left: ball.pos.x + '%'
 	});
-	lastPreviousBallUpdate = (new Date()).getTime();
-	ballHandler.interval = GC.addInterval(moveBall, 1);
-	GC.addInterval(function() {
-		pongSubscription.send({
-			"request": "ball"
-		});
-	}, 1000);
-}
-
-function updateBallFromServer(ball) {
-	ballHandler.direction = {
-		x: ball.dx,
-		y: ball.dy
-	};
-	ballHandler.speed = Number(ball.speed) / 100.0;
-	$ball.css({
-		top: ball.y + '%',
-		left: ball.x + '%'
-	});
-}
-
-export function connect() {
-	defineJqueryObjects();
-
-	pongSubscription = consumer.subscriptions.create("PongChannel", {
-		connected() {
-			// Called when the subscription is ready for use on the server
-			console.log('connected to pong channel');
-			$(document).keydown(keyDownHandler);
-			$(document).keyup(keyUpHandler);
-		},
-	
-		disconnected() {
-			// Called when the subscription has been terminated by the server
-			console.log('disconnected from pong channel');
-		},
-	
-		received(data) {
-			// Called when there's incoming data on the websocket for this channel
-			console.log('Received data from pong channel : ', data.content);
-			if (data.content['act'] == "connection")
-				initializeFromServer(data.content);
-			else if (data.content['act'] == "start")
-				timerAndStart();
-			else if (data.content['act'] == 'press' || data.content['act'] == 'release')
-				paddleMove(data.content);
-			else if (data.content['ball'])
-				updateBallFromServer(data.content['ball']);
-			else
-				console.log('Error: unrecognized data');
-		}
-	});
-}
-
-function initializeFromServer(data) {
-	paddleSpeed = data.paddleSpeed;
-	ballHandler.direction = {
-		x: data.ball.dx,
-		y: data.ball.dy
-	};
-	$ball.css({
-		top: data.ball.y + '%',
-		left: data.ball.x + '%'
-	});
-	ballHandler.speed = Number(data.ball.speed) / 100.0;
-}
-
-function paddleMove(data) {
-	const paddleHandler = data.side == 'left' ? leftPaddleHandler : rightPaddleHandler;
-	paddleHandler.$paddle.css({top: data.top + '%'});
-
-	if (data.act == 'press') {
-		resetPaddle(paddleHandler, data.dir == 'up' ? 'down' : 'up');
-		activatePaddle(paddleHandler, data.dir);
-	}
-	else if (data.act == 'release')
-		resetPaddle(paddleHandler, data.dir);
 }
