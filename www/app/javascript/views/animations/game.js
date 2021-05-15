@@ -15,7 +15,7 @@ let paddleSpeed = 0.0;
 let lastPreviousBallUpdate = null;
 let paddleIsActive = false;
 
-let ball;
+let BH = {ball: null};
 let leftPaddle = {
 	up: {
 		interval: null,
@@ -56,7 +56,7 @@ export function connect() {
 		connected() {},
 		disconnected() {},
 		received(data) {
-			//console.log('Received data from pong channel : ', data.content);
+			console.log('Received data from pong channel : ', data.content);
 			if (data.content['act'] == "connection")
 				initializeFromServer(data.content);
 			else if (data.content['act'] == "start")
@@ -99,10 +99,10 @@ function defineJqueryObjects() {
 }
 
 function initializeFromServer(data) {
-	ball = data.ball;
+	BH.ball = data.ball;
 	$ball.css({
-		top: ball.pos.y + '%',
-		left: ball.pos.x + '%'
+		top: BH.ball.posY + '%',
+		left: BH.ball.posX + '%'
 	});
 	paddleSpeed = data.paddles.speed;
 	paddleHeight = data.paddles.height;
@@ -137,7 +137,7 @@ function start() {
 	paddleIsActive = true;
 	$ball.show();
 	//const randIncrement = Math.random() * 100;
-	// ball.delta = {
+	// BH.ball.delta = {
 	// 	x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
 	// 		* (minAngle.x - angleIncrement.x * randIncrement),
 	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
@@ -147,11 +147,12 @@ function start() {
 		top: '50%',
 		left: '50%'
 	});
-	ball.pos.x = 50;
-	ball.pos.y = 50;
-	ball.lastUpdate = (new Date()).getTime();
+	getBallFromServer();
+	//BH.ball.posX = 50;
+	//BH.ball.posY = 50;
+	//BH.ball.lastUpdate = (new Date()).getTime();
 	//lastPreviousBallUpdate = (new Date()).getTime();
-	//ballInterval= GC.addInterval(moveBall, 100);
+	ballInterval = GC.addInterval(moveBall, 10);
 	//GC.addInterval(getBallFromServer, 10);
 }
 
@@ -236,8 +237,12 @@ function paddleMove(data) {
 }
 
 function getTimeDeltaAndUpdate(handler) {
-	const newTime = new Date().getTime();
-	const timeDelta = newTime - handler.lastUpdate;
+	const newTime = new Date().getTime() / 1000.0;
+	if (handler.lastUpdate == 0) {
+		handler.lastUpdate = newTime;
+		return (0);
+	}
+	let timeDelta = (newTime - handler.lastUpdate) * 1000;
 	handler.lastUpdate = newTime;
 	return (timeDelta);
 }
@@ -255,26 +260,18 @@ function movePaddleDown(paddle) {
 }
 
 function moveBall() {
-	const timeDelta = getTimeDeltaAndUpdate(ball);
-	// const oldPosition = {
-	// 	top: Number($ball.position().top / $gameArea.height()),
-	// 	left: Number($ball.position().left / $gameArea.width())
-	// };
-	// const newPosition = {
-	// 	top: oldPosition.top + ball.delta.y * ball.speed,
-	// 	left: oldPosition.left + ball.delta.x * ball.speed
-	// };
-	ball.pos.x += ball.delta.y * ball.speed * timeDelta;
-	ball.pos.y += ball.delta.x * ball.speed * timeDelta;
-	if (ball.pos.y <= ball.topLimit || ball.pos.y >= ball.bottomLimit)
-		ball.delta.y *= -1.0;
-	/*else if (ballMeetsPaddle(newPosition))
-		ballSpeed *= 1.15;
-	else if (newPosition.left <= ballLeftLimit || newPosition.left >= ballRightLimit)
-		scorePoint(newPosition.left <= ballLeftLimit);*/
-	// else if ((newPosition.left - ballRadius <= leftPaddleLimit && ball.delta.x < 0)
-	// || (newPosition.left + ballRadius >= rightPaddleLimit && ball.delta.x > 0))
-	// 	getBallFromServer();
+	if (BH.ball == null)
+		return ;
+	let timeDelta = getTimeDeltaAndUpdate(BH.ball);
+	BH.ball.posX += BH.ball.deltaX * BH.ball.speed * timeDelta;
+	BH.ball.posY += BH.ball.deltaY * BH.ball.speed * timeDelta;
+	if (BH.ball.posY <= BH.ball.topLimit || BH.ball.posY >= BH.ball.bottomLimit) {
+		BH.ball.deltaY *= -1.0;
+		getBallFromServer();
+	}
+	else if ((BH.ball.posX <= BH.ball.leftLimit && BH.ball.deltaX < 0)
+	|| (BH.ball.posX >= BH.ball.rightLimit && BH.ball.deltaX > 0))
+		getBallFromServer();
 	else
 	{
 		// if ((new Date()).getTime() - lastPreviousBallUpdate >= 100)
@@ -292,8 +289,8 @@ function moveBall() {
 		// 	lastPreviousBallUpdate = (new Date()).getTime();
 		// }
 		$ball.css({
-			top: ball.pos.y + '%',
-			left: ball.pos.x + '%'
+			top: BH.ball.posY + '%',
+			left: BH.ball.posX + '%'
 		});
 	}
 }
@@ -307,7 +304,7 @@ function getBallFromServer() {
 // function scorePoint(leftSide) {
 // 	paddleIsActive = false;
 // 	resetAllKeys();
-// 	GC.cleanInterval(ball.interval);
+// 	GC.cleanInterval(BH.ball.interval);
 // 	reset();
 // 	if (leftSide)
 // 		$rightPoints.text(Number($rightPoints.text()) + 1);
@@ -317,13 +314,13 @@ function getBallFromServer() {
 
 // function changeBallDirection(distBallPaddleCenter, xSign)
 // {
-// 	const oldDirectionWasNegative = ball.delta.y < 0;
-// 	ball.delta = {
+// 	const oldDirectionWasNegative = BH.ball.deltaY < 0;
+// 	BH.ball.delta = {
 // 		x: xSign * (minAngle.x - angleIncrement.x * distBallPaddleCenter),
 // 		y: minAngle.y + angleIncrement.y * distBallPaddleCenter
 // 	};
 // 	if (oldDirectionWasNegative)
-// 		ball.delta.y *= -1.0;
+// 		BH.ball.deltaY *= -1.0;
 // 	return (true);
 // }
 
@@ -332,13 +329,13 @@ function getBallFromServer() {
 // 	const topOfBallPosition = ballPosition.top - ballRadius;
 // 	const leftPaddlePosition = leftPaddle.$paddle.position().top / $gameArea.height();
 // 	const rightPaddlePosition = rightPaddle.$paddle.position().top / $gameArea.height();
-// 	if (ball.delta.x < 0.0
+// 	if (BH.ball.deltaX < 0.0
 // 	&& ballPosition.left - ballRadius <= leftPaddleLimit
 // 	&& bottomOfBallPosition >= leftPaddlePosition - paddleHeight / 2.0
 // 	&& topOfBallPosition <= leftPaddlePosition + paddleHeight / 2.0)
 // 		return (changeBallDirection(100 * Math.abs(leftPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
 // 				1));
-// 	else if (ball.delta.x > 0.0
+// 	else if (BH.ball.deltaX > 0.0
 // 	&& ballPosition.left + ballRadius >= rightPaddleLimit
 // 	&& bottomOfBallPosition >= rightPaddlePosition - paddleHeight / 2.0
 // 	&& topOfBallPosition <= rightPaddlePosition + paddleHeight / 2.0)
@@ -348,9 +345,12 @@ function getBallFromServer() {
 // }
 
 function updateBallFromServer(serverBall) {
-	ball = serverBall;
+	BH.ball = serverBall;
+	// console.log('BH.ball from updateBall: ' + BH.ball);
+	// console.log('BH.ball.posX from updateBall: ', BH.ball.posX);
+	// console.log('BH.ball.deltaX from updateBall: ', BH.ball.deltaX);
 	$ball.css({
-		top: ball.pos.y + '%',
-		left: ball.pos.x + '%'
+		top: BH.ball.posY + '%',
+		left: BH.ball.posX + '%'
 	});
 }

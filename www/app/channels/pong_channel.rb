@@ -40,36 +40,36 @@ class PongChannel < ApplicationCable::Channel
 			bottomLimit: 100 - @BALL_RADIUS,
 			leftLimit: @paddles[:offset] + @paddles[:width] + (@BALL_RADIUS / @AREA_RATIO),
 			rightLimit: 100 - @paddles[:width] - @paddles[:offset] - (@BALL_RADIUS / @AREA_RATIO),
-			pos: {
-				y: 50.0,
-				x: 50.0
-			},
-			delta: {
-				x: 0.707,
-				y: 0.707
-			},
+			posX: 50.0,
+			posY: 50.0,
+			deltaX: 0.707,
+			deltaY: 0.707,
 			lastUpdate: 0
 		}
+		@playersConnected = 0
 	end
 
 	def subscribed
 		stream_from "pong_channel"
 
-		sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
-		
-		scheduler = Rufus::Scheduler.new
+		@playersConnected += 1
+		if @playersConnected == 1
+			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
+			
+			scheduler = Rufus::Scheduler.new
 
-		ActionCable.server.broadcast "pong_channel", content: {
-			act: 'connection',
-			paddles: @paddles,
-			ball: @ball
-		}
-		ActionCable.server.broadcast "pong_channel", content: {
-			act: 'start'
-		}
+			ActionCable.server.broadcast "pong_channel", content: {
+				act: 'connection',
+				paddles: @paddles,
+				ball: @ball
+			}
+			ActionCable.server.broadcast "pong_channel", content: {
+				act: 'start'
+			}
 
-		scheduler.in '3s' do
-		  @paddles[:active] = true
+			scheduler.in '3s' do
+				@paddles[:active] = true
+			end
 		end
 	end
 
@@ -149,15 +149,18 @@ class PongChannel < ApplicationCable::Channel
 	def updateBall
 		newTime = Time.now.to_f
 		if @ball[:lastUpdate] == 0
+			puts 'in first if of updateBall'
 			@ball[:lastUpdate] = newTime
+			broadcastBall()
 			return
 		end
 		timeDelta = (newTime - @ball[:lastUpdate]) * 1000; #ms
 		@ball[:lastUpdate] = newTime
 
 		traveled = timeDelta * @ball[:speed]
+		puts "timeDelta = " + timeDelta.to_s
 		puts "speed = " + @ball[:speed].to_s
-		puts "pos = " + @ball[:pos].inspect
+		puts "ball = " + @ball.inspect
 		puts "leftLimit = " + @ball[:leftLimit].to_s
 		while traveled > 0
 			traveled = setBallBeforeBounce(traveled)
@@ -173,32 +176,32 @@ class PongChannel < ApplicationCable::Channel
 		minDistance = [distanceToTopBottom, distanceToLeftRight].min
 		if remainingDistance < minDistance
 			puts "if"
-			@ball[:pos][:x] += remainingDistance * @ball[:delta][:x]
-			@ball[:pos][:y] += remainingDistance * @ball[:delta][:y]
+			@ball[:posX] += remainingDistance * @ball[:deltaX]
+			@ball[:posY] += remainingDistance * @ball[:deltaY]
 			remainingDistance = 0
 		elsif distanceToTopBottom < distanceToLeftRight
 			puts "elsif"
-			@ball[:pos][:x] += distanceToTopBottom * @ball[:delta][:x]
-			@ball[:pos][:y] += distanceToTopBottom * @ball[:delta][:y]
-			@ball[:delta][:y] *= -1.0
+			@ball[:posX] += distanceToTopBottom * @ball[:deltaX]
+			@ball[:posY] += distanceToTopBottom * @ball[:deltaY]
+			@ball[:deltaY] *= -1.0
 			remainingDistance -= distanceToTopBottom
 		else #above left or right limit
 			puts "else"
-			@ball[:pos][:x] += distanceToLeftRight * @ball[:delta][:x]
-			@ball[:pos][:y] += distanceToLeftRight * @ball[:delta][:y]
-			@ball[:delta][:x] *= -1.0 #temp
+			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
+			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
+			@ball[:deltaX] *= -1.0 #temp
 			remainingDistance -= distanceToTopBottom
 		end
 		return remainingDistance
 	end
 
 	def getTraveledDistance
-		toTopBottom = @ball[:delta][:y] > 0 ? \
-		(@ball[:bottomLimit] - @ball[:pos][:y]) / @ball[:delta][:y] \
-		: (@ball[:pos][:y] - @ball[:topLimit]) / -@ball[:delta][:y]
-		toLeftRight = @ball[:delta][:x] > 0 ? \
-		(@ball[:rightLimit] - @ball[:pos][:x]) / @ball[:delta][:x] \
-		: (@ball[:pos][:x] - @ball[:leftLimit]) / -@ball[:delta][:x]
+		toTopBottom = @ball[:deltaY] > 0 ? \
+		(@ball[:bottomLimit] - @ball[:posY]) / @ball[:deltaY] \
+		: (@ball[:posY] - @ball[:topLimit]) / -@ball[:deltaY]
+		toLeftRight = @ball[:deltaX] > 0 ? \
+		(@ball[:rightLimit] - @ball[:posX]) / @ball[:deltaX] \
+		: (@ball[:posX] - @ball[:leftLimit]) / -@ball[:deltaX]
 		return toTopBottom, toLeftRight
 	end
 
@@ -230,29 +233,29 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def ballMeetsPaddle(side)
-		@ball[:pos][:y] + @ball[:radius] \
+		@ball[:posY] + @ball[:radius] \
 		>= @paddles[side][:y] - @paddles[:height] / 2 \
-		and @ball[:pos][:y] - @ball[:radius] \
+		and @ball[:posY] - @ball[:radius] \
 		>= @paddles[side][:y] + @paddles[:height] / 2
 	end
 
 	def updateBallDirection(side)
-		oldDirectionWasNegative = @ball[:delta][:y] < 0
+		oldDirectionWasNegative = @ball[:deltaY] < 0
 		distBallPaddleCenter = getDistBallPaddleCenter(side)
-		@ball[:delta][:x] = @minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter
-		@ball[:delta][:y] = @minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter
+		@ball[:deltaX] = @minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter
+		@ball[:deltaY] = @minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter
 		if oldDirectionWasNegative
-			@ball[:delta][:y] *= -1.0
+			@ball[:deltaY] *= -1.0
 		end
 	end
 
 	def getDistBallPaddleCenter(side)
-		100 * abs(@paddles[side][:y] - @ball[:pos][:y]) / (@paddles[:height] / 2.0)
+		100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
 	end
 
 	def score
-		@ball[:pos][:x] = 50
-		@ball[:pos][:y] = 50
+		@ball[:posX] = 50
+		@ball[:posY] = 50
 		broadcastBall()
 	end
 
