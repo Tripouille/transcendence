@@ -35,20 +35,28 @@ p {
 	margin: 0;
 }
 
-html, body {
+html {
 	height: 99%;
+	font-size: 1rem;
+}
+
+html, body {
 	margin: 0;
+}
+
+body {
+	height: 100%;
+	background-color: var(--bg-color);
 }
 
 main {
 	height: 100%;
-	font-size: 1rem;
 	font-family: 'screen';
-	background-color: var(--bg-color);
 	color: white;
+	margin: 0;
 }
 
-#game {
+#game, #game_container {
 	height: 100%;
 	width: 100%;
 	display: flex;
@@ -64,16 +72,16 @@ main {
 #player_infos_container {
 	box-sizing: border-box;
 	height: 10%;
-	width: 75%;
+	width: 100%;
 	margin-bottom: 1%;
 	display: flex;
 	justify-content: space-between;
 	color: var(--text-color);
+	font-size: 4vmin;
 }
 
 .player_infos {
-	/* flex: 0.49; */
-	font-size: 3vw;
+	flex: 0.49;
 	text-align: center;
 	border: 1vw ridge var(--element-color);
 	border-style: ridge groove groove ridge;
@@ -126,7 +134,7 @@ main {
 }
 
 .paddle_container {
-	height: 100%;
+	height: 25%;
 	width: 2%;
 	position: absolute;
 	top: 50%;

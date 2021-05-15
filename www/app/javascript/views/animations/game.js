@@ -43,7 +43,7 @@ let rightPaddle = {
 	y: 50
 };
 
-let $gameArea, $ball, $leftPoints, $rightPoints, $timer;
+let $gameContainer, $gameArea, $ball, $playerInfos, $leftPoints, $rightPoints, $timer;
 let paddleHeight, paddleTopLimit, paddleBottomLimit;//, leftPaddleLimit, rightPaddleLimit;
 // let ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
 let ballInterval;
@@ -73,26 +73,29 @@ export function connect() {
 
 function resizeGameArea() {
 	const ratio = 2.0;
-	if ($(window).width() < $(window).height() * 0.75 * ratio) {
-		$gameArea.css('width', '100%');
+	const maxWidth = $(window).height() * 0.75 * ratio;
+	if ($(window).width() < maxWidth) {
+		$gameContainer.css('width', '100%');
 		$gameArea.css('height', $gameArea.width() / ratio);
 	}
 	else {
 		$gameArea.css('height', '75%');
-		$gameArea.css('width', $gameArea.height() * ratio);
+		$gameContainer.css('width', $gameArea.height() * ratio);
 	}
+	$ball.css('width', $ball.height());
 }
 
 function defineJqueryObjects() {
+	$gameContainer = $('#game_container');
 	$gameArea = $('#game_area');
 	$ball = $('#ball_container');
-	$ball.css('width', $ball.height());
-	resizeGameArea();
+	$playerInfos = $('#player_infos_container');
 	$leftPoints = $('#player_infos_left .score');
 	$rightPoints = $('#player_infos_right .score');
 	$timer = $('#timer');
 	leftPaddle.$paddle = $('#paddle_left_container');
 	rightPaddle.$paddle = $('#paddle_right_container');
+	resizeGameArea();
 }
 
 function initializeFromServer(data) {
@@ -149,7 +152,7 @@ function start() {
 	ball.lastUpdate = (new Date()).getTime();
 	//lastPreviousBallUpdate = (new Date()).getTime();
 	//ballInterval= GC.addInterval(moveBall, 100);
-	GC.addInterval(getBallFromServer, 10);
+	//GC.addInterval(getBallFromServer, 10);
 }
 
 function switchKey(e, paddle, oldDir, newDir) {
