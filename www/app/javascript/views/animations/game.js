@@ -25,7 +25,7 @@ let leftPaddle = {
 		interval: null,
 		handler: movePaddleDown
 	},
-	lastUpdate: 0.0,
+	lastUpdate: 0,
 	activeKey: null,
 	y: 50
 };
@@ -38,14 +38,13 @@ let rightPaddle = {
 		interval: null,
 		handler: movePaddleDown
 	},
-	lastUpdate: 0.0,
+	lastUpdate: 0,
 	activeKey: null,
 	y: 50
 };
 
 let $gameContainer, $gameArea, $ball, $playerInfos, $leftPoints, $rightPoints, $timer;
-let paddleHeight, paddleTopLimit, paddleBottomLimit;//, leftPaddleLimit, rightPaddleLimit;
-// let ballTopLimit, ballBottomLimit, ballLeftLimit, ballRightLimit;
+let paddleHeight, paddleTopLimit, paddleBottomLimit;
 let ballInterval;
 let pongSubscription;
 
@@ -56,7 +55,7 @@ export function connect() {
 		connected() {},
 		disconnected() {},
 		received(data) {
-			console.log('Received data from pong channel : ', data.content);
+			//console.log('Received data from pong channel : ', data.content);
 			if (data.content['act'] == "connection")
 				initializeFromServer(data.content);
 			else if (data.content['act'] == "start")
@@ -105,6 +104,7 @@ function initializeFromServer(data) {
 		left: BH.ball.posX + '%'
 	});
 	paddleSpeed = data.paddles.speed;
+	console.log(paddleSpeed);
 	paddleHeight = data.paddles.height;
 	paddleTopLimit = paddleHeight / 2.0;
 	paddleBottomLimit = 100.0 - paddleHeight / 2.0;
@@ -148,9 +148,6 @@ function start() {
 		left: '50%'
 	});
 	getBallFromServer();
-	//BH.ball.posX = 50;
-	//BH.ball.posY = 50;
-	//BH.ball.lastUpdate = (new Date()).getTime();
 	//lastPreviousBallUpdate = (new Date()).getTime();
 	ballInterval = GC.addInterval(moveBall, 10);
 	//GC.addInterval(getBallFromServer, 10);
@@ -186,7 +183,7 @@ function resetAllKeys() {
 }
 
 function activatePaddle(paddle, direction) {
-	paddle.lastUpdate = new Date().getTime(); //ms
+	paddle.lastUpdate = new Date().getTime() / 1000.0; //s
 	paddle[direction].interval = GC.addInterval(function() {
 		paddle[direction].handler(paddle);
 	}, 1);
@@ -226,14 +223,14 @@ function keyUpHandler(e) {
 
 function paddleMove(data) {
 	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
-	paddle.$paddle.css({top: data.y + '%'});
-
+	
 	if (data.act == 'press') {
 		resetPaddle(paddle, data.dir == 'up' ? 'down' : 'up');
 		activatePaddle(paddle, data.dir);
 	}
 	else if (data.act == 'release')
 		resetPaddle(paddle, data.dir);
+	paddle.$paddle.css({top: data.y + '%'});
 }
 
 function getTimeDeltaAndUpdate(handler) {
@@ -354,3 +351,8 @@ function updateBallFromServer(serverBall) {
 		left: BH.ball.posX + '%'
 	});
 }
+
+//todo
+//passer en ms
+//check getBallFromServer() du start
+//synchrone avec if return;
