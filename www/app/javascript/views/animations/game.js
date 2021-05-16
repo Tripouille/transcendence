@@ -56,13 +56,15 @@ export function connect() {
 		disconnected() {},
 		received(data) {
 			//console.log('Received data from pong channel : ', data.content);
-			if (data.content['act'] == "connection")
+			if (data.content.act == "connection")
 				initializeFromServer(data.content);
-			else if (data.content['act'] == "start")
-				timerAndStart();
-			else if (data.content['act'] == 'press' || data.content['act'] == 'release')
+			else if (data.content.act == "timerStart")
+				timerStart();
+			else if (data.content.act == "gameStart")
+				gameStart(data.content.ball);
+			else if (data.content.act == 'press' || data.content.act == 'release')
 				paddleMove(data.content);
-			else if (data.content['act'] == 'ballUpdate')
+			else if (data.content.act == 'ballUpdate')
 				updateBallFromServer(data.content.ball);
 			else
 				console.log('Error: unrecognized data');
@@ -106,7 +108,10 @@ function initializeFromServer(data) {
 	$(document).keyup(keyUpHandler);
 }
 
-function timerAndStart() {
+function timerStart() {
+	BH.ball = null;
+	cleanGameIntervals();
+	paddleIsActive = false;
 	$timer.show();
 	$timer.text('3');
 	$timer.css({color: 'green'});
@@ -117,11 +122,10 @@ function timerAndStart() {
 	GC.addTimeout(function() {
 		GC.cleanInterval(interval);
 		$timer.hide();
-		start();
 	}, 3000);
 }
 
-function start() {
+function gameStart(serverBall) {
 	leftPaddle.$paddle.css({top: '50%'});
 	rightPaddle.$paddle.css({top: '50%'});
 	leftPaddle.y = 50;
@@ -130,16 +134,9 @@ function start() {
 	rightPaddle.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
-	//const randIncrement = Math.random() * 100;
-	// BH.ball.delta = {
-	// 	x: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-	// 		* (minAngle.x - angleIncrement.x * randIncrement),
-	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
-	// 		* (minAngle.y + angleIncrement.y * randIncrement)
-	// };
+	updateBallFromServer(serverBall);
 	//lastPreviousBallUpdate = (new Date()).getTime();
 	ballInterval = GC.addInterval(moveBall, 10);
-	//GC.addInterval(getBallFromServer, 10);
 }
 
 function switchKey(e, paddle, oldDir, newDir) {
@@ -164,11 +161,12 @@ function resetKey(key, paddle, direction) {
 	});
 }
 
-function resetAllKeys() {
-	resetKey(null, leftPaddle, 'up');
-	resetKey(null, leftPaddle, 'down');
-	resetKey(null, rightPaddle, 'up');
-	resetKey(null, rightPaddle, 'down');
+function cleanGameIntervals() {
+	GC.cleanInterval(ballInterval);
+	GC.cleanInterval(leftPaddle.up.interval);
+	GC.cleanInterval(leftPaddle.down.interval);
+	GC.cleanInterval(rightPaddle.up.interval);
+	GC.cleanInterval(rightPaddle.down.interval);
 }
 
 function activatePaddle(paddle, direction) {

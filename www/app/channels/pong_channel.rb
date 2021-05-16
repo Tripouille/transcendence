@@ -55,24 +55,12 @@ class PongChannel < ApplicationCable::Channel
 		@playersConnected += 1
 		if @playersConnected == 1
 			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
-			
-			scheduler = Rufus::Scheduler.new
 
 			ActionCable.server.broadcast "pong_channel", content: {
 				act: 'connection',
 				paddles: @paddles
 			}
-			ActionCable.server.broadcast "pong_channel", content: {
-				act: 'start'
-			}
-
-			scheduler.in '3s' do
-				@paddles[:active] = true
-				@ball[:lastUpdate] = Time.now.to_f * 1000.0
-				initializeRandomBallDirection()
-				puts @ball.inspect
-				broadcastBall()
-			end
+			start()
 		end
 	end
 
@@ -80,8 +68,51 @@ class PongChannel < ApplicationCable::Channel
 		# Any cleanup needed when channel is unsubscribed
 	end
 
+	def start
+		@paddles[:active] = false
+		ActionCable.server.broadcast "pong_channel", content: {
+			act: 'timerStart'
+		}
+		Rufus::Scheduler.new.in '3s' do
+			resetPaddles()
+			resetBall()
+			ActionCable.server.broadcast "pong_channel", content: {
+				act: 'gameStart',
+				ball: @ball
+			}
+		end
+	end
+
+	def initializeRandomBallDirection
+		srand()
+		randIncrement = rand(100)
+		@ball[:deltaX] = [-1, 1].sample * (@minAngle[:dx] - @angleIncrement[:dx] * randIncrement)
+		@ball[:deltaY] = [-1, 1].sample * (@minAngle[:dy] + @angleIncrement[:dy] * randIncrement)
+	end
+
+	def resetPaddles
+		@paddles[:active] = true
+		@paddles[:left] = {
+			y: 50.0,
+			lastUpdate: 0,
+			dir: "stop"
+		}
+		@paddles[:right] = {
+			y: 50.0,
+			lastUpdate: 0,
+			dir: "stop"
+		}
+	end
+
+	def resetBall
+		@ball[:lastUpdate] = Time.now.to_f * 1000.0
+		@ball[:posX] = 50
+		@ball[:posY] = 50
+		initializeRandomBallDirection()
+	end
+
 	def receive(data)
-		if data["request"] == "ball"
+		if data["request"] == "ball" and @paddles[:active]
 			updateBall()
 		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank? \
 		and @paddles[:active] = true
@@ -175,7 +206,11 @@ class PongChannel < ApplicationCable::Channel
 		else #above left or right limit
 			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
 			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
-			@ball[:deltaX] *= -1.0 #temp
+			if ballHitPaddle()
+				@ball[:deltaX] *= -1.0 #temp
+			else
+				score(@ball[:deltaX] < 0 ? :left : :right)
+			end
 			remainingDistance -= distanceToTopBottom
 		end
 		return remainingDistance
@@ -198,11 +233,12 @@ class PongChannel < ApplicationCable::Channel
 		}
 	end
 
-	def initializeRandomBallDirection
-		srand()
-		randIncrement = rand(100)
-		@ball[:deltaX] = [-1, 1].sample * (@minAngle[:dx] - @angleIncrement[:dx] * randIncrement)
-		@ball[:deltaY] = [-1, 1].sample * (@minAngle[:dy] + @angleIncrement[:dy] * randIncrement)
+	def ballHitPaddle
+		false
+	end
+
+	def score(side)
+		start()
 	end
 
 	# def calculatePaddlePosition(paddle)
@@ -244,12 +280,6 @@ class PongChannel < ApplicationCable::Channel
 
 	# def getDistBallPaddleCenter(side)
 	# 	100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
-	# end
-
-	# def score
-	# 	@ball[:posX] = 50
-	# 	@ball[:posY] = 50
-	# 	broadcastBall()
 	# end
 
 end
