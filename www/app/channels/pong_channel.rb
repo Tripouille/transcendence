@@ -47,6 +47,7 @@ class PongChannel < ApplicationCable::Channel
 			lastUpdate: 0
 		}
 		@playersConnected = 0
+		@starting = false
 	end
 
 	def subscribed
@@ -69,6 +70,8 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def start
+		if @starting then return end
+		@starting = true
 		@paddles[:active] = false
 		ActionCable.server.broadcast "pong_channel", content: {
 			act: 'timerStart'
@@ -80,6 +83,7 @@ class PongChannel < ApplicationCable::Channel
 				act: 'gameStart',
 				ball: @ball
 			}
+			@starting = false
 		end
 	end
 
@@ -121,6 +125,7 @@ class PongChannel < ApplicationCable::Channel
 	end
   
 	def updatePaddles(data)
+		puts data.inspect
 		newTime = Time.now.to_f * 1000.0 #ms
 		if @paddles[data["side"].to_sym][:lastUpdate] == 0
 			@paddles[data["side"].to_sym][:lastUpdate] = newTime
@@ -181,49 +186,70 @@ class PongChannel < ApplicationCable::Channel
 
 	def updateBall
 		newTime = Time.now.to_f * 1000.0 #ms
-		timeDelta = newTime - @ball[:lastUpdate] #ms
-		@ball[:lastUpdate] = newTime
-
-		traveled = timeDelta * @ball[:speed]
-		while traveled > 0.0
-			traveled = setBallBeforeBounce(traveled)
+		remainingTime = newTime - @ball[:lastUpdate] #ms
+		
+		while remainingTime > 0.0
+			remainingTime = setBallBeforeBounce(remainingTime)
 		end
+		#@ball[:lastUpdate] = newTime
 		broadcastBall()
 	end
 
-	def setBallBeforeBounce(remainingDistance)
-		distanceToTopBottom, distanceToLeftRight = getTraveledDistance()
-		minDistance = [distanceToTopBottom, distanceToLeftRight].min
+	def setBallBeforeBounce(remainingTime)
+		timeToTopBottom, timeToLeftRight = getTraveledTime()
+		distanceToTopBottom = timeToTopBottom * @ball[:speed]
+		distanceToLeftRight = timeToLeftRight * @ball[:speed]
+
+		minTime = [timeToTopBottom, timeToLeftRight].min
+		minDistance = minTime * @ball[:speed]
+		remainingDistance = remainingTime * @ball[:speed]
+		side = @ball[:deltaX] < 0 ? :left : :right
+
 		if remainingDistance < minDistance
 			@ball[:posX] += remainingDistance * @ball[:deltaX]
 			@ball[:posY] += remainingDistance * @ball[:deltaY]
-			remainingDistance = 0
+			@ball[:lastUpdate] += remainingTime
+			remainingTime = 0.0
 		elsif distanceToTopBottom < distanceToLeftRight
+			@ball[:lastUpdate] += timeToTopBottom
+			if @paddles[side][:lastUpdate] < @ball[:lastUpdate]
+				time = min(@ball[:lastUpdate] - @paddles[side][:lastUpdate], timeToTopBottom)
+				movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
+				@paddles[side][:lastUpdate] += time
+			end
 			@ball[:posX] += distanceToTopBottom * @ball[:deltaX]
 			@ball[:posY] += distanceToTopBottom * @ball[:deltaY]
 			@ball[:deltaY] *= -1.0
-			remainingDistance -= distanceToTopBottom
+			remainingTime -= timeToTopBottom
 		else #above left or right limit
+			@ball[:lastUpdate] += timeToLeftRight
+			if @paddles[side][:lastUpdate] < @ball[:lastUpdate]
+				time = min(@ball[:lastUpdate] - @paddles[side][:lastUpdate], timeToLeftRight)
+				movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
+				@paddles[side][:lastUpdate] += time
+			end
+			#movePaddle(side, @paddles[side][:dir], timeToLeftRight * @paddles[:speed])
+			#@paddles[side][:lastUpdate] += timeToLeftRight
 			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
 			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
-			if ballHitPaddle()
+			if ballHitPaddle(side)
 				@ball[:deltaX] *= -1.0 #temp
 			else
-				score(@ball[:deltaX] < 0 ? :left : :right)
+				score(side)
 			end
-			remainingDistance -= distanceToTopBottom
+			remainingTime -= timeToLeftRight
 		end
-		return remainingDistance
+		return remainingTime
 	end
 
-	def getTraveledDistance
+	def getTraveledTime
 		toTopBottom = @ball[:deltaY] > 0 ? \
 		(@ball[:bottomLimit] - @ball[:posY]) / @ball[:deltaY] \
 		: (@ball[:posY] - @ball[:topLimit]) / -@ball[:deltaY]
 		toLeftRight = @ball[:deltaX] > 0 ? \
 		(@ball[:rightLimit] - @ball[:posX]) / @ball[:deltaX] \
 		: (@ball[:posX] - @ball[:leftLimit]) / -@ball[:deltaX]
-		return toTopBottom, toLeftRight
+		return toTopBottom / @ball[:speed], toLeftRight / @ball[:speed]
 	end
 
 	def broadcastBall
@@ -233,50 +259,28 @@ class PongChannel < ApplicationCable::Channel
 		}
 	end
 
-	def ballHitPaddle
-		false
+	def ballHitPaddle(side)
+		@ball[:posY] + @ball[:radius] >= @paddles[side][:y] - @paddles[:height] / 2 \
+		and @ball[:posY] - @ball[:radius] <= @paddles[side][:y] + @paddles[:height] / 2
 	end
 
 	def score(side)
 		start()
 	end
 
-	# def calculatePaddlePosition(paddle)
-	# 	newTime = Time.now.to_f * 1000 #ms
-	# 	if paddle[:lastUpdate] == 0
-	# 		paddle[:lastUpdate] = newTime
-	# 		return
-	# 	end
-	# 	timeDelta = newTime - paddle[:lastUpdate]
+	def calculatePaddlePosition(paddle)
+		if paddle[:lastUpdate] == 0
+			return
+		end
+		timeDelta = newTime - paddle[:lastUpdate]
 
-	# 	if paddle[:dir] == "up"
-	# 		paddle[:y] -= timeDelta * @paddles[:speed]
-	# 	elsif paddle[:dir] == "down"
-	# 		paddle[:y] += timeDelta * @paddles[:speed]
-	# 	end
-	# 	handlePaddleOverflow()
-	# end
-
-	# def touchLeftLimit(ballPosition)
-	# 	ballPosition < @leftLimit
-	# end
-
-	# def ballMeetsPaddle(side)
-	# 	@ball[:posY] + @ball[:radius] \
-	# 	>= @paddles[side][:y] - @paddles[:height] / 2 \
-	# 	and @ball[:posY] - @ball[:radius] \
-	# 	>= @paddles[side][:y] + @paddles[:height] / 2
-	# end
-
-	# def updateBallDirection(side)
-	# 	oldDirectionWasNegative = @ball[:deltaY] < 0
-	# 	distBallPaddleCenter = getDistBallPaddleCenter(side)
-	# 	@ball[:deltaX] = @minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter
-	# 	@ball[:deltaY] = @minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter
-	# 	if oldDirectionWasNegative
-	# 		@ball[:deltaY] *= -1.0
-	# 	end
-	# end
+		if paddle[:dir] == "up"
+			paddle[:y] -= timeDelta * @paddles[:speed]
+		elsif paddle[:dir] == "down"
+			paddle[:y] += timeDelta * @paddles[:speed]
+		end
+		handlePaddleOverflow()
+	end
 
 	# def getDistBallPaddleCenter(side)
 	# 	100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
