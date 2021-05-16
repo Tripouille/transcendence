@@ -69,6 +69,8 @@ class PongChannel < ApplicationCable::Channel
 
 			scheduler.in '3s' do
 				@paddles[:active] = true
+				@ball[:lastUpdate] = Time.now.to_f * 1000.0
+				broadcastBall()
 			end
 		end
 	end
@@ -78,7 +80,6 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
-		puts data.inspect
 		if data["request"] == "ball"
 			updateBall()
 		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank? \
@@ -148,11 +149,6 @@ class PongChannel < ApplicationCable::Channel
 
 	def updateBall
 		newTime = Time.now.to_f * 1000.0 #ms
-		if @ball[:lastUpdate] == 0
-			@ball[:lastUpdate] = newTime
-			broadcastBall()
-			return
-		end
 		timeDelta = newTime - @ball[:lastUpdate] #ms
 		@ball[:lastUpdate] = newTime
 

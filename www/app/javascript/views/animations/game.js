@@ -143,13 +143,8 @@ function start() {
 	// 	y: (Math.floor(Math.random() * 100) % 2 ? 1 : -1)
 	// 		* (minAngle.y + angleIncrement.y * randIncrement)
 	// };
-	$ball.css({
-		top: '50%',
-		left: '50%'
-	});
-	getBallFromServer();
 	//lastPreviousBallUpdate = (new Date()).getTime();
-	//ballInterval = GC.addInterval(moveBall, 10);
+	ballInterval = GC.addInterval(moveBall, 10);
 	//GC.addInterval(getBallFromServer, 10);
 }
 
@@ -343,16 +338,8 @@ function getBallFromServer() {
 
 function updateBallFromServer(serverBall) {
 	BH.ball = serverBall;
-	// console.log('BH.ball from updateBall: ' + BH.ball);
-	// console.log('BH.ball.posX from updateBall: ', BH.ball.posX);
-	// console.log('BH.ball.deltaX from updateBall: ', BH.ball.deltaX);
 	$ball.css({
 		top: BH.ball.posY + '%',
 		left: BH.ball.posX + '%'
 	});
 }
-
-//todo
-//passer en ms
-//check getBallFromServer() du start
-//synchrone avec if return;
