@@ -98,13 +98,7 @@ function defineJqueryObjects() {
 }
 
 function initializeFromServer(data) {
-	BH.ball = data.ball;
-	$ball.css({
-		top: BH.ball.posY + '%',
-		left: BH.ball.posX + '%'
-	});
 	paddleSpeed = data.paddles.speed;
-	console.log(paddleSpeed);
 	paddleHeight = data.paddles.height;
 	paddleTopLimit = paddleHeight / 2.0;
 	paddleBottomLimit = 100.0 - paddleHeight / 2.0;

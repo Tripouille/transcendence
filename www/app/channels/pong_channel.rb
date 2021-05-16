@@ -60,8 +60,7 @@ class PongChannel < ApplicationCable::Channel
 
 			ActionCable.server.broadcast "pong_channel", content: {
 				act: 'connection',
-				paddles: @paddles,
-				ball: @ball
+				paddles: @paddles
 			}
 			ActionCable.server.broadcast "pong_channel", content: {
 				act: 'start'
@@ -70,6 +69,8 @@ class PongChannel < ApplicationCable::Channel
 			scheduler.in '3s' do
 				@paddles[:active] = true
 				@ball[:lastUpdate] = Time.now.to_f * 1000.0
+				initializeRandomBallDirection()
+				puts @ball.inspect
 				broadcastBall()
 			end
 		end
@@ -195,6 +196,13 @@ class PongChannel < ApplicationCable::Channel
 			act: 'ballUpdate',
 			ball: @ball
 		}
+	end
+
+	def initializeRandomBallDirection
+		srand()
+		randIncrement = rand(100)
+		@ball[:deltaX] = [-1, 1].sample * (@minAngle[:dx] - @angleIncrement[:dx] * randIncrement)
+		@ball[:deltaY] = [-1, 1].sample * (@minAngle[:dy] + @angleIncrement[:dy] * randIncrement)
 	end
 
 	# def calculatePaddlePosition(paddle)
