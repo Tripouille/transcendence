@@ -149,7 +149,7 @@ function start() {
 	});
 	getBallFromServer();
 	//lastPreviousBallUpdate = (new Date()).getTime();
-	ballInterval = GC.addInterval(moveBall, 10);
+	//ballInterval = GC.addInterval(moveBall, 10);
 	//GC.addInterval(getBallFromServer, 10);
 }
 
@@ -183,7 +183,7 @@ function resetAllKeys() {
 }
 
 function activatePaddle(paddle, direction) {
-	paddle.lastUpdate = new Date().getTime() / 1000.0; //s
+	paddle.lastUpdate = new Date().getTime(); //ms
 	paddle[direction].interval = GC.addInterval(function() {
 		paddle[direction].handler(paddle);
 	}, 1);
@@ -234,12 +234,12 @@ function paddleMove(data) {
 }
 
 function getTimeDeltaAndUpdate(handler) {
-	const newTime = new Date().getTime() / 1000.0;
+	const newTime = new Date().getTime();
 	if (handler.lastUpdate == 0) {
 		handler.lastUpdate = newTime;
 		return (0);
 	}
-	let timeDelta = (newTime - handler.lastUpdate) * 1000;
+	let timeDelta = newTime - handler.lastUpdate;
 	handler.lastUpdate = newTime;
 	return (timeDelta);
 }

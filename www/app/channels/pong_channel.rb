@@ -78,6 +78,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
+		puts data.inspect
 		if data["request"] == "ball"
 			updateBall()
 		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank? \
@@ -87,7 +88,7 @@ class PongChannel < ApplicationCable::Channel
 	end
   
 	def updatePaddles(data)
-		newTime = Time.now.to_f * 1000 #ms
+		newTime = Time.now.to_f * 1000.0 #ms
 		if @paddles[data["side"].to_sym][:lastUpdate] == 0
 			@paddles[data["side"].to_sym][:lastUpdate] = newTime
 			@paddles[data["side"].to_sym][:dir] = data["dir"]
@@ -98,71 +99,65 @@ class PongChannel < ApplicationCable::Channel
 
 		if data["act"] == "press"
 			pressKey(data, newTime, timeDelta)
-		end
-
-		if data["act"] == "release" and @paddles[data["side"].to_sym][:dir] == data["dir"]
+		elsif data["act"] == "release" and @paddles[data["side"].to_sym][:dir] == data["dir"]
 			releaseKey(data, newTime, timeDelta)
 		end
 	end
 
-	def pressKey(data, newTime, timeDelta)
-		if @paddles[data["side"].to_sym][:dir] == "up"
-			@paddles[data["side"].to_sym][:y] -= timeDelta * @paddles[:speed]
-		elsif @paddles[data["side"].to_sym][:dir] == "down"
-			@paddles[data["side"].to_sym][:y] += timeDelta * @paddles[:speed]
+	def movePaddle(side, dir, delta)
+		if dir == "up"
+			@paddles[side][:y] -= delta
+		elsif dir == "down"
+			@paddles[side][:y] += delta
 		end
-		@paddles[data["side"].to_sym][:dir] = data["dir"]
-		@paddles[data["side"].to_sym][:lastUpdate] = newTime
-		handlePaddleOverflow(data)
+		handlePaddleOverflow(side)
+	end
+
+	def pressKey(data, newTime, timeDelta)
+		side = data["side"].to_sym
+		movePaddle(side, @paddles[side][:dir], timeDelta * @paddles[:speed])
+		@paddles[side][:dir] = data["dir"]
+		@paddles[side][:lastUpdate] = newTime
 		broadcastPaddleInfos(data)
 	end
 
 	def releaseKey(data, newTime, timeDelta)
-		if data["dir"] == "up"
-			@paddles[data["side"].to_sym][:y] -= timeDelta * @paddles[:speed]
-		elsif data["dir"] == "down"
-			@paddles[data["side"].to_sym][:y] += timeDelta * @paddles[:speed]
-		end
-		@paddles[data["side"].to_sym][:dir] = "stop"
-		@paddles[data["side"].to_sym][:lastUpdate] = newTime
-		handlePaddleOverflow(data)
+		side = data["side"].to_sym
+		movePaddle(side, data["dir"], timeDelta * @paddles[:speed])
+		@paddles[side][:dir] = "stop"
+		@paddles[side][:lastUpdate] = newTime
 		broadcastPaddleInfos(data)
 	end
 
-	def handlePaddleOverflow(data)
-		if @paddles[data["side"].to_sym][:y] - @paddles[:height] / 2.0 < 0.0
-			@paddles[data["side"].to_sym][:y] = @paddles[:height] / 2.0
-		elsif @paddles[data["side"].to_sym][:y] + @paddles[:height] / 2.0 > 100.0
-			@paddles[data["side"].to_sym][:y] = 100.0 - @paddles[:height] / 2.0
+	def handlePaddleOverflow(side)
+		if @paddles[side][:y] - @paddles[:height] / 2.0 < 0.0
+			@paddles[side][:y] = @paddles[:height] / 2.0
+		elsif @paddles[side][:y] + @paddles[:height] / 2.0 > 100.0
+			@paddles[side][:y] = 100.0 - @paddles[:height] / 2.0
 		end
 	end
 
 	def broadcastPaddleInfos(data)
-		ActionCable.server.broadcast "pong_channel", content: {
+		ActionCable.server.broadcast("pong_channel", content: {
 			act: data["act"],
 			dir: data["dir"],
 			side: data["side"],
-			top: @paddles[data["side"].to_sym][:y]
-		}
+			y: @paddles[data["side"].to_sym][:y]
+		})
 	end
 
 	def updateBall
-		newTime = Time.now.to_f
+		newTime = Time.now.to_f * 1000.0 #ms
 		if @ball[:lastUpdate] == 0
-			puts 'in first if of updateBall'
 			@ball[:lastUpdate] = newTime
 			broadcastBall()
 			return
 		end
-		timeDelta = (newTime - @ball[:lastUpdate]) * 1000; #ms
+		timeDelta = newTime - @ball[:lastUpdate] #ms
 		@ball[:lastUpdate] = newTime
 
 		traveled = timeDelta * @ball[:speed]
-		puts "timeDelta = " + timeDelta.to_s
-		puts "speed = " + @ball[:speed].to_s
-		puts "ball = " + @ball.inspect
-		puts "leftLimit = " + @ball[:leftLimit].to_s
-		while traveled > 0
+		while traveled > 0.0
 			traveled = setBallBeforeBounce(traveled)
 		end
 		broadcastBall()
@@ -170,23 +165,17 @@ class PongChannel < ApplicationCable::Channel
 
 	def setBallBeforeBounce(remainingDistance)
 		distanceToTopBottom, distanceToLeftRight = getTraveledDistance()
-		puts distanceToTopBottom
-		puts distanceToLeftRight
-		puts remainingDistance
 		minDistance = [distanceToTopBottom, distanceToLeftRight].min
 		if remainingDistance < minDistance
-			puts "if"
 			@ball[:posX] += remainingDistance * @ball[:deltaX]
 			@ball[:posY] += remainingDistance * @ball[:deltaY]
 			remainingDistance = 0
 		elsif distanceToTopBottom < distanceToLeftRight
-			puts "elsif"
 			@ball[:posX] += distanceToTopBottom * @ball[:deltaX]
 			@ball[:posY] += distanceToTopBottom * @ball[:deltaY]
 			@ball[:deltaY] *= -1.0
 			remainingDistance -= distanceToTopBottom
 		else #above left or right limit
-			puts "else"
 			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
 			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
 			@ball[:deltaX] *= -1.0 #temp
@@ -212,51 +201,51 @@ class PongChannel < ApplicationCable::Channel
 		}
 	end
 
-	def calculatePaddlePosition(paddle)
-		newTime = Time.now.to_f * 1000 #ms
-		if paddle[:lastUpdate] == 0
-			paddle[:lastUpdate] = newTime
-			return
-		end
-		timeDelta = newTime - paddle[:lastUpdate]
+	# def calculatePaddlePosition(paddle)
+	# 	newTime = Time.now.to_f * 1000 #ms
+	# 	if paddle[:lastUpdate] == 0
+	# 		paddle[:lastUpdate] = newTime
+	# 		return
+	# 	end
+	# 	timeDelta = newTime - paddle[:lastUpdate]
 
-		if paddle[:dir] == "up"
-			paddle[:y] -= timeDelta * @paddles[:speed]
-		elsif paddle[:dir] == "down"
-			paddle[:y] += timeDelta * @paddles[:speed]
-		end
-		handlePaddleOverflow()
-	end
+	# 	if paddle[:dir] == "up"
+	# 		paddle[:y] -= timeDelta * @paddles[:speed]
+	# 	elsif paddle[:dir] == "down"
+	# 		paddle[:y] += timeDelta * @paddles[:speed]
+	# 	end
+	# 	handlePaddleOverflow()
+	# end
 
-	def touchLeftLimit(ballPosition)
-		ballPosition < @leftLimit
-	end
+	# def touchLeftLimit(ballPosition)
+	# 	ballPosition < @leftLimit
+	# end
 
-	def ballMeetsPaddle(side)
-		@ball[:posY] + @ball[:radius] \
-		>= @paddles[side][:y] - @paddles[:height] / 2 \
-		and @ball[:posY] - @ball[:radius] \
-		>= @paddles[side][:y] + @paddles[:height] / 2
-	end
+	# def ballMeetsPaddle(side)
+	# 	@ball[:posY] + @ball[:radius] \
+	# 	>= @paddles[side][:y] - @paddles[:height] / 2 \
+	# 	and @ball[:posY] - @ball[:radius] \
+	# 	>= @paddles[side][:y] + @paddles[:height] / 2
+	# end
 
-	def updateBallDirection(side)
-		oldDirectionWasNegative = @ball[:deltaY] < 0
-		distBallPaddleCenter = getDistBallPaddleCenter(side)
-		@ball[:deltaX] = @minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter
-		@ball[:deltaY] = @minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter
-		if oldDirectionWasNegative
-			@ball[:deltaY] *= -1.0
-		end
-	end
+	# def updateBallDirection(side)
+	# 	oldDirectionWasNegative = @ball[:deltaY] < 0
+	# 	distBallPaddleCenter = getDistBallPaddleCenter(side)
+	# 	@ball[:deltaX] = @minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter
+	# 	@ball[:deltaY] = @minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter
+	# 	if oldDirectionWasNegative
+	# 		@ball[:deltaY] *= -1.0
+	# 	end
+	# end
 
-	def getDistBallPaddleCenter(side)
-		100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
-	end
+	# def getDistBallPaddleCenter(side)
+	# 	100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
+	# end
 
-	def score
-		@ball[:posX] = 50
-		@ball[:posY] = 50
-		broadcastBall()
-	end
+	# def score
+	# 	@ball[:posX] = 50
+	# 	@ball[:posY] = 50
+	# 	broadcastBall()
+	# end
 
 end
