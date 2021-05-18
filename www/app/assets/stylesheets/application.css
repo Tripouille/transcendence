@@ -13,3 +13,37 @@
  *= require_tree .
  *= require_self
  */
+ 
+ * {
+    --bg-color: black;
+    --second-bg-color: black;
+    --element-color: darkgreen;
+    --ball-color: lightgreen;
+    --border-color: darkgreen;
+    --paddle-color: darkgreen;
+    --text-color: lightgreen;
+    --left-color: red;
+    --right-color: rgb(240, 230, 20);
+}
+
+@font-face {
+    font-family: 'screen';
+    src: url('ScreenMatrix.ttf');
+}
+
+p {
+    margin: 0;
+}
+
+html, body {
+    height: 99%;
+    margin: 0;
+}
+
+main {
+    height: 100%;
+    font-size: 1rem;
+    font-family: 'screen';
+    background-color: var(--bg-color);
+    color: white;
+}

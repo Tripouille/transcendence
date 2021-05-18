@@ -19,15 +19,7 @@ $(function() {
 		},
 
 		homepage: function() {this.homepageView.render();},
-		users: function() {this.usersView.render($main);},
-		/*handleRouteAll: function(viewid, msg) {
-			if (viewid == 1)
-				this.handleRoute1();
-			else if (viewid == 2)
-				this.handleRoute2();
-			else if (viewid == 3)
-				this.handleRoute3();
-		}*/
+		users: function() {this.usersView.render($main);}
 	});
 	const router = new myRouter();
 	Backbone.history.start();

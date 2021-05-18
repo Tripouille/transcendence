@@ -1,13 +1,23 @@
+version: '3'
 services:
   www:
     build: .
     user: "root:root"
-    command: sh /www/launch.sh
+    command: sh /launch.sh
+    privileged: true
     volumes:
-       - C:\Users\jean-\Documents\42\transcendence\www:/www #
-       - C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
-       #- /root/transcendence/www:/www #
-       #- /root/transcendence/data:/var/lib/postgresql/data #
+       #- C:\Users\jean-\Documents\42\transcendence\www:/www #
+       #- C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
+       #- /Users/jgambard/transcendence/www:/www #
+       #- /Users/jgambard/transcendence/data:/var/lib/postgresql/data #
+       #- /Users/aalleman/transcendence/www:/www #
+       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
+       #- /Users/aalleman/transcendence/www:/www #
+       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
+       #- /root/transcendence/www:/www
+        - /root/transcendence/www/app:/www/app
+        - /root/transcendence/www/db:/www/db
+        - /root/transcendence/www/config:/www/config
     ports:
       - "80:80"
       - "81:81"
