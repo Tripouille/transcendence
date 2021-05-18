@@ -1,7 +1,7 @@
 import consumer from "../../channels/consumer"
 import * as GC from './garbage_collector';
 
-const LEFT_UP_KEY = "w";
+const LEFT_UP_KEY = "z";
 const LEFT_DOWN_KEY = "s";
 const RIGHT_UP_KEY = "ArrowUp";
 const RIGHT_DOWN_KEY = "ArrowDown";
@@ -134,6 +134,7 @@ function gameStart(serverBall) {
 	rightPaddle.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
+	console.log('gameStart', serverBall.posX, serverBall.posY);
 	updateBallFromServer(serverBall);
 	//lastPreviousBallUpdate = (new Date()).getTime();
 	ballInterval = GC.addInterval(moveBall, 10);
@@ -211,13 +212,14 @@ function keyUpHandler(e) {
 function paddleMove(data) {
 	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
 	
+	paddle.y = data.y;
+	paddle.$paddle.css({top: data.y + '%'});
 	if (data.act == 'press') {
 		resetPaddle(paddle, data.dir == 'up' ? 'down' : 'up');
 		activatePaddle(paddle, data.dir);
 	}
 	else if (data.act == 'release')
 		resetPaddle(paddle, data.dir);
-	paddle.$paddle.css({top: data.y + '%'});
 }
 
 function getTimeDeltaAndUpdate(handler) {
@@ -252,10 +254,14 @@ function moveBall() {
 	if (BH.ball.posY <= BH.ball.topLimit || BH.ball.posY >= BH.ball.bottomLimit) {
 		BH.ball.deltaY *= -1.0;
 		getBallFromServer();
+		BH.ball = null;
 	}
 	else if ((BH.ball.posX <= BH.ball.leftLimit && BH.ball.deltaX < 0)
 	|| (BH.ball.posX >= BH.ball.rightLimit && BH.ball.deltaX > 0))
+	{
 		getBallFromServer();
+		BH.ball = null;
+	}
 	else
 	{
 		// if ((new Date()).getTime() - lastPreviousBallUpdate >= 100)
@@ -306,26 +312,6 @@ function getBallFromServer() {
 // 	if (oldDirectionWasNegative)
 // 		BH.ball.deltaY *= -1.0;
 // 	return (true);
-// }
-
-// function ballMeetsPaddle(ballPosition) {
-// 	const bottomOfBallPosition = ballPosition.top + ballRadius;
-// 	const topOfBallPosition = ballPosition.top - ballRadius;
-// 	const leftPaddlePosition = leftPaddle.$paddle.position().top / $gameArea.height();
-// 	const rightPaddlePosition = rightPaddle.$paddle.position().top / $gameArea.height();
-// 	if (BH.ball.deltaX < 0.0
-// 	&& ballPosition.left - ballRadius <= leftPaddleLimit
-// 	&& bottomOfBallPosition >= leftPaddlePosition - paddleHeight / 2.0
-// 	&& topOfBallPosition <= leftPaddlePosition + paddleHeight / 2.0)
-// 		return (changeBallDirection(100 * Math.abs(leftPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
-// 				1));
-// 	else if (BH.ball.deltaX > 0.0
-// 	&& ballPosition.left + ballRadius >= rightPaddleLimit
-// 	&& bottomOfBallPosition >= rightPaddlePosition - paddleHeight / 2.0
-// 	&& topOfBallPosition <= rightPaddlePosition + paddleHeight / 2.0)
-// 		return (changeBallDirection(100 * Math.abs(rightPaddlePosition - ballPosition.top) / (paddleHeight / 2.0),
-// 				-1));
-// 	return (false);
 // }
 
 function updateBallFromServer(serverBall) {

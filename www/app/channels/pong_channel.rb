@@ -33,8 +33,10 @@ class PongChannel < ApplicationCable::Channel
 		}
 		@BALL_RADIUS = 3.0
 		@AREA_RATIO = 2.0
+		@BASE_BALL_SPEED = 0.025
+		@BALL_SPEED_MULTIPLIER = 1.2
 		@ball = {
-			speed: 0.025,
+			speed: @BASE_BALL_SPEED,
 			radius: @BALL_RADIUS,
 			topLimit: @BALL_RADIUS,
 			bottomLimit: 100 - @BALL_RADIUS,
@@ -112,6 +114,7 @@ class PongChannel < ApplicationCable::Channel
 		@ball[:lastUpdate] = Time.now.to_f * 1000.0
 		@ball[:posX] = 50
 		@ball[:posY] = 50
+		@ball[:speed] = @BASE_BALL_SPEED
 		initializeRandomBallDirection()
 	end
 
@@ -186,16 +189,19 @@ class PongChannel < ApplicationCable::Channel
 
 	def updateBall
 		newTime = Time.now.to_f * 1000.0 #ms
-		remainingTime = newTime - @ball[:lastUpdate] #ms
+		timeDelta = newTime - @ball[:lastUpdate] #ms
 		
+		remainingTime = timeDelta
 		while remainingTime > 0.0
-			remainingTime = setBallBeforeBounce(remainingTime)
+			remainingTime = setBallBeforeBounce(remainingTime, timeDelta - remainingTime)
 		end
-		#@ball[:lastUpdate] = newTime
-		broadcastBall()
+		if remainingTime > -1.0
+			@ball[:lastUpdate] = newTime
+			broadcastBall()
+		end
 	end
 
-	def setBallBeforeBounce(remainingTime)
+	def setBallBeforeBounce(remainingTime, elapsedTime)
 		timeToTopBottom, timeToLeftRight = getTraveledTime()
 		distanceToTopBottom = timeToTopBottom * @ball[:speed]
 		distanceToLeftRight = timeToLeftRight * @ball[:speed]
@@ -208,34 +214,23 @@ class PongChannel < ApplicationCable::Channel
 		if remainingDistance < minDistance
 			@ball[:posX] += remainingDistance * @ball[:deltaX]
 			@ball[:posY] += remainingDistance * @ball[:deltaY]
-			@ball[:lastUpdate] += remainingTime
 			remainingTime = 0.0
 		elsif distanceToTopBottom < distanceToLeftRight
-			@ball[:lastUpdate] += timeToTopBottom
-			if @paddles[side][:lastUpdate] < @ball[:lastUpdate]
-				time = min(@ball[:lastUpdate] - @paddles[side][:lastUpdate], timeToTopBottom)
-				movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
-				@paddles[side][:lastUpdate] += time
-			end
 			@ball[:posX] += distanceToTopBottom * @ball[:deltaX]
 			@ball[:posY] += distanceToTopBottom * @ball[:deltaY]
 			@ball[:deltaY] *= -1.0
 			remainingTime -= timeToTopBottom
 		else #above left or right limit
-			@ball[:lastUpdate] += timeToLeftRight
-			if @paddles[side][:lastUpdate] < @ball[:lastUpdate]
-				time = min(@ball[:lastUpdate] - @paddles[side][:lastUpdate], timeToLeftRight)
-				movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
-				@paddles[side][:lastUpdate] += time
-			end
-			#movePaddle(side, @paddles[side][:dir], timeToLeftRight * @paddles[:speed])
-			#@paddles[side][:lastUpdate] += timeToLeftRight
+			time = @ball[:lastUpdate] + elapsedTime + timeToLeftRight - @paddles[side][:lastUpdate]
+			movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
 			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
 			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
 			if ballHitPaddle(side)
 				@ball[:deltaX] *= -1.0 #temp
+				@ball[:speed] *= @BALL_SPEED_MULTIPLIER
 			else
 				score(side)
+				return -1.0
 			end
 			remainingTime -= timeToLeftRight
 		end
