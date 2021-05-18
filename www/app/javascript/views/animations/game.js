@@ -263,29 +263,10 @@ function moveBall() {
 	}
 	else
 	{
-		//ballAnimation();
 		$ball.css({
 			top: BH.ball.posY + '%',
 			left: BH.ball.posX + '%'
 		});
-	}
-}
-
-function ballAnimation() {
-	const now = (new Date()).getTime();
-	if (now - lastPreviousBallUpdate >= 200)
-	{
-		const $previousBall = $ball.clone();
-		$previousBall.css({opacity: 0.6});
-		$gameArea.append($previousBall);
-		const interval = GC.addInterval(function() {
-			$previousBall.css({opacity: $previousBall.css('opacity') - 0.2});
-		}, 200);
-		GC.addTimeout(function() {
-			GC.cleanInterval(interval);
-			$previousBall.remove();
-		}, 200 * 3);
-		lastPreviousBallUpdate = now;
 	}
 }
 
