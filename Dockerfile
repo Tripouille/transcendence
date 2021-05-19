@@ -10,6 +10,7 @@ RUN bundle install
 # Postgresql
 RUN su -c "initdb /var/lib/postgresql/data" - postgres
 COPY srcs/pg_hba.conf /var/lib/postgresql/data/
+COPY srcs/postgresql.conf /var/lib/postgresql/data/
 RUN chmod -R 700 /var/lib/postgresql/data/ \
 	&& chown -R postgres:postgres /var/lib/postgresql/data/ \
 	&& mkdir -p /var/run/postgresql \
