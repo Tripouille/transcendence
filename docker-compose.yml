@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   www:
     build: .
@@ -6,18 +6,12 @@ services:
     command: sh /launch.sh
     privileged: true
     volumes:
-       #- C:\Users\jean-\Documents\42\transcendence\www:/www #
-       #- C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
-       #- /Users/jgambard/transcendence/www:/www #
-       #- /Users/jgambard/transcendence/data:/var/lib/postgresql/data #
-       #- /Users/aalleman/transcendence/www:/www #
-       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
-       #- /Users/aalleman/transcendence/www:/www #
-       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
-       #- /root/transcendence/www:/www
-        - /root/transcendence/www/app:/www/app
-        - /root/transcendence/www/db:/www/db
-        - /root/transcendence/www/config:/www/config
+      # - /root/transcendence/www/app:/www/app
+      # - /root/transcendence/www/db:/www/db
+      # - /root/transcendence/www/config:/www/config
+      - ./www/app:/www/app
+      - ./www/db:/www/db
+      - ./www/config:/www/config
     ports:
       - "80:80"
       - "81:81"
