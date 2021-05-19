@@ -1,4 +1,8 @@
 FROM alpine
+
+ENV FT_ID f4b37cbaf338086eb088d7718e257cc856bb60c3758ca802a941ce8ed8c35ba9
+ENV FT_SECRET eca37713c88c7150d8032c0ce111a5ac5e5d1d640e4bb4fccdf379109924f5c5
+
 RUN apk -U upgrade && apk add build-base ruby-full ruby-dev zlib-dev postgresql-dev nodejs yarn tzdata postgresql
 
 # Ruby on Rails
