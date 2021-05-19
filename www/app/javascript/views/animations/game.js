@@ -276,29 +276,6 @@ function getBallFromServer() {
 	});
 }
 
-// function scorePoint(leftSide) {
-// 	paddleIsActive = false;
-// 	resetAllKeys();
-// 	GC.cleanInterval(BH.ball.interval);
-// 	reset();
-// 	if (leftSide)
-// 		$rightPoints.text(Number($rightPoints.text()) + 1);
-// 	else
-// 		$leftPoints.text(Number($leftPoints.text()) + 1);
-// }
-
-// function changeBallDirection(distBallPaddleCenter, xSign)
-// {
-// 	const oldDirectionWasNegative = BH.ball.deltaY < 0;
-// 	BH.ball.delta = {
-// 		x: xSign * (minAngle.x - angleIncrement.x * distBallPaddleCenter),
-// 		y: minAngle.y + angleIncrement.y * distBallPaddleCenter
-// 	};
-// 	if (oldDirectionWasNegative)
-// 		BH.ball.deltaY *= -1.0;
-// 	return (true);
-// }
-
 function updateBallFromServer(serverBall) {
 	BH.ball = serverBall;
 	$ball.css({

@@ -34,6 +34,7 @@ class PongChannel < ApplicationCable::Channel
 		@BALL_RADIUS = 3.0
 		@AREA_RATIO = 2.0
 		@BASE_BALL_SPEED = 0.025
+		@MAX_BALL_SPEED = 0.2
 		@BALL_SPEED_MULTIPLIER = 1.2
 		@ball = {
 			speed: @BASE_BALL_SPEED,
@@ -203,31 +204,25 @@ class PongChannel < ApplicationCable::Channel
 
 	def setBallBeforeBounce(remainingTime, elapsedTime)
 		timeToTopBottom, timeToLeftRight = getTraveledTime()
-		distanceToTopBottom = timeToTopBottom * @ball[:speed]
-		distanceToLeftRight = timeToLeftRight * @ball[:speed]
-
 		minTime = [timeToTopBottom, timeToLeftRight].min
-		minDistance = minTime * @ball[:speed]
-		remainingDistance = remainingTime * @ball[:speed]
 		side = @ball[:deltaX] < 0 ? :left : :right
 
-		if remainingDistance < minDistance
-			@ball[:posX] += remainingDistance * @ball[:deltaX]
-			@ball[:posY] += remainingDistance * @ball[:deltaY]
+		if remainingTime < minTime
+			updateBallPosition(remainingTime * @ball[:speed])
 			remainingTime = 0.0
-		elsif distanceToTopBottom < distanceToLeftRight
-			@ball[:posX] += distanceToTopBottom * @ball[:deltaX]
-			@ball[:posY] += distanceToTopBottom * @ball[:deltaY]
+		elsif timeToTopBottom < timeToLeftRight
+			updateBallPosition(timeToTopBottom * @ball[:speed])
 			@ball[:deltaY] *= -1.0
 			remainingTime -= timeToTopBottom
 		else #above left or right limit
 			time = @ball[:lastUpdate] + elapsedTime + timeToLeftRight - @paddles[side][:lastUpdate]
 			movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
-			@ball[:posX] += distanceToLeftRight * @ball[:deltaX]
-			@ball[:posY] += distanceToLeftRight * @ball[:deltaY]
+			updateBallPosition(timeToLeftRight * @ball[:speed])
 			if ballHitPaddle(side)
-				@ball[:deltaX] *= -1.0 #temp
-				@ball[:speed] *= @BALL_SPEED_MULTIPLIER
+				updateBallDirection(side)
+				if @ball[:speed] < @MAX_BALL_SPEED
+					@ball[:speed] *= @BALL_SPEED_MULTIPLIER
+				end
 			else
 				score(side)
 				return -1.0
@@ -235,6 +230,21 @@ class PongChannel < ApplicationCable::Channel
 			remainingTime -= timeToLeftRight
 		end
 		return remainingTime
+	end
+
+	def updateBallPosition(traveledDistance)
+		@ball[:posX] += traveledDistance * @ball[:deltaX]
+		@ball[:posY] += traveledDistance * @ball[:deltaY]
+	end
+
+	def updateBallDirection(side)
+		distBallPaddleCenter = getDistBallPaddleCenter(side)
+		@ball[:deltaX] = (side == :left ? 1 : -1) * (@minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter)
+		@ball[:deltaY] = (@ball[:deltaY] < 0 ? -1 : 1) * (@minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter)
+	end
+
+	def getDistBallPaddleCenter(side)
+		100 * (@paddles[side][:y] - @ball[:posY]).abs / (@paddles[:height] / 2.0)
 	end
 
 	def getTraveledTime
@@ -276,9 +286,5 @@ class PongChannel < ApplicationCable::Channel
 		end
 		handlePaddleOverflow()
 	end
-
-	# def getDistBallPaddleCenter(side)
-	# 	100 * abs(@paddles[side][:y] - @ball[:posY]) / (@paddles[:height] / 2.0)
-	# end
 
 end
