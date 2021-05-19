@@ -6,6 +6,7 @@ RUN gem install pg rails
 COPY www/ /www/
 WORKDIR /www
 RUN bundle install
+RUN bundle exec rake webpacker:install
 
 # Postgresql
 RUN su -c "initdb /var/lib/postgresql/data" - postgres
