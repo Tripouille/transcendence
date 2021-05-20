@@ -1,7 +1,30 @@
+
+<header id="mainNav">
+	<ul>
+		<li><button id="game" class="button1 favorite styled" type="button" href="">Game</button></li>
+		<li><button id="competition" class="button1 favorite styled" type="button" href="">Competition</button></li>
+		<li><button id="guilds" class="button1 favorite styled" type="button" href="">Guilds</button></li>
+	</ul>
+	<ul>
+		<li><button id="admin" class="favorite styled" type="button" href="">Admin</button></li>
+		<li><button id="sign-in" class="favorite styled" type="button">
+			<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
+			<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
+			Session = <%= @session.inspect %></button>
+		</li>
+	</ul>
+
+</header>
+
 <main>
+	<h1>Welcome to Transcendence</h1>
+
+	<div id="main-bloc" class="bloc">Main</div>
+
+	<div id="contacts", class="bloc">Contacts</div>
+
+	<div id="chat" class="bloc">Chat</div>
+
 </main>
-<div>
-Session = <%= @session.inspect %> <br>
-<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
-<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
-</div>
+
+<footer></footer>

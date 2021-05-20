@@ -1,5 +1,5 @@
-export const Guild = Backbone.Model.extend({
-	urlRoot: '/guilds',
+export const GuildModel = Backbone.Model.extend({
+	urlRoot: '/guilds/:id',
 	defaults: {
 		id: null,
 		name: "",

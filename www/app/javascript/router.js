@@ -1,28 +1,24 @@
-import { HomepageView } from 'views/homepage';
-import { UsersView } from 'views/users';
+import { HomepageView } from 'views/homepageView';
 
 $(function() {
-	const $main = $('main');
+	const $body = $('body');
 	const myRouter = Backbone.Router.extend({
-		homepageView: new HomepageView({el: $main}),
-		usersView: new UsersView(),
-		// guildsView: new GuildsView(),
+		homepageView: new HomepageView({el: $body}),
+
 
 		routes: {
 			"": "homepage",
-			"homepage": "homepage",
-			"users": "users",
-			// "guilds": "guilds"
+			// "homepage": "homepage",
 		},
 
 		execute: function(callback, args, name) {
-			$main.empty();
+			// $main.empty();
 			callback.apply(this, args);
 		},
 
-		homepage: function() {this.homepageView.render();},
-		users: function() {this.usersView.render($main);},
-		// guilds: function() {this.guildsView.render($main);}
+		homepage: function() {
+			this.homepageView.render();
+		},
 	});
 	const router = new myRouter();
 	Backbone.history.start();

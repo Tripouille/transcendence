@@ -28,4 +28,6 @@ Backbone.sync = function(method, model, options) {
   return Backbone._sync(method, model, options);
 };
 
+console.log("Inside Application.js")
+
 require('router');
