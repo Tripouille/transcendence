@@ -134,9 +134,9 @@ function gameStart(serverBall) {
 	rightPaddle.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
-	updateBallFromServer(serverBall);
+	//updateBallFromServer(serverBall);
 	lastPreviousBallUpdate = (new Date()).getTime();
-	ballInterval = GC.addInterval(moveBall, 10);
+	//ballInterval = GC.addInterval(moveBall, 10);
 }
 
 function switchKey(e, paddle, oldDir, newDir) {

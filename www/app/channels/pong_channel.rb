@@ -15,7 +15,7 @@ class PongChannel < ApplicationCable::Channel
 			dy: (@maxAngle[:dy] - @minAngle[:dy]) / 100.0
 		}
 		@paddles = {
-			speed: 0.08,
+			speed: 0.09,
 			height: 25.0,
 			width: 2.0,
 			offset: 1.0,
@@ -49,15 +49,14 @@ class PongChannel < ApplicationCable::Channel
 			deltaY: 0.707,
 			lastUpdate: 0
 		}
-		@playersConnected = 0
 		@starting = false
 	end
 
 	def subscribed
 		stream_from "pong_channel"
 
-		@playersConnected += 1
-		if @playersConnected == 1
+		playerIsHost = true
+		if playerIsHost
 			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
 
 			ActionCable.server.broadcast "pong_channel", content: {
@@ -69,7 +68,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		# Any cleanup needed when channel is unsubscribed
+		@scheduler.stop
 	end
 
 	def start
@@ -87,6 +86,12 @@ class PongChannel < ApplicationCable::Channel
 				ball: @ball
 			}
 			@starting = false
+
+			@scheduler = Rufus::Scheduler.new
+			@scheduler.every '0.3s' do
+				puts "in scheduler"
+				updateBall()
+			end
 		end
 	end
 
@@ -265,11 +270,14 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def ballHitPaddle(side)
+		return true
 		@ball[:posY] + @ball[:radius] >= @paddles[side][:y] - @paddles[:height] / 2 \
 		and @ball[:posY] - @ball[:radius] <= @paddles[side][:y] + @paddles[:height] / 2
 	end
 
 	def score(side)
+		puts 'score'
+		@scheduler.stop
 		start()
 	end
 
