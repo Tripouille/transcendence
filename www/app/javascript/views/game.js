@@ -3,10 +3,10 @@ import * as Pong from './animations/game';
 const GameView = Backbone.View.extend({
 	template: _.template($('#gameTemplate').html()),
 
-    render: function() {
+    render: function(matchId) {
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
-		Pong.connect();
+		Pong.connect(matchId);
         return this;
     }
 });

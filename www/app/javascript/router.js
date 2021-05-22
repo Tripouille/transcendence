@@ -15,7 +15,7 @@ $(function() {
 
 		routes: {
 			"": "game",
-			"game": "game",
+			"game(/:id)": "game",
 			"lobby": "lobby",
 			"users": "users"
 		},
@@ -31,8 +31,12 @@ $(function() {
 		users: function() {
 			this.usersView.render($main);
 		},
-		game: function() {
-			this.gameView.render();
+		game: function(id) {
+			if (id == null) {
+				this.navigate('lobby', {trigger: true});
+				return ;
+			}
+			this.gameView.render(id);
 		},
 		lobby: function() {
 			this.lobbyView.render(this);

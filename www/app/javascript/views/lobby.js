@@ -13,17 +13,15 @@ const LobbyView = Backbone.View.extend({
                 const $right = $('#rightPlayer');
                 $left.text(data.left_player);
                 $right.text(data.right_player);
-                console.log('data : ', data);
-                if (data.left_player != null && data.right_player != null) {
-                    lobbyView.timer(router);
-                }
+                if (data.left_player != null && data.right_player != null)
+                    lobbyView.timer(data, router);
                 else
-                    console.log('waiting for another player');
+                    lobbyView.wait(data, router);
             }
         });
         return this;
     },
-    timer: function(router) {
+    timer: function(match, router) {
         const $timer = $('#timer');
         $timer.show();
         $timer.text('3');
@@ -33,8 +31,25 @@ const LobbyView = Backbone.View.extend({
         GC.addTimeout(function() {
             GC.cleanInterval(interval);
             $timer.hide();
-            router.navigate('game', {trigger: true});
+            router.navigate('game/' + match.id, {trigger: true});
         }, 3000);
+    },
+    wait: function(match, router) {
+        const $left = $('#leftPlayer');
+        const $right = $('#rightPlayer');
+        const lobbyView = this;
+        const waitInterval = GC.addInterval(function() {
+            $.ajax('matches/' + match.id, {
+                success: function(data) {
+                    if (data.left_player != null && data.right_player != null) {
+                        $left.text(data.left_player);
+                        $right.text(data.right_player);
+                        lobbyView.timer(data, router);
+                        GC.cleanInterval(waitInterval);
+                    }
+                }
+            });
+        }, 1000);
     }
 });
 

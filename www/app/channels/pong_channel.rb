@@ -53,14 +53,16 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def subscribed
-		stream_from "pong_channel"
+		@match = Match.find(params["match_id"])
+		stream_for @match
 
 		playerIsHost = true
 		if playerIsHost
 			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
 
-			ActionCable.server.broadcast "pong_channel", content: {
+			PongChannel.broadcast_to @match, content: {
 				act: 'connection',
+				match: @match,
 				paddles: @paddles
 			}
 			start()
@@ -74,13 +76,13 @@ class PongChannel < ApplicationCable::Channel
 		if @starting then return end
 		@starting = true
 		@paddles[:active] = false
-		ActionCable.server.broadcast "pong_channel", content: {
+		PongChannel.broadcast_to @match, content: {
 			act: 'timerStart'
 		}
 		Rufus::Scheduler.new.in '3s' do
 			resetPaddles()
 			resetBall()
-			ActionCable.server.broadcast "pong_channel", content: {
+			PongChannel.broadcast_to @match, content: {
 				act: 'gameStart',
 				ball: @ball
 			}
@@ -178,7 +180,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def broadcastPaddleInfos(data)
-		ActionCable.server.broadcast("pong_channel", content: {
+		PongChannel.broadcast_to(@match, content: {
 			act: data["act"],
 			dir: data["dir"],
 			side: data["side"],
@@ -271,7 +273,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def broadcastBall
-		ActionCable.server.broadcast "pong_channel", content: {
+		PongChannel.broadcast_to @match, content: {
 			act: 'ballUpdate',
 			ball: @ball
 		}

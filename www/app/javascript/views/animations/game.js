@@ -48,14 +48,19 @@ let paddleHeight, paddleTopLimit, paddleBottomLimit;
 let ballInterval;
 let pongSubscription;
 
-export function connect() {
+export function connect(matchId) {
 	defineJqueryObjects();
 	$(window).resize(resizeGameArea);
-	pongSubscription = consumer.subscriptions.create("PongChannel", {
+	console.log('subscribing to channel ' + matchId);
+	pongSubscription = consumer.subscriptions.create({
+		channel: "PongChannel",
+		match_id: matchId
+	},
+	{
 		connected() {},
 		disconnected() {},
 		received(data) {
-			//console.log('Received data from pong channel : ', data.content);
+			console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "connection")
 				initializeFromServer(data.content);
 			else if (data.content.act == "timerStart")
@@ -100,6 +105,9 @@ function defineJqueryObjects() {
 }
 
 function initializeFromServer(data) {
+	console.log(data);
+	$('#player_infos_left .name').text(data.match.left_player);
+	$('#player_infos_right .name').text(data.match.right_player);
 	paddleSpeed = data.paddles.speed;
 	paddleHeight = data.paddles.height;
 	paddleTopLimit = paddleHeight / 2.0;

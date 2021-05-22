@@ -16,4 +16,9 @@ class MatchesController < ApplicationController
 		match.save
 		render json: match
 	end
+
+	def show
+		match = Match.find(params[:id])
+		render json: match
+	end
 end
