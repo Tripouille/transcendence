@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2021_05_19_113856) do
   enable_extension "plpgsql"
 
   create_table "users", force: :cascade do |t|
-    t.string "username"
+    t.string "username", default: "", null: false
     t.string "pictures", default: ""
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -25,8 +25,10 @@ ActiveRecord::Schema.define(version: 2021_05_19_113856) do
     t.string "provider"
     t.string "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["login"], name: "index_users_on_login", unique: true
     t.index ["provider"], name: "index_users_on_provider"
     t.index ["uid"], name: "index_users_on_uid"
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
 end

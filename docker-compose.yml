@@ -18,9 +18,9 @@ services:
        #- ./www/app:/www/app
        #- ./www/db:/www/db
        #- ./www/config:/www/config
-        - /root/transcendence/www/app:/www/app
-        - /root/transcendence/www/db:/www/db
-        - /root/transcendence/www/config:/www/config
+        - ./www/app:/www/app
+        - ./www/db:/www/db
+        - ./www/config:/www/config
     ports:
       - "80:80"
       - "81:81"
