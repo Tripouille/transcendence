@@ -56,16 +56,29 @@ class PongChannel < ApplicationCable::Channel
 		@match = Match.find(params["match_id"])
 		stream_for @match
 
-		playerIsHost = true
-		if playerIsHost
-			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
-
-			PongChannel.broadcast_to @match, content: {
-				act: 'connection',
-				match: @match,
-				paddles: @paddles
-			}
-			start()
+		puts @match.inspect
+		if @match[:left_player] == connection.session[:user_id]
+			puts "in if"
+			scheduler = Rufus::Scheduler.new
+			rufus = scheduler.schedule_every '1s' do
+				puts "rufuuuus"
+				if @match[:status] == "timer"
+					PongChannel.broadcast_to @match, content: {
+						act: 'connection',
+						match: @match,
+						paddles: @paddles
+					}
+					start()
+					rufus.unschedule
+					rufus.kill
+				end
+				sleep(1)
+				@match.update
+			end
+		elsif @match[:right_player] == connection.session[:user_id]
+			puts "in elsif"
+			@match[:status] = "timer"
+			@match.save
 		end
 	end
 
