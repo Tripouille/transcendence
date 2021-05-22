@@ -68,7 +68,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		@scheduler.stop
+		@updateBallJob.pause
 	end
 
 	def start
@@ -86,10 +86,9 @@ class PongChannel < ApplicationCable::Channel
 				ball: @ball
 			}
 			@starting = false
-
-			@scheduler = Rufus::Scheduler.new
-			@scheduler.every '0.3s' do
-				puts "in scheduler"
+			scheduler = Rufus::Scheduler.new
+			@updateBallJob = scheduler.every '1s' do
+				puts "coucou"
 				updateBall()
 			end
 		end
@@ -194,47 +193,62 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def updateBall
-		newTime = Time.now.to_f * 1000.0 #ms
-		timeDelta = newTime - @ball[:lastUpdate] #ms
-		
-		remainingTime = timeDelta
-		while remainingTime > 0.0
-			remainingTime = setBallBeforeBounce(remainingTime, timeDelta - remainingTime)
+		now = Time.now.to_f * 1000.0 #ms
+		totalTime = now - @ball[:lastUpdate]
+		ballData = {
+			remainingTime: totalTime,
+			elapsedTime: 0.0,
+			status: "running"
+		}
+		while ballData[:status] == "running"
+			setBallBeforeBounce(ballData)
+			ballData[:elapsedTime] = totalTime - ballData[:remainingTime]
 		end
-		if remainingTime > -1.0
-			@ball[:lastUpdate] = newTime
+		if ballData[:status] == "stop"
+			@ball[:lastUpdate] = now
 			broadcastBall()
+		elsif ballData[:status] == "score"
+			score(side)
 		end
 	end
 
-	def setBallBeforeBounce(remainingTime, elapsedTime)
+	def ballTouchBorder(ballRemainingTime, timeToBorder)
+		ballRemainingTime < timeToBorder
+	end
+
+	def ballTouchVertBeforeHori(timeToTopBottom, timeToLeftRight)
+		timeToTopBottom < timeToLeftRight
+	end
+
+	def updateBallSpeed
+		if @ball[:speed] < @MAX_BALL_SPEED
+			@ball[:speed] *= @BALL_SPEED_MULTIPLIER
+		end
+	end
+
+	def setBallBeforeBounce(ballData)
 		timeToTopBottom, timeToLeftRight = getTraveledTime()
-		minTime = [timeToTopBottom, timeToLeftRight].min
 		side = @ball[:deltaX] < 0 ? :left : :right
 
-		if remainingTime < minTime
-			updateBallPosition(remainingTime * @ball[:speed])
-			remainingTime = 0.0
-		elsif timeToTopBottom < timeToLeftRight
+		if not ballTouchBorder(ballData[:remainingTime], [timeToTopBottom, timeToLeftRight].min)
+			updateBallPosition(ballData[:remainingTime] * @ball[:speed])
+			ballData[:status] = "stop"
+		elsif ballTouchVertBeforeHori(timeToTopBottom, timeToLeftRight)
 			updateBallPosition(timeToTopBottom * @ball[:speed])
 			@ball[:deltaY] *= -1.0
-			remainingTime -= timeToTopBottom
-		else #above left or right limit
-			time = @ball[:lastUpdate] + elapsedTime + timeToLeftRight - @paddles[side][:lastUpdate]
+			ballData[:remainingTime] -= timeToTopBottom
+		else #touch hori
+			time = @ball[:lastUpdate] + ballData[:elapsedTime] + timeToLeftRight - @paddles[side][:lastUpdate]
 			movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
 			updateBallPosition(timeToLeftRight * @ball[:speed])
 			if ballHitPaddle(side)
 				updateBallDirection(side)
-				if @ball[:speed] < @MAX_BALL_SPEED
-					@ball[:speed] *= @BALL_SPEED_MULTIPLIER
-				end
+				updateBallSpeed()
 			else
-				score(side)
-				return -1.0
+				ballData[:status] = "score"
 			end
-			remainingTime -= timeToLeftRight
+			ballData[:remainingTime] -= timeToLeftRight
 		end
-		return remainingTime
 	end
 
 	def updateBallPosition(traveledDistance)
@@ -277,8 +291,8 @@ class PongChannel < ApplicationCable::Channel
 
 	def score(side)
 		puts 'score'
-		@scheduler.stop
-		start()
+		@updateBallJob.pause
+		#start()
 	end
 
 	def calculatePaddlePosition(paddle)

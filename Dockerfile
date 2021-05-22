@@ -5,12 +5,6 @@ ENV FT_SECRET eca37713c88c7150d8032c0ce111a5ac5e5d1d640e4bb4fccdf379109924f5c5
 
 RUN apk -U upgrade && apk add build-base ruby-full ruby-dev zlib-dev postgresql-dev nodejs yarn tzdata postgresql
 
-# Ruby on Rails
-RUN gem install pg rails
-COPY www/ /www/
-WORKDIR /www
-RUN bundle install
-
 # Postgresql
 RUN su -c "initdb /var/lib/postgresql/data" - postgres
 COPY srcs/pg_hba.conf /var/lib/postgresql/data/
@@ -34,5 +28,12 @@ RUN mv /var/www/localhost/htdocs/adminer-4.8.0.php /var/www/localhost/htdocs/ind
 	&& mkdir /var/run/lighttpd \
     && touch /var/run/lighttpd/php-fastcgi.socket \
     && chown -R lighttpd:lighttpd /var/run/lighttpd
+
+# Ruby on Rails
+RUN gem install pg rails
+COPY www/ /www/
+WORKDIR /www
+RUN bundle install
+RUN bundle exec rake webpacker:install
 
 COPY srcs/launch.sh /
