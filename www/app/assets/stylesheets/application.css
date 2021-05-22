@@ -158,11 +158,16 @@ main {
 	bottom: 50%;
 }
 
-#timer {
+#game #timer {
 	color: green;
 	text-align: center;
 	font-size: 15em;
 	line-height: 100%;
+}
+
+#lobby #timer {
+	font-size: 15em;
+	display: none;
 }
 
 @media (max-width: 800px) {

@@ -1,5 +1,5 @@
 import consumer from "../../channels/consumer"
-import * as GC from './garbage_collector';
+import * as GC from '../garbage_collector';
 
 const LEFT_UP_KEY = "z";
 const LEFT_DOWN_KEY = "s";

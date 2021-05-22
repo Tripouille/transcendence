@@ -1,7 +1,7 @@
 import UsersView from 'views/users';
 import GameView from 'views/game';
 import LobbyView from 'views/lobby';
-import * as GC from 'views/animations/garbage_collector';
+import * as GC from 'views/garbage_collector';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -35,7 +35,7 @@ $(function() {
 			this.gameView.render();
 		},
 		lobby: function() {
-			this.lobbyView.render();
+			this.lobbyView.render(this);
 		}
 	});
 	const router = new myRouter();
