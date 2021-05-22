@@ -68,7 +68,6 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		@updateBallJob.pause
 	end
 
 	def start
@@ -86,11 +85,6 @@ class PongChannel < ApplicationCable::Channel
 				ball: @ball
 			}
 			@starting = false
-			scheduler = Rufus::Scheduler.new
-			@updateBallJob = scheduler.every '1s' do
-				puts "coucou"
-				updateBall()
-			end
 		end
 	end
 
@@ -291,7 +285,6 @@ class PongChannel < ApplicationCable::Channel
 
 	def score(side)
 		puts 'score'
-		@updateBallJob.pause
 		#start()
 	end
 

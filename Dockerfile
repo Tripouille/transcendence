@@ -34,6 +34,6 @@ RUN gem install pg rails
 COPY www/ /www/
 WORKDIR /www
 RUN bundle install
-RUN bundle exec rake webpacker:install
+RUN echo "n" | bundle exec rake webpacker:install
 
 COPY srcs/launch.sh /
