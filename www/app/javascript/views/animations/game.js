@@ -10,10 +10,6 @@ const timerColors = {
 	2: 'orange',
 	1: 'red'
 };
-let paddleSpeed = 0.0;
-
-let lastPreviousBallUpdate = null;
-let paddleIsActive = false;
 
 let BH = {ball: null};
 let leftPaddle = {
@@ -43,9 +39,10 @@ let rightPaddle = {
 	y: 50
 };
 
+let paddleIsActive = false;
 let $gameContainer, $gameArea, $ball, $playerInfos, $leftPoints, $rightPoints, $timer;
-let paddleHeight, paddleTopLimit, paddleBottomLimit;
-let ballInterval;
+let paddleSpeed, paddleHeight, paddleTopLimit, paddleBottomLimit;
+let ballInterval, waitingForServer = false;
 let pongSubscription;
 
 export function connect(matchId) {
@@ -61,16 +58,16 @@ export function connect(matchId) {
 		disconnected() {},
 		received(data) {
 			console.log('Received data from pong channel : ', data.content);
-			if (data.content.act == "connection")
+			if (data.content.act == "initialize")
 				initializeFromServer(data.content);
-			else if (data.content.act == "timerStart")
+			else if (data.content.act == "launchTimer")
 				timerStart();
 			else if (data.content.act == "gameStart")
-				gameStart(data.content.ball);
+				gameStart(data.content.match);
 			else if (data.content.act == 'press' || data.content.act == 'release')
 				paddleMove(data.content);
-			else if (data.content.act == 'ballUpdate')
-				updateBallFromServer(data.content.ball);
+			else if (data.content.act == 'updateMatch')
+				setMatchFromServer(data.content.match);
 			else
 				console.log('Error: unrecognized data');
 		}
@@ -105,19 +102,27 @@ function defineJqueryObjects() {
 }
 
 function initializeFromServer(data) {
-	console.log(data);
+	// Initialize players infos
 	$('#player_infos_left .name').text(data.match.left_player);
 	$('#player_infos_right .name').text(data.match.right_player);
+
+	// Initialize paddle infos
 	paddleSpeed = data.paddles.speed;
 	paddleHeight = data.paddles.height;
 	paddleTopLimit = paddleHeight / 2.0;
 	paddleBottomLimit = 100.0 - paddleHeight / 2.0;
+
+	// Initialize ball
+	BH.ball = data.ball;
+	BH.ball.lastUpdate = data.match.last_update;
+
+	// Keys
 	$(document).keydown(keyDownHandler);
 	$(document).keyup(keyUpHandler);
 }
 
 function timerStart() {
-	BH.ball = null;
+	// BH.ball = null;
 	cleanGameIntervals();
 	paddleIsActive = false;
 	$timer.show();
@@ -133,18 +138,13 @@ function timerStart() {
 	}, 3000);
 }
 
-function gameStart(serverBall) {
-	leftPaddle.$paddle.css({top: '50%'});
-	rightPaddle.$paddle.css({top: '50%'});
-	leftPaddle.y = 50;
-	rightPaddle.y = 50;
+function gameStart(match) {
+	setMatchFromServer(match);
 	leftPaddle.activeKey = null;
 	rightPaddle.activeKey = null;
 	paddleIsActive = true;
 	$ball.show();
-	//updateBallFromServer(serverBall);
-	lastPreviousBallUpdate = (new Date()).getTime();
-	//ballInterval = GC.addInterval(moveBall, 10);
+	ballInterval = GC.addInterval(moveBall, 10);
 }
 
 function switchKey(e, paddle, oldDir, newDir) {
@@ -218,9 +218,7 @@ function keyUpHandler(e) {
 
 function paddleMove(data) {
 	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
-	
-	paddle.y = data.y;
-	paddle.$paddle.css({top: data.y + '%'});
+
 	if (data.act == 'press') {
 		resetPaddle(paddle, data.dir == 'up' ? 'down' : 'up');
 		activatePaddle(paddle, data.dir);
@@ -253,41 +251,59 @@ function movePaddleDown(paddle) {
 }
 
 function moveBall() {
-	if (BH.ball == null)
+	if (waitingForServer)
 		return ;
+	console.log('moveBall');
+	// if (BH.ball == null) // CHECK MATCH STATUS
+	// 	return ;
 	let timeDelta = getTimeDeltaAndUpdate(BH.ball);
-	BH.ball.posX += BH.ball.deltaX * BH.ball.speed * timeDelta;
-	BH.ball.posY += BH.ball.deltaY * BH.ball.speed * timeDelta;
-	if (BH.ball.posY <= BH.ball.topLimit || BH.ball.posY >= BH.ball.bottomLimit) {
-		BH.ball.deltaY *= -1.0;
-		getBallFromServer();
-		BH.ball = null;
+	BH.ball.x += BH.ball.dx * BH.ball.speed * timeDelta;
+	BH.ball.y += BH.ball.dy * BH.ball.speed * timeDelta;
+	console.log('timeDelta = ', timeDelta, 'BH.ball = ', BH.ball);
+	if (BH.ball.y <= BH.ball.topLimit || BH.ball.y >= BH.ball.bottomLimit) {
+		console.log('if');
+		BH.ball.dy *= -1.0;
+		getMatchFromServer();
 	}
-	else if ((BH.ball.posX <= BH.ball.leftLimit && BH.ball.deltaX < 0)
-	|| (BH.ball.posX >= BH.ball.rightLimit && BH.ball.deltaX > 0))
+	else if ((BH.ball.x <= BH.ball.leftLimit && BH.ball.dx < 0)
+	|| (BH.ball.x >= BH.ball.rightLimit && BH.ball.dx > 0))
 	{
-		getBallFromServer();
-		BH.ball = null;
+		console.log('else if');
+		getMatchFromServer();
 	}
 	else
 	{
+		console.log('else (css)');
 		$ball.css({
-			top: BH.ball.posY + '%',
-			left: BH.ball.posX + '%'
+			top: BH.ball.y + '%',
+			left: BH.ball.x + '%'
 		});
 	}
 }
 
-function getBallFromServer() {
+function getMatchFromServer() {
 	pongSubscription.send({
-		"request": "ball"
+		"act": "updateMatch"
 	});
+	waitingForServer = true;
 }
 
-function updateBallFromServer(serverBall) {
-	BH.ball = serverBall;
+function setMatchFromServer(match) {
+	leftPaddle.y = Number(match.left_paddle_y);
+	rightPaddle.y = Number(match.right_paddle_y);
+	leftPaddle.$paddle.css({top: leftPaddle.y + '%'});
+	rightPaddle.$paddle.css({top: rightPaddle.y + '%'});
+	leftPaddle.lastUpdate = Number(match.last_update);
+	rightPaddle.lastUpdate = Number(match.last_update);
+	BH.ball.x = Number(match.ball_x);
+	BH.ball.y = Number(match.ball_y);
+	BH.ball.dx = Number(match.ball_dx);
+	BH.ball.dy = Number(match.ball_dy);
+	BH.ball.speed = Number(match.ball_speed);
 	$ball.css({
-		top: BH.ball.posY + '%',
-		left: BH.ball.posX + '%'
+		top: BH.ball.y + '%',
+		left: BH.ball.x + '%'
 	});
+	BH.ball.lastUpdate = Number(match.last_update);
+	waitingForServer = false;
 }
