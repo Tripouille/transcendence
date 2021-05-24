@@ -6,14 +6,14 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <script id="guildViewTemplate" type="text/template">
-        <li class="guildInfo">Name: <%%= name %></li>
-        <li class="guildInfo">Anagram: <%%= anagram %></li>
-        <li class="guildInfo">Score: <%%= score %></li>
-    </script>
-    
+  	<%= render 'templates/main' %>
+  	<%= render 'templates/guilds' %>
+
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+  	<%= render 'templates/initializers' %>
+
   </head>
 
   <body>

@@ -4,14 +4,15 @@ import { FooterView } from "./footerView";
 
 export const HomepageView = Backbone.View.extend({
 
-    headerView: new HeaderView({el: $('header')}),
-    mainView: new MainView({el: $('main')}),
-    footerView: new FooterView({el: $('footer')}),
+    // headerView: new HeaderView(),
+    mainView: new MainView(),
+    // mainView: new MainView({el: $('main')}),
+    // headerView: new FooterView(),
 
     render: function() {
-        this.headerView.render();
+        // this.headerView.render();
         this.mainView.render();
-        this.footerView.render();
+        // this.footerView.render();
         return this;
     }
 });

@@ -1,7 +1,10 @@
 export const MainView = Backbone.View.extend({
 
+    template: _.template( $('#main-blocTemplate').html()),
+
     render: function() {
-        console.log("inside main view");
+        $("#main-bloc").empty();
+        $("#main-bloc").html(this.template);
         return this;
     }
 });

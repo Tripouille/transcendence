@@ -20,7 +20,7 @@ header {
   } */
 #mainNav {
   position: absolute;
-  top: 40px;
+  top: 0px;
   padding-bottom: 10px;
 }
 #mainNav a {
@@ -38,4 +38,8 @@ header {
 }
 #mainNav a:hover {
   text-decoration: underline;
+}
+
+main {
+  margin-top: 50px;
 }
