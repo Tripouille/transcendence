@@ -69,6 +69,10 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
+		if not @rufus.nil?
+			@rufus.unschedule
+			@rufus.kill
+		end
 	end
 
 	def start
