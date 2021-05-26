@@ -1,5 +1,4 @@
 export const GuildView = Backbone.View.extend({
-
     tagName: "tr",
     className: "guildRow",
 
@@ -9,9 +8,9 @@ export const GuildView = Backbone.View.extend({
         var guildTemplate = this.template(this.model.toJSON());
         this.$el.html(guildTemplate);
         
-        // console.log(window.currentUser);
         if (window.currentUser.guild_id == null)
             this.$el.append(_.template( $('#joinGuildButton').html()));
+
         return this;
     }
 });

@@ -1,2 +1,2 @@
 www/Gemfile.lock
-db/schema.rb
+www/db/schema.rb

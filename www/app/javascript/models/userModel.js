@@ -29,12 +29,12 @@ export const UserModel = Backbone.Model.extend({
 	updateModel: function() {
         this.fetch({
 			success: function(model, response, options) {
-				console.log("fetched User with sucess");
+				// console.log("fetched User with sucess");
                 return this;
 
 			},
 			error: function(){
-				console.log("fetched User with failure");
+				// console.log("fetched User with failure");
 			}
 		});
 	},

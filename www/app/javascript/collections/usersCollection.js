@@ -12,12 +12,12 @@ export const UsersCollection = Backbone.Collection.extend({
 	updateCollection: function() {
         this.fetch({
 			success: function(collection, response, options) {
-				console.log("fetched user-collection with sucess");
+				// console.log("fetched user-collection with sucess");
                 return this;
 
 			},
 			error: function(){
-				console.log("fetched user-collection with failure");
+				// console.log("fetched user-collection with failure");
 			}
 		});
 	},

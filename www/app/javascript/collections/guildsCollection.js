@@ -11,12 +11,12 @@ export const GuildsCollection = Backbone.Collection.extend({
 
 		this.fetch({
 			success: function(collection, response, options) {
-				console.log("fetched guild-collection with sucess");
+				// console.log("fetched guild-collection with sucess");
                 return this;
 
 			},
 			error: function(){
-				console.log("fetched guild-collection with failure");
+				// console.log("fetched guild-collection with failure");
 			}
 		});
 	},

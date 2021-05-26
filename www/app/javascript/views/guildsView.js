@@ -5,11 +5,21 @@ export const GuildsView = Backbone.View.extend({
     addGuildView: function(guild, i) {
         guild.set({"rank": i + 1});
         var guildView = new GuildView ({ model: guild });
-        this.$el.append(guildView.render().el);
+        $('#guildTableBody').append(guildView.render().el);
+    },
+
+    renderForm: function(templateName) {
+        // let template = _.template($('#guildStaticContent').html());
+        let template = _.template($(templateName).html());
+        this.$el.html(template);
+        // window.currentUser.updateModel();
+        // window.guildsCollection.each(this.addGuildView, this);
+        return this;
     },
 
     render: function() {
-        console.log(window.guildsCollection);
+        let template = _.template($('#guildStaticContent').html());
+        this.$el.html(template);
         window.currentUser.updateModel();
         window.guildsCollection.each(this.addGuildView, this);
         return this;

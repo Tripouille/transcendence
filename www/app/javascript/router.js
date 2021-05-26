@@ -1,12 +1,13 @@
-import { HomepageView } from './views/homepageView';
-import { GuildsView } from './views/guildsView';
-import { GuildsCollection } from 'collections/guildsCollection'
-import { UsersCollection } from 'collections/usersCollection'
-import { UserModel } from 'models/userModel'
-
-import UsersView from 'views/users';
-import GameView from 'views/game';
+import { HomepageView } from 'views/homepageView';
+import { GuildsView } from 'views/guildsView';
+import { UsersView } from 'views/usersView';
+import { GameView } from 'views/game';
 import * as GC from 'views/animations/garbage_collector';
+
+import { UserModel } from 'models/userModel';
+
+import { GuildsCollection } from 'collections/guildsCollection';
+import { UsersCollection } from 'collections/usersCollection';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -17,58 +18,65 @@ window.currentUser = window.currentUser || new UserModel(initCurrentUser);
 
 $(function() {
 
+	const $main = $('#main-bloc');
 	const myRouter = Backbone.Router.extend({
-		usersView: new UsersView(),
-		gameView: new GameView({el: $main}),
+		homepageView: new HomepageView({ el: $main }),
+		guildsView: new GuildsView({ el: $main }),
+		gameView: new GameView({ el: $main }),
+		usersView: new UsersView({ el: $main }),
 
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
 			"guildspage": "guildspage",
-			"game": "game",
+			"newguild": "newguild",
+			"gamepage": "gamepage",
 			"users": "users"
 		},
 
 		onClick: function(links) {
 			_.each(links, function(link){
-				$(link).click(function() {
+				$(link).on("click", function() {
 					router.navigate(link, true, true);
 				});
 			});
 		},
 
 		execute: function(callback, args, name) {
-			$main.empty();
+			// $main.empty();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
 
-			this.onClick(["#homepage", "#guildspage"]);
+			this.onClick(["#homepage", "#guildspage", "#gamepage"]);
 
 			callback.apply(this, args);
 		},
 
 		homepage: function() {
 			console.log("> homepage");
-			var homepageView = new HomepageView(); 
-			homepageView.render();
+			this.homepageView.render();
 		},
 
 		guildspage: function() {
 			console.log("> guilds - page");
-			let template = _.template($('#guildStaticContent').html())
-			$('#main-bloc').html(template);
+			this.guildsView.render();
 
-			// console.log(window.guildsCollection);
-			var guildsView = new GuildsView({ el: $('#guildTableBody') });
-			guildsView.render();
+			$("#newguild").on("click", function() {
+				router.navigate("#newguild", true, true);
+			});
+		},
+
+		newguild: function() {
+			console.log("> guilds - page #new");
+			this.guildsView.renderForm('#newGuildForm');
 		},
 
 		users: function() {
-			this.usersView.render($main);
+			this.usersView.render();
 		},
 
-		game: function() {
+		gamepage: function() {
 			this.gameView.render();
 		}
 	});

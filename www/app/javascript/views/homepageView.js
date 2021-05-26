@@ -6,12 +6,11 @@ export const HomepageView = Backbone.View.extend({
 
     // headerView: new HeaderView(),
     mainView: new MainView(),
-    // mainView: new MainView({el: $('main')}),
     // headerView: new FooterView(),
 
     render: function() {
         // this.headerView.render();
-        this.mainView.render();
+        this.$el.html(this.mainView.render().el);
         // this.footerView.render();
         return this;
     }
