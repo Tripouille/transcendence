@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     delete 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
+  get '/login', to: 'users#login'
   # Root users CRUD
   resources :users
 

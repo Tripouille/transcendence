@@ -2,6 +2,10 @@
 
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
+  def login
+
+  end
+
   def marvin
     @user = User.from_omniauth(request.env["omniauth.auth"])
 
