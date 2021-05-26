@@ -4,11 +4,12 @@ export const GuildModel = Backbone.Model.extend({
 		id: null,
 		name: "",
 		anagram: "",
+		owner: "",
 		score: 0
 	},
 	idAttribute: "id",
 	initialize: function() {
-		console.log('Guild has been initialized');
+		console.log('GuildModel has been initialized');
 	},
 	validate: function (attr) {
 		if (attr.name.length < 5 || attr.name.length > 20) {

@@ -1,20 +1,22 @@
-import { GuildModel } from "../models/guildModel";
+import { GuildModel } from '../models/guildModel';
 
 export const GuildsCollection = Backbone.Collection.extend({
 	model: GuildModel,
 	url: "/guilds",
 
 	initialize: function() {
-        this.fetch({
+		this.comparator = function(model) {
+			return -model.get("score");
+		}
+
+		this.fetch({
 			success: function(collection, response, options) {
-				console.log("fetch with sucess");
-                console.log(collection);
-                console.log(response);
+				console.log("fetched guild-collection with sucess");
                 return this;
 
 			},
 			error: function(){
-				console.log("fetch with failure");
+				console.log("fetched guild-collection with failure");
 			}
 		});
 	},

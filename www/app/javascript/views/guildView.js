@@ -1,14 +1,17 @@
 export const GuildView = Backbone.View.extend({
 
-    tagName: "ul",
-    className: "",
+    tagName: "tr",
+    className: "guildRow",
 
-    template: _.template( $('#guildViewTemplate').html()),
+    template: _.template( $('#guildRow').html()),
 
     render: function() {
-        console.log(this.model);
         var guildTemplate = this.template(this.model.toJSON());
         this.$el.html(guildTemplate);
+        
+        // console.log(window.currentUser);
+        if (window.currentUser.guild_id == null)
+            this.$el.append(_.template( $('#joinGuildButton').html()));
         return this;
     }
 });

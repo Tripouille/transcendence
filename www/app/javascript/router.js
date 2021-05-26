@@ -1,28 +1,33 @@
-import { HomepageView } from 'views/homepageView';
-import { GuildsView } from 'views/guildsView';
-import { GuildsCollection } from "collections/guildsCollection"
+import { HomepageView } from './views/homepageView';
+import { GuildsView } from './views/guildsView';
+import { GuildsCollection } from 'collections/guildsCollection'
+import { UsersCollection } from 'collections/usersCollection'
+import { UserModel } from 'models/userModel'
+
+window.guildsCollection = window.guildsCollection || new GuildsCollection(initGuildsCollection);
+window.usersCollection = window.usersCollection || new UsersCollection();
+window.currentUser = window.currentUser || new UserModel(initCurrentUser);
 
 $(function() {
+
 	const myRouter = Backbone.Router.extend({
-		guildsCollection: new GuildsCollection(initGuildCollection.models),
 
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
 			"guildspage": "guildspage",
-			// "newguild": "newguild",
 		},
 
 		onClick: function(links) {
 			_.each(links, function(link){
-				$(link).on("click", function() {
+				$(link).click(function() {
 					router.navigate(link, true, true);
 				});
 			});
 		},
 
 		execute: function(callback, args, name) {
-			this.onClick(["#homepage", "#guildspage", "#newguild"]);
+			this.onClick(["#homepage", "#guildspage"]);
 			callback.apply(this, args);
 		},
 
@@ -34,23 +39,13 @@ $(function() {
 
 		guildspage: function() {
 			console.log("> guilds - page");
-
-			let template = _.template($('#newGuildButton').html())
+			let template = _.template($('#guildStaticContent').html())
 			$('#main-bloc').html(template);
 
-			var guildsView = new GuildsView({ collection: this.guildsCollection});
-			$('#main-bloc').append(guildsView.render().el);
+			// console.log(window.guildsCollection);
+			var guildsView = new GuildsView({ el: $('#guildTableBody') });
+			guildsView.render();
 		},
-
-		// newguild: function() {
-		// 	console.log("> guilds - new");
-
-		// 	let template = _.template($('#newGuildButton').html())
-		// 	$('#main-bloc').html(template);
-
-		// 	var guildsView = new GuildsView({ collection: this.guildsCollection});
-		// 	$('#main-bloc').append(guildsView.render().el);
-		// },
 	});
 	const router = new myRouter();
 	Backbone.history.start();

@@ -1,12 +1,16 @@
-export const User = Backbone.Model.extend({
+export const UserModel = Backbone.Model.extend({
 	urlRoot: '/users',
 	defaults: {
 		id: null,
-		name: ""
+		username: "",
+		pictures: "",
+		email: "",
+		login: "",
+		uid: "",
 	},
 	idAttribute: "id",
 	initialize: function() {
-		console.log('User has been initialized');
+		console.log('UserModel has been initialized');
 	},
 	validate: function (attr) {
 		if (attr.name.length < 2 || attr.name.length > 20) {
@@ -20,5 +24,18 @@ export const User = Backbone.Model.extend({
 		  model.unset(attr);
 		});
 		Backbone.Model.prototype.save.call(this, attributes, options);
-	}
+	},
+
+	updateModel: function() {
+        this.fetch({
+			success: function(model, response, options) {
+				console.log("fetched User with sucess");
+                return this;
+
+			},
+			error: function(){
+				console.log("fetched User with failure");
+			}
+		});
+	},
 });

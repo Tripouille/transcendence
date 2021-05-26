@@ -1,13 +1,29 @@
-<script id="newGuildButton" type="text/template">
+<script id="guildStaticContent" type="text/template">
 	<button id="newguild" class="button1 favorite styled" type="button">Create your own Guild !</button>
+	<button id="otherbutton" class="button1 favorite styled" type="button">Update !</button>
+
+	<table id="guildTable">
+		<thead>
+			<tr>
+				<th>Rank</th>
+				<th>Name (Anagram)</th>
+				<th>Owner</th>
+				<th>Score</th>
+			</tr>
+		</thead>
+		<tbody id="guildTableBody">
+		</tbody>
+	</table>
 </script>
 
-<script id="newGuildTemplate" type="text/template">
-	<button id="newguild" class="button1 favorite styled" type="button">Create your own Guild !</button>
+<script id="joinGuildButton" type="text/template">
+	<button id="" class="button1 favorite styled" type="button">Join</button>
 </script>
 
-<script id="guildViewTemplate" type="text/template">
-	<li class="guildInfo">Name: <%%= name %></li>
-	<li class="guildInfo">Anagram: <%%= anagram %></li>
-	<li class="guildInfo">Score: <%%= score %></li>
+
+<script id="guildRow" type="text/template">
+	<td><%%= rank %></td>
+	<td><%%= name %> (<%%= anagram %>)</td>
+	<td><%%= owner %></td>
+	<td><%%= score %></td>
 </script>
