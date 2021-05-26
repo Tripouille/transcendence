@@ -4,6 +4,13 @@ import { GuildsCollection } from 'collections/guildsCollection'
 import { UsersCollection } from 'collections/usersCollection'
 import { UserModel } from 'models/userModel'
 
+import UsersView from 'views/users';
+import GameView from 'views/game';
+import * as GC from 'views/animations/garbage_collector';
+
+window.intervals = new Array();
+window.timeouts = new Array();
+
 window.guildsCollection = window.guildsCollection || new GuildsCollection(initGuildsCollection);
 window.usersCollection = window.usersCollection || new UsersCollection();
 window.currentUser = window.currentUser || new UserModel(initCurrentUser);
@@ -11,11 +18,15 @@ window.currentUser = window.currentUser || new UserModel(initCurrentUser);
 $(function() {
 
 	const myRouter = Backbone.Router.extend({
+		usersView: new UsersView(),
+		gameView: new GameView({el: $main}),
 
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
 			"guildspage": "guildspage",
+			"game": "game",
+			"users": "users"
 		},
 
 		onClick: function(links) {
@@ -27,7 +38,13 @@ $(function() {
 		},
 
 		execute: function(callback, args, name) {
+			$main.empty();
+			GC.clearTimeoutsIntervals();
+			$(document).off("keydown");
+			$(document).off("keyup");
+
 			this.onClick(["#homepage", "#guildspage"]);
+
 			callback.apply(this, args);
 		},
 
@@ -46,6 +63,14 @@ $(function() {
 			var guildsView = new GuildsView({ el: $('#guildTableBody') });
 			guildsView.render();
 		},
+
+		users: function() {
+			this.usersView.render($main);
+		},
+
+		game: function() {
+			this.gameView.render();
+		}
 	});
 	const router = new myRouter();
 	Backbone.history.start();
