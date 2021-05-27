@@ -7,7 +7,7 @@ $(function() {
 	const myRouter = Backbone.Router.extend({
 
 		routes: {
-			"": "homepage",
+			"": "login",
 			"homepage": "homepage",
 			"user": "user",
 			"login": "login",
@@ -17,6 +17,9 @@ $(function() {
 			console.log("> Login - Page");
 			let login = new LoginView();
 			login.render();
+			$('$test').on("click", function() {
+				router.navigate('homepage', true, true);
+			});
 		}
 
 		// onClick: function(links) {
