@@ -17,9 +17,6 @@ $(function() {
 			console.log("> Login - Page");
 			let login = new LoginView();
 			login.render();
-			$('$test').on("click", function() {
-				router.navigate('homepage', true, true);
-			});
 		}
 
 		// onClick: function(links) {

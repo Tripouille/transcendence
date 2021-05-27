@@ -184,7 +184,6 @@ main {
 	position: relative;
 	display: inline-block;
 	margin: 35px auto;
-
 }
 
 .header-wrap {
@@ -201,6 +200,7 @@ main {
 	text-shadow: 0 -1px 0 #fff, 0 1px 0 #004d40, 0 2px 0 #00483b, 0 3px 0 #004639, 0 4px 0 #004336, 0 5px 0 #004134, 0 6px 0 #003f32, 0 7px 0 #003d30, 0 8px 0 #003a2d, 0 9px 0 #00382b, 0 10px 0 #003528, 0 11px 0 #003225, 0 12px 0 #002f22, 0 13px 0 #002b1e, 0 14px 0 #00281c, 0 15px 0 #001f13, 0 22px 30px rgba(0, 0, 0, 0.9), 0 22px 30px rgba(0, 0, 0, 0.9), 0 22px 15px rgba(0, 0, 0, 0.9), 0 11px 15px rgba(0, 0, 0, 0.9), 0 15px 20px rgba(0, 0, 0, 0.9), 0 15px 11px rgba(0, 0, 0, 0.9), 0 16px 11px rgba(0, 0, 0, 0.9);
 	transition: text-shadow 0.3s ease 0.3s, transform 0.3s ease 0.3s, letter-spacing 0.3s ease 0.3s;
 }
+
 .header-wrap:hover {
 	transition: text-shadow 0.33s ease, transform 0.3s ease, letter-spacing 0.3s ease;
 	text-shadow: 0 0 0 #004134, 0 1px 0 #00483b, 0 2px 0 #003528, 0 3px 3px rgba(0, 0, 0, 0.9);
@@ -211,10 +211,6 @@ main {
 .retro-btn {
 	text-transform: uppercase;
 	background: 0 0;
-}
-
-.retro-btn.success .btn .btn-inner .content-wrapper .btn-content {
-	background-color: #009a3e;
 }
 
 .retro-btn .btn {
@@ -248,4 +244,12 @@ main {
 	text-decoration-color: initial;
 	border-color: initial;
 	-webkit-tap-highlight-color: transparent;
+}
+
+.retro-btn .btn:hover {
+	-webkit-transform: translate3d(0, 1px, 0);
+	transition: text-shadow 0.33s ease, transform 0.3s ease, letter-spacing 0.3s ease;
+	text-shadow: 0 0 0 #004134, 0 1px 0 #00483b, 0 2px 0 #003528, 0 3px 3px rgba(0, 0, 0, 0.9);
+	transform: translate3d(0, 1px, 0);
+	letter-spacing: 0.125em;
 }
