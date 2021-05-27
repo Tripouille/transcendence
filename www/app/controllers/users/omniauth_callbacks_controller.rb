@@ -15,7 +15,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       session[:user_id] = @user.id
     else
       session["devise.marvin_data"] = request.env["omniauth.auth"]
-      redirect_to new_user_registration_url
+      redirect_to root_path('http://localhost/#login')
     end
   end
 

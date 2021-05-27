@@ -1,6 +1,6 @@
 export const LoginView = Backbone.View.extend({
 
-	el: 'body',
+	el: 'main',
 
 	events: {
 		'mouseover .retro-btn': 'mouseHandler',
@@ -22,14 +22,9 @@ export const LoginView = Backbone.View.extend({
         return this;
 	},
 
-	clickHandler : function(){
-		console.log('I was clicked!');
-	},
-
-	mouseHandler : function(e){
-		console.log('mouse handler');
-		console.log('newClass = ' + newClass);
-		$('a.btn').toggleClass('btn-center');
+	clickHandler : function(e ){
+		e.preventDefault()
+		document.location.replace('/users/auth/marvin')
 	}
 
 });
