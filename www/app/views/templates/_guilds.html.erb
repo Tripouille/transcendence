@@ -15,10 +15,6 @@
 	</table>
 </script>
 
-<script id="newGuildForm" type="text/template">
-	<p>Guild Creation Form</p>
-</script>
-
 <script id="joinGuildButton" type="text/template">
 	<button id="" class="button1 favorite styled" type="button">Join</button>
 </script>
@@ -29,3 +25,32 @@
 	<td><%%= owner %></td>
 	<td><%%= score %></td>
 </script>
+
+<script id="guildNewStatic" type="text/template">
+	<p>New guild form :</p>
+	<form id="newguildform" name="todo">
+		<!-- error message -->
+		<div class="field">
+			<label for="name">Guild name:</label>
+			<input type="text" id="name" name="name"><br>
+		</div>
+		<div class="field">
+			<label for="anagram">Guild anagram:</label>
+			<input type="text" id="anagram" name="anagram"><br>
+		</div>
+		<div id="formSubmitNewGuild" class="actions">
+			<input type="submit" value="Create guild" />
+		</div>
+	</form>
+</script>
+
+<!---
+<script id="errorNewForm" type="text/template">
+	<div id="error_explanation">
+		<h2><%%= number %> error prohibited this guild from being saved:</h2>
+		<ul>
+			<li><%%= error %></li>
+		</ul>
+	</div>
+</script>
+-->

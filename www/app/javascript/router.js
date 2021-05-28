@@ -1,7 +1,8 @@
 import { HomepageView } from 'views/homepageView';
 import { GuildsView } from 'views/guildsView';
-import { UsersView } from 'views/usersView';
-import { GameView } from 'views/game';
+import { GuildNewView } from 'views/guildNewView';
+import UsersView from 'views/usersView';
+import GameView from 'views/game';
 import * as GC from 'views/animations/garbage_collector';
 
 import { UserModel } from 'models/userModel';
@@ -16,12 +17,13 @@ window.guildsCollection = window.guildsCollection || new GuildsCollection(initGu
 window.usersCollection = window.usersCollection || new UsersCollection();
 window.currentUser = window.currentUser || new UserModel(initCurrentUser);
 
-$(function() {
+$(function () {
 
 	const $main = $('#main-bloc');
 	const myRouter = Backbone.Router.extend({
 		homepageView: new HomepageView({ el: $main }),
 		guildsView: new GuildsView({ el: $main }),
+		guildNewView: new GuildNewView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		usersView: new UsersView({ el: $main }),
 
@@ -34,15 +36,15 @@ $(function() {
 			"users": "users"
 		},
 
-		onClick: function(links) {
-			_.each(links, function(link){
-				$(link).on("click", function() {
+		onClick: function (links) {
+			_.each(links, function (link) {
+				$(link).on("click", function () {
 					router.navigate(link, true, true);
 				});
 			});
 		},
 
-		execute: function(callback, args, name) {
+		execute: function (callback, args, name) {
 			// $main.empty();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
@@ -53,30 +55,30 @@ $(function() {
 			callback.apply(this, args);
 		},
 
-		homepage: function() {
+		homepage: function () {
 			console.log("> homepage");
 			this.homepageView.render();
 		},
 
-		guildspage: function() {
+		guildspage: function () {
 			console.log("> guilds - page");
 			this.guildsView.render();
 
-			$("#newguild").on("click", function() {
+			$("#newguild").on("click", function () {
 				router.navigate("#newguild", true, true);
 			});
 		},
 
-		newguild: function() {
+		newguild: function () {
 			console.log("> guilds - page #new");
-			this.guildsView.renderForm('#newGuildForm');
+			this.guildNewView.render();
 		},
 
-		users: function() {
+		users: function () {
 			this.usersView.render();
 		},
 
-		gamepage: function() {
+		gamepage: function () {
 			this.gameView.render();
 		}
 	});
