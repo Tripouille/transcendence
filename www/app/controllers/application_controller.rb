@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
 
-	before_action :require_login, only: %i[ show edit update destroy ]
+	before_action :require_login, only: [ :show, :edit, :update, :destroy ]
 
 	def index
 		@session = session[:user_id]

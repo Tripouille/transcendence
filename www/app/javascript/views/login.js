@@ -10,10 +10,10 @@ export const LoginView = Backbone.View.extend({
 
 	initialize: function() {
 		console.log("Login Page initialize");
-		console.log("Remove nav bar on login Page");
-		$("#mainNav").remove();
-		$("#contacts").remove();
-		$("#chat").remove();
+		console.log("Clear nav bar on login Page");
+		$("#mainNav").empty();
+		$("#contacts").empty();
+		$("#chat").empty();
 		$("main").empty();
         $("main").html(this.template);
 		this.render();
