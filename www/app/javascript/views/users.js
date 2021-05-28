@@ -1,9 +1,9 @@
-import { UsersCollection } from '../collections/usersCollection';
-import { UserView } from './userView';
+import { Users } from '../collections/users';
+import { UserView } from '../views/user';
 
-export const UsersView = Backbone.View.extend({
+const UsersView = Backbone.View.extend({
 	tagName: "ul",
-	collection: new UsersCollection(),
+	collection: new Users(),
 
 	initialize: function() {
 		//console.log('Users view has been initialized');

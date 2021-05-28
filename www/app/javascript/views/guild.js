@@ -8,9 +8,8 @@ export const GuildView = Backbone.View.extend({
         var guildTemplate = this.template(this.model.toJSON());
         this.$el.html(guildTemplate);
         
-        if (window.currentUser.guild_id == null)
+        if (window.currentUser.has("guild_id"))
             this.$el.append(_.template( $('#joinGuildButton').html()));
-
         return this;
     }
 });

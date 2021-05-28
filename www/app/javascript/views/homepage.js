@@ -1,4 +1,6 @@
-export const MainView = Backbone.View.extend({
+export const HomepageView = Backbone.View.extend({
+
+    tagName: "div",
 
     template: _.template( $('#homepageTemplate').html()),
 
