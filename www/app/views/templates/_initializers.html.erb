@@ -1,18 +1,7 @@
 <script type=text/javascript>
-	/* Initialization of the backbone objects */
-	/* Attention si pas de rafraichissement de la page */
-
-	/* Collection related to the guilds database */
-	var initGuildsCollection = <%== @guilds.to_json %>;
-
-	/* Collection related to the users database */
-	// var initUsersCollection = new Backbone.Collection(<%== @users.to_json %>);
-	// var initUsersCollection = <%== @users.to_json %>;
-	// console.log(initUsersCollection);
-
-	/* Model related to the current user */
-	// var initCurrentUser = new Backbone.Model(<%== session[:user].to_json %>);
+	
+	/* Creates a temp variable to access currentUser's session for backbone */
+	/* maybe to be deleted in the future */
 	var initCurrentUser = <%== session[:user].to_json %>;
-	// console.log(initCurrentUser);
 
 </script>

@@ -1,10 +1,9 @@
-
 <header id="mainNav">
 	<ul>
 		<li><button id="homepage" class="button1 favorite styled" type="button">Homepage</button></li>
 		<li><button id="" class="button1 favorite styled" type="button">Game</button></li>
 		<li><button id="competition" class="button1 favorite styled" type="button">Competition</button></li>
-		<li><button id="guildspage" class="button1 favorite styled" type="button">Guilds</button></li>
+		<li><button id="guilds" class="button1 favorite styled" type="button">Guilds</button></li>
 		<li><button id="admin" class="favorite styled" type="button">Admin</button></li>
 		<li><button id="sign-in" class="favorite styled" type="button">
 			<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
@@ -12,18 +11,8 @@
 			Session = <%= @session.inspect %></button>
 		</li>
 	</ul>
-
 </header>
 
-<main>
-	<h1>Welcome to Transcendence</h1>
-
-	<div id="main-bloc" class="bloc">Main</div>
-
-	<div id="contacts", class="bloc">Contacts</div>
-
-	<div id="chat" class="bloc">Chat</div>
-
-</main>
+<main></main>
 
 <footer></footer>

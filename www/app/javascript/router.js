@@ -1,25 +1,18 @@
-import { HomepageView } from 'views/homepageView';
-import { GuildsView } from 'views/guildsView';
-import { GuildNewView } from 'views/guildNewView';
-import UsersView from 'views/usersView';
+import { HomepageView } from 'views/homepage';
+import { GuildsView } from 'views/guilds';
+import UsersView from 'views/users';
 import GameView from 'views/game';
 import * as GC from 'views/animations/garbage_collector';
-
-import { UserModel } from 'models/userModel';
-
-import { GuildsCollection } from 'collections/guildsCollection';
-import { UsersCollection } from 'collections/usersCollection';
 
 window.intervals = new Array();
 window.timeouts = new Array();
 
-window.guildsCollection = window.guildsCollection || new GuildsCollection(initGuildsCollection);
-window.usersCollection = window.usersCollection || new UsersCollection();
-window.currentUser = window.currentUser || new UserModel(initCurrentUser);
+/* a voir pour supprimer plus tard */
+window.currentUser = new Backbone.Model(initCurrentUser);
 
 $(function () {
 
-	const $main = $('#main-bloc');
+	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
 		homepageView: new HomepageView({ el: $main }),
 		guildsView: new GuildsView({ el: $main }),
@@ -30,14 +23,15 @@ $(function () {
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
-			"guildspage": "guildspage",
+			"guilds": "guilds",
 			"newguild": "newguild",
-			"gamepage": "gamepage",
+			"game": "game",
 			"users": "users"
 		},
 
-		onClick: function (links) {
-			_.each(links, function (link) {
+		initialize: function () {
+			/* function to link the clickable items to backbone routes */
+			_.each(["#homepage", "#guilds"], function (link) {
 				$(link).on("click", function () {
 					router.navigate(link, true, true);
 				});
@@ -45,13 +39,10 @@ $(function () {
 		},
 
 		execute: function (callback, args, name) {
-			// $main.empty();
+			$main.empty();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
-
-			this.onClick(["#homepage", "#guildspage", "#gamepage"]);
-
 			callback.apply(this, args);
 		},
 
@@ -60,7 +51,7 @@ $(function () {
 			this.homepageView.render();
 		},
 
-		guildspage: function () {
+		guilds: function () {
 			console.log("> guilds - page");
 			this.guildsView.render();
 
@@ -78,7 +69,7 @@ $(function () {
 			this.usersView.render();
 		},
 
-		gamepage: function () {
+		game: function () {
 			this.gameView.render();
 		}
 	});
