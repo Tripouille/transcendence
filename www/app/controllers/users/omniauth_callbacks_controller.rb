@@ -28,7 +28,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_omniauth_failure_path_for scope
-    root_path
+    root_path(:anchor => 'homepage')
   end
 
 end
