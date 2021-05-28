@@ -15,15 +15,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       session[:user_id] = @user.id
     else
       session["devise.marvin_data"] = request.env["omniauth.auth"]
-      redirect_to root_path('http://localhost/#login')
+      redirect_to(root_path(:anchor => 'login'))
     end
   end
 
   def after_sign_in_path_for(user)
     if user.username.blank?
-      edit_user_path(resource.id)
+      root_path(:anchor => 'user')
     else
-      root_path
+      root_path(:anchor => 'homepage')
     end
   end
 

@@ -4,10 +4,13 @@ import { LoginView } from 'views/login';
 //import { GuildsCollection } from "collections/guildsCollection"
 
 $(function() {
+	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
 
+		loginView:	new LoginView(),
+
 		routes: {
-			"": "login",
+			"": "homepage",
 			"homepage": "homepage",
 			"user": "user",
 			"login": "login",
@@ -15,8 +18,7 @@ $(function() {
 
 		login: function() {
 			console.log("> Login - Page");
-			let login = new LoginView();
-			login.render();
+			this.loginView.render($main);
 		}
 
 		// onClick: function(links) {
