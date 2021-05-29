@@ -6,7 +6,11 @@ const GameView = Backbone.View.extend({
     render: function(matchId) {
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
-		Pong.connect(matchId);
+        $.ajax('matchside/' + matchId, {
+            success: function(data) {
+                Pong.connect(matchId, data.side);
+            }
+        });
         return this;
     }
 });

@@ -20,4 +20,15 @@ class MatchesController < ApplicationController
 		match = Match.find(params[:id])
 		render json: match
 	end
+
+	def side
+		match = Match.find(params[:id])
+		if match["left_player"] == session[:user_id]
+			render json: {side: "left"}
+		elsif match["right_player"] == session[:user_id]
+			render json: {side: "right"}
+		else
+			render json: {side: "unknown"}
+		end
+	end
 end
