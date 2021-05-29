@@ -80,7 +80,6 @@ class PongChannel < ApplicationCable::Channel
 	def waitForOpponent
 		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('1s') do
 			if @match[:status] == "ready"
-				#@match[:last_update] = getNow()
 				PongChannel.broadcast_to @match, content: {
 					act: 'initialize',
 					match: @match,
@@ -138,8 +137,8 @@ class PongChannel < ApplicationCable::Channel
 
 	def gameLoop
 		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.3s') do
-			puts 'in gameLoop'
 			if @match[:status] == "playing"
+				puts 'in gameLoop, playing'
 				updateMatchFromDB()
 				updateMatch()
 			end
