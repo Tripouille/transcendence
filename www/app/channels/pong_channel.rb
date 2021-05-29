@@ -12,7 +12,7 @@ class PongChannel < ApplicationCable::Channel
 			inc_y: (0.939 - 0.174) / 100.0
 		}
 		@PADDLES = {
-			speed: 0.02,
+			speed: 0.09,
 			height: 25.0,
 			width: 2.0,
 			offset: 1.0
@@ -28,6 +28,7 @@ class PongChannel < ApplicationCable::Channel
 			speed_multipler: 1.2,
 			max_speed: 0.2
 		}
+		
 		@schedulers = {}
 	end
 
@@ -79,7 +80,7 @@ class PongChannel < ApplicationCable::Channel
 	def waitForOpponent
 		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('1s') do
 			if @match[:status] == "ready"
-				@match[:last_update] = getNow()
+				#@match[:last_update] = getNow()
 				PongChannel.broadcast_to @match, content: {
 					act: 'initialize',
 					match: @match,
@@ -106,7 +107,7 @@ class PongChannel < ApplicationCable::Channel
 			@schedulers.delete(:timer)
 			resetGame()
 			broadcastGameStart()
-			#gameLoop()
+			gameLoop()
 		end
 	end
 
@@ -151,7 +152,7 @@ class PongChannel < ApplicationCable::Channel
 		@match[:last_update] = now
 		updatePaddlePos(:left_paddle_y, @match[:left_paddle_dir], totalTime * @PADDLES[:speed])
 		updatePaddlePos(:right_paddle_y, @match[:right_paddle_dir], totalTime * @PADDLES[:speed])
-		#updateBall(now, totalTime)
+		updateBall(now, totalTime)
 		saveMatchToDB()
 		if @match[:status] == "scoring" then score() end
 	end
@@ -195,14 +196,14 @@ class PongChannel < ApplicationCable::Channel
 
 	def receive(data)
 		updateMatchFromDB()
-		if @match[:status] == "playing" and isValidAction(data["act"])
+		if @match[:status] == "playing" and isValidAction(data["dir"])
 			updateMatch()
-			handleAndBroadcastPaddleMovement(data["act"], data["dir"])
+			handleAndBroadcastPaddleMovement(data["dir"])
 		end
 	end
 
-	def isValidAction(action)
-		return ["press", "release"].include? action
+	def isValidAction(dir)
+		return ["stop", "up", "down"].include? dir
 	end
 
 	def broadcastMatch
@@ -212,14 +213,9 @@ class PongChannel < ApplicationCable::Channel
 		}
 	end
 
-	def handleAndBroadcastPaddleMovement(act, dir)
-		if act == "press"
-			@match[@SIDE_PADDLE_DIR] = dir
-			broadcastPaddleMovement(act, dir)
-		elsif act == "release" and @match[@SIDE_PADDLE_DIR] == dir
-			@match[@SIDE_PADDLE_DIR] = "stop"
-			broadcastPaddleMovement(act, dir)
-		end
+	def handleAndBroadcastPaddleMovement(dir)
+		@match[@SIDE_PADDLE_DIR] = dir
+		broadcastPaddleMovement(dir)
 		saveMatchToDB()
 	end
 
@@ -240,9 +236,8 @@ class PongChannel < ApplicationCable::Channel
 		end
 	end
 
-	def broadcastPaddleMovement(act, dir)
+	def broadcastPaddleMovement(dir)
 		PongChannel.broadcast_to(@match, content: {
-			act: act,
 			dir: dir,
 			side: @SIDE,
 			left_top: @match[:left_paddle_y],
