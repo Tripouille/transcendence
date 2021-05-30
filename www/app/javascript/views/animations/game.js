@@ -9,7 +9,7 @@ const timerColors = {
 	1: 'red'
 };
 
-let BH = {ball: null};
+let BH = {ball: null, angles: null};
 let leftPaddle = {
 	interval: null,
 	lastUpdate: 0,
@@ -98,7 +98,8 @@ function initializeFromServer(data) {
 
 	// Initialize ball
 	BH.ball = data.ball;
-	BH.ball.lastUpdate = data.match.last_update;
+	BH.ball.lastUpdate = getNow();
+	BH.angles = data.angles;
 
 	// Keys
 	$(document).keydown(keyDownHandler);
@@ -155,7 +156,6 @@ function releaseKey(key) {
 
 function sendNextMessage() {
 	if (paddleMessages.length > 0) {
-		console.log('sending ', paddleMessages[paddleMessages.length - 1]);
 		sendingMessage = true;
 		pongSubscription.send(paddleMessages.pop());
 	}
@@ -188,7 +188,7 @@ function stopPaddleAnimation(paddle) {
 }
 
 function keyDownHandler(e) {
-	console.log('key down, sending message = ', sendingMessage);
+	//console.log('key down');
 	if (!paddleIsActive)
 		return ;
 	if (e.key == UP_KEY)
@@ -209,7 +209,6 @@ function keyUpHandler(e) {
 function paddleMove(data) {
 	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
 
-	console.log('paddleMove', data.dir);
 	if (data.dir == 'up' || data.dir == 'down') {
 		updatePaddlePos(data);
 		startPaddleAnimation(paddle, data.dir);
@@ -257,17 +256,27 @@ function movePaddleDown(paddle) {
 }
 
 function moveBall() {
-	// if (BH.ball == null) // CHECK MATCH STATUS
-	// 	return ;
+	// CHECK MATCH STATUS ?
+	if (!BH.ball.active) 
+	 	return ;
 	let timeDelta = getTimeDeltaAndUpdate(BH.ball);
 	BH.ball.x += BH.ball.dx * BH.ball.speed * timeDelta;
 	BH.ball.y += BH.ball.dy * BH.ball.speed * timeDelta;
+	const side = BH.ball.dx < 0 ? 'left' : 'right';
 	if (BH.ball.y <= BH.ball.topLimit || BH.ball.y >= BH.ball.bottomLimit) {
 		BH.ball.dy *= -1.0;
 	}
-	else if ((BH.ball.x <= BH.ball.leftLimit && BH.ball.dx < 0)
-	|| (BH.ball.x >= BH.ball.rightLimit && BH.ball.dx > 0)) {
-		BH.ball.dx *= -1.0;
+	else if ((side == 'left' && BH.ball.x <= BH.ball.leftLimit)
+	|| (side == 'right' && BH.ball.x >= BH.ball.rightLimit)) {
+		if (ballHitPaddle(side)) {
+			updateBallDirection(side);
+			updateBallSpeed();
+		}
+		else {
+			console.log('freezing');
+			BH.ball.active = false;
+		}
+		console.log('else if (touch horizontally)');
 	}
 	else
 	{
@@ -276,6 +285,39 @@ function moveBall() {
 			left: BH.ball.x + '%'
 		});
 	}
+}
+
+function ballHitPaddle(side) {
+	if (side == 'left') {
+		return (BH.ball.y + BH.ball.radius >= leftPaddle.y - paddleHeight / 2.0
+				&& BH.ball.y - BH.ball.radius <= leftPaddle.y + paddleHeight / 2.0);
+	}
+	else if (side == 'right') {
+		return (BH.ball.y + BH.ball.radius >= rightPaddle.y - paddleHeight / 2.0
+				&& BH.ball.y - BH.ball.radius <= rightPaddle.y + paddleHeight / 2.0);
+	}
+}
+
+function updateBallDirection(side) {
+	console.log('updating ball direction');
+	const distBallPaddleCenter = Math.min(getDistBallPaddleCenter(side), 100.0)
+	BH.ball.dx = (side == 'left' ? 1 : -1) * (BH.angles.min_dx - BH.angles.inc_x * distBallPaddleCenter);
+	BH.ball.dy = (BH.ball.dy < 0 ? -1 : 1) * (BH.angles.min_dy + BH.angles.inc_y * distBallPaddleCenter);
+	console.log(BH.ball.dx, BH.ball.dy);
+}
+
+function getDistBallPaddleCenter(side) {
+	if (side == 'left')
+		return (Math.abs(leftPaddle.y - BH.ball.y) / (paddleHeight / 2.0)) * 100;
+	else if (side == 'right')
+		return (Math.abs(rightPaddle.y - BH.ball.y) / (paddleHeight / 2.0)) * 100;
+}
+
+function updateBallSpeed() {
+	console.log('ball speed : ', BH.ball.speed, ', max speed : ', Number(BH.ball.max_speed), ', speed multiplier : ', Number(BH.ball.speed_multiplier));
+	if (BH.ball.speed < Number(BH.ball.max_speed))
+		BH.ball.speed *= Number(BH.ball.speed_multiplier);
+	console.log('speed : ', BH.ball.speed);
 }
 
 function setMatchFromServer(match) {
@@ -296,4 +338,5 @@ function setMatchFromServer(match) {
 		top: BH.ball.y + '%',
 		left: BH.ball.x + '%'
 	});
+	BH.ball.active = true;
 }

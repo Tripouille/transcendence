@@ -25,7 +25,7 @@ class PongChannel < ApplicationCable::Channel
 			leftLimit: @PADDLES[:offset] + @PADDLES[:width] + (@BALL_RADIUS / @AREA_RATIO),
 			rightLimit: 100.0 - @PADDLES[:width] - @PADDLES[:offset] - (@BALL_RADIUS / @AREA_RATIO),
 			base_speed: 0.025,
-			speed_multipler: 1.2,
+			speed_multiplier: 1.2,
 			max_speed: 0.2
 		}
 		
@@ -84,7 +84,8 @@ class PongChannel < ApplicationCable::Channel
 					act: 'initialize',
 					match: @match,
 					paddles: @PADDLES,
-					ball: @BALL
+					ball: @BALL,
+					angles: @ANGLE
 				}
 				start()
 				killScheduler(:waitForOpponent)
@@ -270,7 +271,7 @@ class PongChannel < ApplicationCable::Channel
 
 	def updateBallSpeed
 		if @match[:ball_speed] < @BALL[:max_speed]
-			@match[:ball_speed] *= @BALL[:speed_multipler]
+			@match[:ball_speed] *= @BALL[:speed_multiplier]
 		end
 	end
 

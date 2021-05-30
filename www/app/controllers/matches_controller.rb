@@ -6,9 +6,9 @@ class MatchesController < ApplicationController
 			match = Match.new(left_player: session[:user_id])
 		else
 			match = matches.first
-			if match["left_player"].nil?
+			if match["left_player"].nil? and match["right_player"] != session[:user_id]
 				match["left_player"] = session[:user_id]
-			else
+			elsif match["right_player"].nil? and match["left_player"] != session[:user_id]
 				match["right_player"] = session[:user_id]
 			end
 		end
