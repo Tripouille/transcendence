@@ -1,8 +1,8 @@
 import consumer from "../../channels/consumer"
 import * as GC from '../garbage_collector';
 
-const UP_KEY = "w";
-const DOWN_KEY = "s";
+const UP_KEY = "ArrowUp";
+const DOWN_KEY = "ArrowDown";
 const timerColors = {
 	3: 'green',
 	2: 'orange',
@@ -21,10 +21,10 @@ let rightPaddle = {
 	y: 50
 };
 
-let paddleIsActive = false, activeKey = null, side;
+let activeKey = null, side;
 let $gameContainer, $gameArea, $ball, $leftPoints, $rightPoints, $timer;
 let paddleSpeed, paddleHeight, paddleTopLimit, paddleBottomLimit;
-let ballInterval;
+let ballInterval, status = 'ready';
 let paddleMessages = [];
 let sendingMessage = false;
 let pongSubscription;
@@ -53,6 +53,8 @@ export function connect(matchId, serverSide) {
 				paddleMove(data.content);
 			else if (data.content.act == 'updateMatch')
 				setMatchFromServer(data.content.match);
+			else if (data.content.act == 'score')
+				score(data.content.match);
 			else
 				console.log('Error: unrecognized data');
 		}
@@ -87,8 +89,8 @@ function defineJqueryObjects() {
 
 function initializeFromServer(data) {
 	// Initialize players infos
-	$('#player_infos_left .name').text(data.match.left_player);
-	$('#player_infos_right .name').text(data.match.right_player);
+	$('#player_infos_left .name').text(data.players.left.login);
+	$('#player_infos_right .name').text(data.players.right.login);
 
 	// Initialize paddle infos
 	paddleSpeed = data.paddles.speed;
@@ -104,11 +106,12 @@ function initializeFromServer(data) {
 	// Keys
 	$(document).keydown(keyDownHandler);
 	$(document).keyup(keyUpHandler);
+
+	status = "ready";
 }
 
 function timerStart() {
-	cleanGameIntervals();
-	paddleIsActive = false;
+	status = "timer";
 	$timer.show();
 	$timer.text('3');
 	$timer.css({color: 'green'});
@@ -125,16 +128,18 @@ function timerStart() {
 function gameStart(match) {
 	setMatchFromServer(match);
 	activeKey = null;
-	paddleIsActive = true;
 	sendingMessage = false;
 	$ball.show();
 	ballInterval = GC.addInterval(moveBall, 10);
+	status = "playing";
 }
 
 function pressKey(e, dir) {
 	e.preventDefault();
-	if (e.key != activeKey) {
-		activeKey = e.key;
+	if (status != "playing")
+		return ;
+	if (dir != activeKey) {
+		activeKey = dir;
 		paddleMessages.unshift({
 			'dir': dir
 		});
@@ -143,8 +148,8 @@ function pressKey(e, dir) {
 	}
 }
 
-function releaseKey(key) {
-	if (key == activeKey) {
+function releaseKey(dir) {
+	if (dir == activeKey) {
 		activeKey = null;
 		paddleMessages.unshift({
 			'dir': 'stop'
@@ -189,8 +194,6 @@ function stopPaddleAnimation(paddle) {
 
 function keyDownHandler(e) {
 	//console.log('key down');
-	if (!paddleIsActive)
-		return ;
 	if (e.key == UP_KEY)
 		pressKey(e, 'up');
 	else if (e.key == DOWN_KEY)
@@ -198,25 +201,27 @@ function keyDownHandler(e) {
 }
 
 function keyUpHandler(e) {
-	if (!paddleIsActive)
-		return ;
 	if (e.key == UP_KEY)
-		releaseKey(e.key);
+		releaseKey('up');
 	else if (e.key == DOWN_KEY)
-		releaseKey(e.key);
+		releaseKey('down');
 }
 
 function paddleMove(data) {
+	if (status != "playing")
+		return ;
 	const paddle = data.side == 'left' ? leftPaddle : rightPaddle;
 
+	setMatchFromServer(data.match);
+
 	if (data.dir == 'up' || data.dir == 'down') {
-		updatePaddlePos(data);
+		//updatePaddlePos(data, paddle);
 		startPaddleAnimation(paddle, data.dir);
 	}
 	else if (data.dir == 'stop')
 	{
 		stopPaddleAnimation(paddle);
-		updatePaddlePos(data);
+		//updatePaddlePos(data, paddle);
 	}
 
 	if (data.side == side) {
@@ -225,11 +230,9 @@ function paddleMove(data) {
 	}
 }
 
-function updatePaddlePos(data) {
-	leftPaddle.$paddle.css({top: data.left_top + '%'});
-	rightPaddle.$paddle.css({top: data.right_top + '%'});
-	leftPaddle.y = Number(data.left_top);
-	rightPaddle.y = Number(data.right_top);
+function updatePaddlePos(data, paddle) {
+	paddle.$paddle.css({top: data.top + '%'});
+	paddle.y = Number(data.top);
 }
 
 function getNow() {
@@ -256,35 +259,34 @@ function movePaddleDown(paddle) {
 }
 
 function moveBall() {
-	// CHECK MATCH STATUS ?
-	if (!BH.ball.active) 
+	if (status != "playing") 
 	 	return ;
 	let timeDelta = getTimeDeltaAndUpdate(BH.ball);
 	BH.ball.x += BH.ball.dx * BH.ball.speed * timeDelta;
 	BH.ball.y += BH.ball.dy * BH.ball.speed * timeDelta;
 	const side = BH.ball.dx < 0 ? 'left' : 'right';
-	if (BH.ball.y <= BH.ball.topLimit || BH.ball.y >= BH.ball.bottomLimit) {
+	const vside = BH.ball.dy < 0 ? 'up' : 'down';
+	if ((vside == 'up' && BH.ball.y <= BH.ball.topLimit)
+	|| (vside == 'down' && BH.ball.y >= BH.ball.bottomLimit))
 		BH.ball.dy *= -1.0;
-	}
 	else if ((side == 'left' && BH.ball.x <= BH.ball.leftLimit)
 	|| (side == 'right' && BH.ball.x >= BH.ball.rightLimit)) {
 		if (ballHitPaddle(side)) {
 			updateBallDirection(side);
 			updateBallSpeed();
 		}
-		else {
-			console.log('freezing');
-			BH.ball.active = false;
-		}
-		console.log('else if (touch horizontally)');
+		else
+			status = "scoring";
 	}
 	else
-	{
-		$ball.css({
-			top: BH.ball.y + '%',
-			left: BH.ball.x + '%'
-		});
-	}
+		updateBallCss();
+}
+
+function updateBallCss() {
+	$ball.css({
+		top: BH.ball.y + '%',
+		left: BH.ball.x + '%'
+	});
 }
 
 function ballHitPaddle(side) {
@@ -299,11 +301,9 @@ function ballHitPaddle(side) {
 }
 
 function updateBallDirection(side) {
-	console.log('updating ball direction');
 	const distBallPaddleCenter = Math.min(getDistBallPaddleCenter(side), 100.0)
 	BH.ball.dx = (side == 'left' ? 1 : -1) * (BH.angles.min_dx - BH.angles.inc_x * distBallPaddleCenter);
 	BH.ball.dy = (BH.ball.dy < 0 ? -1 : 1) * (BH.angles.min_dy + BH.angles.inc_y * distBallPaddleCenter);
-	console.log(BH.ball.dx, BH.ball.dy);
 }
 
 function getDistBallPaddleCenter(side) {
@@ -314,10 +314,8 @@ function getDistBallPaddleCenter(side) {
 }
 
 function updateBallSpeed() {
-	console.log('ball speed : ', BH.ball.speed, ', max speed : ', Number(BH.ball.max_speed), ', speed multiplier : ', Number(BH.ball.speed_multiplier));
 	if (BH.ball.speed < Number(BH.ball.max_speed))
 		BH.ball.speed *= Number(BH.ball.speed_multiplier);
-	console.log('speed : ', BH.ball.speed);
 }
 
 function setMatchFromServer(match) {
@@ -334,9 +332,14 @@ function setMatchFromServer(match) {
 	BH.ball.dx = Number(match.ball_dx);
 	BH.ball.dy = Number(match.ball_dy);
 	BH.ball.speed = Number(match.ball_speed);
-	$ball.css({
-		top: BH.ball.y + '%',
-		left: BH.ball.x + '%'
-	});
+	updateBallCss();
 	BH.ball.active = true;
+	status = match.status;
+}
+
+function score(match) {
+	status = "scoring";
+	cleanGameIntervals();
+	$leftPoints.text(match.left_score);
+	$rightPoints.text(match.right_score);
 }

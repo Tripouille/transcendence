@@ -12,7 +12,7 @@ class PongChannel < ApplicationCable::Channel
 			inc_y: (0.939 - 0.174) / 100.0
 		}
 		@PADDLES = {
-			speed: 0.09,
+			speed: 0.08,
 			height: 25.0,
 			width: 2.0,
 			offset: 1.0
@@ -24,9 +24,9 @@ class PongChannel < ApplicationCable::Channel
 			bottomLimit: 100.0 - @BALL_RADIUS,
 			leftLimit: @PADDLES[:offset] + @PADDLES[:width] + (@BALL_RADIUS / @AREA_RATIO),
 			rightLimit: 100.0 - @PADDLES[:width] - @PADDLES[:offset] - (@BALL_RADIUS / @AREA_RATIO),
-			base_speed: 0.025,
+			base_speed: 0.06,
 			speed_multiplier: 1.2,
-			max_speed: 0.2
+			max_speed: 0.15
 		}
 		
 		@schedulers = {}
@@ -49,6 +49,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
+		puts @SIDE.to_s + ' unsubscribing'
 		@schedulers.each do |key, scheduler|
 			scheduler.unschedule
 			scheduler.kill
@@ -78,11 +79,20 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def waitForOpponent
-		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('1s') do
+		players = {
+			left: {
+				login: User.find(@match[:left_player]).login
+			},
+			right: {
+				login: User.find(@match[:right_player]).login
+			}
+		}
+		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
 			if @match[:status] == "ready"
 				PongChannel.broadcast_to @match, content: {
 					act: 'initialize',
 					match: @match,
+					players: players,
 					paddles: @PADDLES,
 					ball: @BALL,
 					angles: @ANGLE
@@ -136,27 +146,6 @@ class PongChannel < ApplicationCable::Channel
 		end
 	end
 
-	def gameLoop
-		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.3s') do
-			if @match[:status] == "playing"
-				puts 'in gameLoop, playing'
-				updateMatchFromDB()
-				updateMatch()
-			end
-		end
-	end
-
-	def updateMatch()
-		now = getNow()
-		totalTime = now - @match[:last_update]
-		@match[:last_update] = now
-		updatePaddlePos(:left_paddle_y, @match[:left_paddle_dir], totalTime * @PADDLES[:speed])
-		updatePaddlePos(:right_paddle_y, @match[:right_paddle_dir], totalTime * @PADDLES[:speed])
-		updateBall(now, totalTime)
-		saveMatchToDB()
-		if @match[:status] == "scoring" then score() end
-	end
-
 	def initializeRandomBallDirection
 		srand()
 		randIncrement = rand(100)
@@ -192,6 +181,27 @@ class PongChannel < ApplicationCable::Channel
 		ActiveRecord::Base.connection_pool.with_connection do
 			@match.save
 		end
+	end
+
+	def gameLoop
+		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.5s') do
+			if @match[:status] == "playing"
+				puts 'in gameLoop, playing'
+				updateMatchFromDB()
+				updateMatch()
+			end
+		end
+	end
+
+	def updateMatch()
+		now = getNow()
+		totalTime = now - @match[:last_update]
+		@match[:last_update] = now
+		updatePaddlePos(:left_paddle_y, @match[:left_paddle_dir], totalTime * @PADDLES[:speed])
+		updatePaddlePos(:right_paddle_y, @match[:right_paddle_dir], totalTime * @PADDLES[:speed])
+		updateBall(now, totalTime)
+		saveMatchToDB()
+		if @match[:status] == "scoring" then score() end
 	end
 
 	def receive(data)
@@ -240,9 +250,7 @@ class PongChannel < ApplicationCable::Channel
 		PongChannel.broadcast_to(@match, content: {
 			dir: dir,
 			side: @SIDE,
-			left_top: @match[:left_paddle_y],
-			right_top: @match[:right_paddle_y],
-			last_update: @match[:last_update]
+			match: @match
 		})
 	end
 
@@ -250,14 +258,14 @@ class PongChannel < ApplicationCable::Channel
 		ballData = {
 			remainingTime: totalTime,
 			elapsedTime: 0.0,
-			hitPaddle: false,
+			hit: false,
 			status: "running"
 		}
 		while ballData[:status] == "running"
 			setBallBeforeBounce(ballData)
 			ballData[:elapsedTime] = totalTime - ballData[:remainingTime]
 		end
-		if ballData[:hitPaddle] then broadcastMatch() end
+		if ballData[:hit] then broadcastMatch() end
 		if ballData[:status] == "score" then @match[:status] = "scoring" end
 	end
 
@@ -286,12 +294,13 @@ class PongChannel < ApplicationCable::Channel
 			updateBallPosition(timeToTopBottom * @match[:ball_speed])
 			@match[:ball_dy] *= -1.0
 			ballData[:remainingTime] -= timeToTopBottom
+			ballData[:hit] = true
 		else #touch hori
 			updateBallPosition(timeToLeftRight * @match[:ball_speed])
 			if ballHitPaddle(side)
 				updateBallDirection(side)
 				updateBallSpeed()
-				ballData[:hitPaddle] = true
+				ballData[:hit] = true
 			else
 				ballData[:status] = "score"
 			end
@@ -329,7 +338,6 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def ballHitPaddle(side)
-		#return true
 		if side == :left
 			@match[:ball_y] + @BALL[:radius] >= @match[:left_paddle_y] - @PADDLES[:height] / 2 \
 			and @match[:ball_y] - @BALL[:radius] <= @match[:left_paddle_y] + @PADDLES[:height] / 2
@@ -340,7 +348,16 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def score()
-		puts 'score()'
+		if @match[:ball_x] < 50.0
+			@match[:right_score] += 1
+		else
+			@match[:left_score] += 1
+		end
+		saveMatchToDB()
+		PongChannel.broadcast_to @match, content: {
+			act: 'score',
+			match: @match
+		}
 		resetMatch()
 	end
 end

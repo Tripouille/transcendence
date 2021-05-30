@@ -49,7 +49,7 @@ const LobbyView = Backbone.View.extend({
                     }
                 }
             });
-        }, 1000);
+        }, 200);
     }
 });
 
