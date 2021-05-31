@@ -33,4 +33,14 @@ export const GuildModel = Backbone.Model.extend({
 	// 	});
 	// 	Backbone.Model.prototype.save.call(this, attributes, options);
 	// }
+
+	// calculateRank: function () {
+	// 	console.log("calculating rank");
+	// 	this.rank = 1;
+	// },
+
+	// getActiveMembersNo: function () {
+	// 	console.log("getting active members number");
+	// 	this.active_members = 2;
+	// },
 });

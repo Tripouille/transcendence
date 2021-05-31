@@ -1,5 +1,6 @@
 import { HomepageView } from 'views/homepage';
 import { GuildsView } from 'views/guilds';
+import { GuildNewView } from 'views/guildNew';
 import UsersView from 'views/users';
 import GameView from 'views/game';
 import * as GC from 'views/animations/garbage_collector';

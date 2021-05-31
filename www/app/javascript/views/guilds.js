@@ -1,4 +1,4 @@
-import { GuildView } from './guild';
+import { GuildRowView } from './guildRow';
 import { GuildsCollection } from 'collections/guilds';
 
 export const GuildsView = Backbone.View.extend({
@@ -13,8 +13,8 @@ export const GuildsView = Backbone.View.extend({
                 // console.log("fetched guild-collection with sucess");
                 collection.each(function (guild, i) {
                     guild.set({ "rank": i + 1 });
-                    var guildView = new GuildView({ model: guild });
-                    $('#guildTableBody').append(guildView.render().el);
+                    var guildRowView = new GuildRowView({ model: guild });
+                    $('#guildTableBody').append(guildRowView.render().el);
                 }, this);
             },
             error: function () {

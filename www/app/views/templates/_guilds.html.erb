@@ -26,6 +26,45 @@
 	<td><%%= score %></td>
 </script>
 
+<script id="guildDisplay" type="text/template">
+	<p><%%= name %> (<%%= anagram %>)</p>
+	<ul>
+		<li>
+			<p>Rank</p>
+			<p><%%= rank %></p>
+		</li>
+		<li>
+			<p>Owner</p>
+			<p><%%= owner %></p>
+		</li>
+		<li>
+			<p>Active Members</p>
+			<p><%%= active_members %></p>
+		</li>
+		<li>
+			<p>Formed</p>
+			<p><%%= created_at %></p>
+		</li>
+	</ul>
+
+	<table id="guildMembers">
+		<thead>
+			<tr>
+				<th>Members</th>
+				<th>Rank</th>
+				<th>MMR</th>
+				<th>Contribution</th>
+			</tr>
+		</thead>
+		<tbody id="guildMembersBody">
+		</tbody>
+	</table>
+
+	<div class="joinGuild"></div>
+	<div class="onGoingWar"></div>
+	<div class="pendingInvites"></div>
+</script>
+
 <script id="guildNewStatic" type="text/template">
 	<p>New guild form :</p>
 	<form id="newguildform" name="todo">
