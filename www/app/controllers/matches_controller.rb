@@ -1,6 +1,7 @@
 class MatchesController < ApplicationController
 
 	def matchmaking
+		if session[:user_id].blank? then return render json: {}, status: :unauthorized end
 		matches = Match.order(:created_at).where('left_player is null or right_player is null').limit(1)
 		if matches.blank?
 			match = Match.new(left_player: session[:user_id])

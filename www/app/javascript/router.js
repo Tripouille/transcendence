@@ -1,6 +1,7 @@
 import UsersView from 'views/users';
-import GameView from 'views/game';
+import SelectModeView from 'views/selectMode';
 import LobbyView from 'views/lobby';
+import GameView from 'views/game';
 import * as GC from 'views/garbage_collector';
 
 window.intervals = new Array();
@@ -12,11 +13,13 @@ $(function() {
 		usersView: new UsersView(),
 		gameView: new GameView({el: $main}),
 		lobbyView: new LobbyView({el: $main}),
+		selectModeView: new SelectModeView({el: $main}),
 
 		routes: {
-			"": "game",
-			"game(/:id)": "game",
-			"lobby": "lobby",
+			"": "root",
+			"game": "selectMode",
+			"game/lobby": "lobby",
+			"game/:id": "game",
 			"users": "users"
 		},
 
@@ -28,20 +31,40 @@ $(function() {
 			callback.apply(this, args);
 		},
 
+		root: function() {
+			this.navigate('game', {trigger: true});
+		},
 		users: function() {
 			this.usersView.render($main);
 		},
+		selectMode: function() {
+			console.log("dans le select mode");
+			new SelectModeView({el: $('main')}).render();
+			console.log($('main'));
+
+			//this.selectModeView.render();
+		},
+		lobby: function() {
+			console.log("dans le lobby");
+			this.lobbyView.render(this);
+		},
 		game: function(id) {
 			if (id == null) {
-				this.navigate('lobby', {trigger: true});
+				this.navigate('game/lobby', {trigger: true});
 				return ;
 			}
 			this.gameView.render(id);
 		},
-		lobby: function() {
-			this.lobbyView.render(this);
-		}
 	});
 	const router = new myRouter();
 	Backbone.history.start();
+
+	$(document).on('turbolinks:click', function (event) {
+		const link = event.target.getAttribute('href');
+		if (link.charAt(0) === '#') {
+			event.preventDefault();
+			router.navigate(link.substring(1), {trigger: true});
+		}
+	});
+
 });
