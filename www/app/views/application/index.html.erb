@@ -1,15 +1,17 @@
 <header id="mainNav">
 	<ul>
-		<li><button id="homepage" class="button1 favorite styled" type="button">Homepage</button></li>
-		<li><button id="" class="button1 favorite styled" type="button">Game</button></li>
-		<li><button id="competition" class="button1 favorite styled" type="button">Competition</button></li>
-		<li><button id="guilds" class="button1 favorite styled" type="button">Guilds</button></li>
-		<li><button id="admin" class="favorite styled" type="button">Admin</button></li>
-		<li><button id="sign-in" class="favorite styled" type="button">
-			<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
-			<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
-			Session = <%= @session.inspect %></button>
-		</li>
+		<a href="#homepage"><li>Homepage</li></a>
+		<a href=""><li>Game</li></a>
+		<a href="#competition"><li>Competition</li></a>
+		<a href="#guilds"><li id="guilds">Guilds</li></a>
+		<a href="#admin"><li>Admin</li></a>
+		<a href="#sign-in">
+			<li>
+				<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
+				<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
+				Session = <%= @session.inspect %>
+			</li>
+		</a>
 	</ul>
 </header>
 

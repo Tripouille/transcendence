@@ -7,5 +7,7 @@ class CreateGuilds < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :guilds, :name, unique: true
+    add_index :guilds, :anagram, unique: true
   end
 end

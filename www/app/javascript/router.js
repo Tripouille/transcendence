@@ -1,7 +1,7 @@
 import { HomepageView } from 'views/homepage';
 import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
-import { GuildNewView } from 'views/guildNew';
+import { GuildNewView } from 'views/guild/guildNew';
 import UsersView from 'views/users';
 import GameView from 'views/game';
 import * as GC from 'views/animations/garbage_collector';
@@ -24,22 +24,13 @@ $(function () {
 		usersView: new UsersView({ el: $main }),
 
 		routes: {
-			"": "homepage",
+			"": "root",
 			"homepage": "homepage",
 			"guilds": "guilds",
 			"guild/:id": "displayguild",
 			"newguild": "newguild",
 			"game": "game",
 			"users": "users"
-		},
-
-		initialize: function () {
-			/* function to link the clickable items to backbone routes */
-			_.each(["#homepage", "#guilds"], function (link) {
-				$(link).on("click", function () {
-					router.navigate(link, true, true);
-				});
-			});
 		},
 
 		execute: function (callback, args, name) {
@@ -50,6 +41,10 @@ $(function () {
 			callback.apply(this, args);
 		},
 
+		root: function () {
+			this.navigate('homepage', { trigger: true });
+		},
+
 		homepage: function () {
 			console.log("> homepage");
 			this.homepageView.render();
@@ -58,7 +53,6 @@ $(function () {
 		guilds: function () {
 			console.log("> guilds - page");
 			this.guildsView.render(router);
-
 		},
 
 		displayguild: function (id) {
@@ -81,4 +75,11 @@ $(function () {
 	});
 	const router = new myRouter();
 	Backbone.history.start();
+	$(document).on('turbolinks:click', function (event) {
+		const link = event.target.getAttribute('href');
+		if (link.charAt(0) === '#') {
+			event.preventDefault();
+			router.navigate(link.substring(1), { trigger: true });
+		}
+	});
 });

@@ -64,6 +64,6 @@ class GuildsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def guild_params
-      params.require(:guild).permit(:name, :anagram, :owner, :score)
+      params.require(:guild).permit(:name, :anagram, :score, :owner_id)
     end
 end
