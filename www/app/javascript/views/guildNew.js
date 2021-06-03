@@ -1,19 +1,14 @@
 import { GuildModel } from '../models/guild';
+import { User } from '../models/user';
 
 export const GuildNewView = Backbone.View.extend({
-	initialize: function () {
-		this.model = new GuildModel();
-
-		// this.model.on('invalid', this.onModelInvalid, this);
-	},
 
 	events: {
-		'click #formSubmitNewGuild': 'onFormSubmit',
-		'change input[type!="submit"]': 'onInputChange',
-		// 'blur input[type!="submit"]': 'onInputChange',
-		// 'focus input': function (e) {
-		// this.resetInputErrors(e.target);
-		// }
+		'click #formSubmitNewGuild input': 'onFormSubmit',
+		'blur input[required]': 'onInputChange',
+		'focus input[required]': function (e) {
+			this.resetInputErrors(e.target);
+		}
 	},
 
 	templates: {
@@ -21,54 +16,76 @@ export const GuildNewView = Backbone.View.extend({
 	},
 
 	onFormSubmit: function (e) {
-		// get data from form on submit button
-		// var model = this.model;
+		/* get data from form on submit button */
+		let model = new GuildModel();
 
 		e.preventDefault();
-
-		this.$el.find('input[name]').each(function () {
-			this.model.set(this.name, this.value);
+		/* save the new guild and the guild_id to the current user databses */
+		model.set('name', $('#name').val());
+		model.set('anagram', $('#anagram').val());
+		model.set('owner_id', window.currentUser.get('id'));
+		model.save({}, {
+			success: function (model, response, options) {
+				console.log("Succes saving guild model");
+				let userModel = new User();
+				userModel.set('id', window.currentUser.get('id'))
+				$.when(userModel.fetch()).done(function () {
+					userModel.set('guild_id', model.get('id'));
+					userModel.save({
+						/* Pourquoi succes ne s'affiche pas */
+						success: function (userModel, resp, options) {
+							console.log("The guild_id has been saved to the user");
+						},
+						error: function (userModel, resp, options) {
+							console.log("Something went wrong while saving the guild_id to the user");
+							console.log(resp.responseJSON);
+						}
+					});
+				});
+				$("#guilds").trigger("click");
+			},
+			error: function (model, response, options) {
+				console.log("Something went wrong while saving the new guild");
+				console.log(response.responseJSON);
+			}
 		});
-		this.model.set('owner', window.currentUser.name);
-		this.model.save();
-
-		// var result = $('#newguildform').serializeArray();
-		// console.log(result);
-		// if (result !== true) {
-		// 	console.log("form unvalidated")
-		// 	this.showInputErrors(result);
-		// }
-		// else {
-		// 	console.log("form validated")
-		// 	this.model.save(result);
-		$("#guildspage").trigger("click")
 	},
-
+	/* render the form page */
 	render: function () {
 		let template = _.template($('#guildNewStatic').html());
+
 		this.$el.html(template);
 		return this;
 	},
-
-	onInputChange: function (e) {
-		// this.model.set(e.target.name, e.target.value);
-		var result = this.model.validate(e.target);
-		if (result !== true)
-			this.showInputErrors(result);
-		else
-			$('#newguildform').find('.error').remove();
-
+	/* validate the labels on the go */
+	validateOnChange: function (attr) {
+		if (attr.name == "name") {
+			if (attr.value.length < 5 || attr.name.length > 20) {
+				return "Invalid name length."
+			}
+		}
+		if (attr.name == "anagram") {
+			if (attr.value == "" || attr.value.length > 5) {
+				return "Invalid anagram length."
+			}
+		}
+		return true;
 	},
+	onInputChange: function (e) {
+		/* transformer e.target au format attr pour tout mettre avec la fonction validate */
+		var result = this.validateOnChange(e.target);
 
-	showInputErrors: function (errors) {
-		var $target = $('#newguildform');
-		var errorsHTML = '';
+		if (result !== true)
+			this.showInputErrors(result, e.target.name);
+	},
+	resetInputErrors: function (e) {
+		$('#newGuildForm').find('label[for=' + e.name + '] span').remove();
+	},
+	showInputErrors: function (errors, labelName) {
+		var $target = $('label[for=' + labelName + ']');
+		var errorHTML = '';
 
-		$target.find('.error').remove();
-
-		errorsHTML += this.templates.error({ error: errors });
-
-		$target.prepend(errorsHTML);
+		errorHTML += this.templates.error({ error: errors });
+		$target.append(errorHTML);
 	}
-
 });

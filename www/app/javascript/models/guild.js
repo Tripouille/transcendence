@@ -4,7 +4,7 @@ export const GuildModel = Backbone.Model.extend({
 		id: null,
 		name: "",
 		anagram: "",
-		owner: "",
+		owner_id: "",
 		score: 0
 	},
 	idAttribute: "id",
@@ -12,35 +12,24 @@ export const GuildModel = Backbone.Model.extend({
 		console.log('GuildModel has been initialized');
 	},
 	validate: function (attr) {
-		if (attr.name == "name") {
-			if (attr.value.length < 5 || attr.name.length > 20) {
-				return "Invalid name length."
-			}
+		if (attr.name == "" || attr.name.length < 5 || attr.name.length > 20) {
+			return "Invalid name length."
 		}
-		if (attr.name == "anagram") {
-			if (attr.value.length > 5) {
-				return "Invalid anagram length."
-			}
+		if (attr.anagram == "" || attr.anagram.length > 5) {
+			return "Invalid anagram length."
 		}
-		return true;
+		if (attr.owner_id == "") {
+			return "Guild has no owner."
+		}
 	},
 	// save: function (attributes, options) {
 	// 	console.log(attributes);
 	// 	var model = this;
-	// 	var garbage = ["url", "created_at", "updated_at", "token"];
+	// 	var garbage = ["created_at", "updated_at"];
 	// 	_.each(garbage, function (attr) {
 	// 		model.unset(attr);
 	// 	});
 	// 	Backbone.Model.prototype.save.call(this, attributes, options);
 	// }
 
-	// calculateRank: function () {
-	// 	console.log("calculating rank");
-	// 	this.rank = 1;
-	// },
-
-	// getActiveMembersNo: function () {
-	// 	console.log("getting active members number");
-	// 	this.active_members = 2;
-	// },
 });

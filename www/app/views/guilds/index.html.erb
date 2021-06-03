@@ -7,8 +7,8 @@
     <tr>
       <th>Name</th>
       <th>Anagram</th>
-      <th>Owner</th>
       <th>Score</th>
+      <th>Owner</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -18,8 +18,8 @@
       <tr>
         <td><%= guild.name %></td>
         <td><%= guild.anagram %></td>
-        <td><%= guild.owner %></td>
         <td><%= guild.score %></td>
+        <td><%= guild.owner_id %></td>
         <td><%= link_to 'Show', guild %></td>
         <td><%= link_to 'Edit', edit_guild_path(guild) %></td>
         <td><%= link_to 'Destroy', guild, method: :delete, data: { confirm: 'Are you sure?' } %></td>

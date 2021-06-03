@@ -1,5 +1,5 @@
 <script id="guildStaticContent" type="text/template">
-	<button id="newguild" class="button1 favorite styled" type="button">Create your own Guild !</button>
+	<a href="#newguild"><div>Create your own Guild !</div></a>
 
 	<table id="guildTable">
 		<thead>
@@ -22,7 +22,7 @@
 <script id="guildRow" type="text/template">
 	<td><%%= rank %></td>
 	<td><%%= name %> (<%%= anagram %>)</td>
-	<td><%%= owner %></td>
+	<td><%%= owner_id %></td>
 	<td><%%= score %></td>
 </script>
 
@@ -35,7 +35,7 @@
 		</li>
 		<li>
 			<p>Owner</p>
-			<p><%%= owner %></p>
+			<p><%%= owner_id %></p>
 		</li>
 		<li>
 			<p>Active Members</p>
@@ -67,29 +67,17 @@
 
 <script id="guildNewStatic" type="text/template">
 	<p>New guild form :</p>
-	<form id="newguildform" name="todo">
-		<!-- error message -->
+	<form id="newGuildForm" name="newguilform">
 		<div class="field">
 			<label for="name">Guild name:</label>
-			<input type="text" id="name" name="name"><br>
+			<input type="text" id="name" name="name" required>
 		</div>
 		<div class="field">
 			<label for="anagram">Guild anagram:</label>
-			<input type="text" id="anagram" name="anagram"><br>
+			<input type="text" id="anagram" name="anagram" required>
 		</div>
 		<div id="formSubmitNewGuild" class="actions">
 			<input type="submit" value="Create guild" />
 		</div>
 	</form>
 </script>
-
-<!---
-<script id="errorNewForm" type="text/template">
-	<div id="error_explanation">
-		<h2><%%= number %> error prohibited this guild from being saved:</h2>
-		<ul>
-			<li><%%= error %></li>
-		</ul>
-	</div>
-</script>
--->

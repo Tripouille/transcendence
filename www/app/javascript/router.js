@@ -17,26 +17,17 @@ $(function () {
 	const myRouter = Backbone.Router.extend({
 		homepageView: new HomepageView({ el: $main }),
 		guildsView: new GuildsView({ el: $main }),
-		guildNewView: new GuildNewView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		usersView: new UsersView({ el: $main }),
+		guildNewView: new GuildNewView({ el: $main }),
 
 		routes: {
-			"": "homepage",
+			"": "root",
 			"homepage": "homepage",
 			"guilds": "guilds",
 			"newguild": "newguild",
 			"game": "game",
 			"users": "users"
-		},
-
-		initialize: function () {
-			/* function to link the clickable items to backbone routes */
-			_.each(["#homepage", "#guilds"], function (link) {
-				$(link).on("click", function () {
-					router.navigate(link, true, true);
-				});
-			});
 		},
 
 		execute: function (callback, args, name) {
@@ -47,6 +38,10 @@ $(function () {
 			callback.apply(this, args);
 		},
 
+		root: function () {
+			this.navigate('homepage', { trigger: true });
+		},
+
 		homepage: function () {
 			console.log("> homepage");
 			this.homepageView.render();
@@ -55,10 +50,6 @@ $(function () {
 		guilds: function () {
 			console.log("> guilds - page");
 			this.guildsView.render();
-
-			$("#newguild").on("click", function () {
-				router.navigate("#newguild", true, true);
-			});
 		},
 
 		newguild: function () {
@@ -76,4 +67,11 @@ $(function () {
 	});
 	const router = new myRouter();
 	Backbone.history.start();
+	$(document).on('turbolinks:click', function (event) {
+		const link = event.target.getAttribute('href');
+		if (link.charAt(0) === '#') {
+			event.preventDefault();
+			router.navigate(link.substring(1), { trigger: true });
+		}
+	});
 });
