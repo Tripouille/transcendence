@@ -37,14 +37,13 @@ class PongChannel < ApplicationCable::Channel
 		updateMatchFromDB()
 		stream_for @match
 
-		if not ["lobby", "ready"].include? @match[:status]
-			return
-		end
-		if playerIsLeft()
-			registerLeftPlayer()
-			waitForOpponent()
-		elsif playerIsRight()
-			registerRightPlayer()
+		if ["lobby", "ready"].include? @match[:status]
+			if playerIsLeft()
+				registerLeftPlayer()
+				waitForOpponent()
+			elsif playerIsRight()
+				registerRightPlayer()
+			end
 		end
 	end
 
@@ -54,6 +53,7 @@ class PongChannel < ApplicationCable::Channel
 			scheduler.unschedule
 			scheduler.kill
 		end
+		stop_stream_for @match
 	end
 
 	def playerIsLeft

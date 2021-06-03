@@ -24,8 +24,8 @@ $(function() {
 		},
 
 		execute: function(callback, args, name) {
-			$main.empty();
 			GC.clearTimeoutsIntervals();
+			$main.empty();
 			$(document).off("keydown");
 			$(document).off("keyup");
 			callback.apply(this, args);

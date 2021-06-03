@@ -1,8 +1,8 @@
 class MatchesController < ApplicationController
 
 	def matchmaking
-		if session[:user_id].blank? then return render json: {}, status: :unauthorized end
-		matches = Match.order(:created_at).where('left_player is null or right_player is null').limit(1)
+		if session[:user_id].blank? then return render json: nil, status: :unauthorized end
+		matches = Match.order(:created_at).where('left_player is null or right_player is null')
 		if matches.blank?
 			match = Match.new(left_player: session[:user_id])
 		else
@@ -24,12 +24,27 @@ class MatchesController < ApplicationController
 
 	def side
 		match = Match.find(params[:id])
-		if match["left_player"] == session[:user_id]
-			render json: {side: "left"}
-		elsif match["right_player"] == session[:user_id]
-			render json: {side: "right"}
+		answer = {status: match[:status]}
+		if match[:left_player] == session[:user_id]
+			answer[:side] = "left"
+		elsif match[:right_player] == session[:user_id]
+			answer[:side] = "right"
 		else
-			render json: {side: "unknown"}
+			answer[:side] = "unknown"
+		end
+		render json: answer
+	end
+
+	def alreadyingame
+		if session[:user_id].blank? then return render json: nil, status: :unauthorized end
+		matches = Match.order(:created_at)
+				.where('(left_player = ' + session[:user_id].to_s + ' and right_player is not null)'\
+				' or (right_player = ' + session[:user_id].to_s + ' and left_player is not null)')
+				.where.not(status: "finished")
+		if matches.blank?
+			render json: nil
+		else
+			render json: matches.first
 		end
 	end
 end

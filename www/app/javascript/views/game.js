@@ -8,7 +8,12 @@ const GameView = Backbone.View.extend({
 		this.$el.attr({id: 'game'});
         $.ajax('matchside/' + matchId, {
             success: function(data) {
-                Pong.connect(matchId, data.side);
+                if (["lobby", "ready"].includes(data.status))
+                    Pong.connect(matchId, data.side);
+                else {
+                    console.log('This game is finished.');
+                    window.router.navigate('game', true);
+                }
             },
             error: function() {
                 console.log('This game does not exist.');

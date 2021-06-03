@@ -40,7 +40,7 @@ export function connect(matchId, serverSide) {
 	},
 	{
 		connected() {},
-		disconnected() {console.log('unsubscribing');},
+		disconnected() {},
 		received(data) {
 			//console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "initialize")
@@ -164,6 +164,7 @@ function releaseKey(dir) {
 function sendNextMessage() {
 	if (paddleMessages.length > 0) {
 		sendingMessage = true;
+		console.log('sending message');
 		pongSubscription.send(paddleMessages.pop());
 	}
 }
@@ -347,4 +348,5 @@ function endMatch(match) {
 	GC.addTimeout(function() {
 		window.router.navigate('game', true);
 	}, 1000);
+	consumer.subscriptions.remove(pongSubscription);
 }
