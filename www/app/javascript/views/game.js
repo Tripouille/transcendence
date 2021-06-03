@@ -9,6 +9,10 @@ const GameView = Backbone.View.extend({
         $.ajax('matchside/' + matchId, {
             success: function(data) {
                 Pong.connect(matchId, data.side);
+            },
+            error: function() {
+                console.log('This game does not exist.');
+                window.router.navigate('game', true);
             }
         });
         return this;

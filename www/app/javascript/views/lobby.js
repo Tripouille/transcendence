@@ -3,7 +3,7 @@ import * as GC from './garbage_collector';
 const LobbyView = Backbone.View.extend({
 	template: _.template($('#lobbyTemplate').html()),
 
-    render: function(router) {
+    render: function() {
         this.$el.html(this.template({}));
         this.$el.attr({id: 'lobby'});
         const lobbyView = this;
@@ -14,14 +14,14 @@ const LobbyView = Backbone.View.extend({
                 $left.text(data.left_player);
                 $right.text(data.right_player);
                 if (data.left_player != null && data.right_player != null)
-                    lobbyView.timer(data, router);
+                    lobbyView.timer(data);
                 else
-                    lobbyView.wait(data, router);
+                    lobbyView.wait(data);
             }
         });
         return this;
     },
-    timer: function(match, router) {
+    timer: function(match) {
         const $timer = $('#timer');
         $timer.show();
         $timer.text('3');
@@ -31,10 +31,10 @@ const LobbyView = Backbone.View.extend({
         GC.addTimeout(function() {
             GC.cleanInterval(interval);
             $timer.hide();
-            router.navigate('game/' + match.id, {trigger: true});
+            window.router.navigate('game/' + match.id, {trigger: true});
         }, 3000);
     },
-    wait: function(match, router) {
+    wait: function(match) {
         const $left = $('#leftPlayer');
         const $right = $('#rightPlayer');
         const lobbyView = this;
@@ -44,7 +44,7 @@ const LobbyView = Backbone.View.extend({
                     if (data.left_player != null && data.right_player != null) {
                         $left.text(data.left_player);
                         $right.text(data.right_player);
-                        lobbyView.timer(data, router);
+                        lobbyView.timer(data);
                         GC.cleanInterval(waitInterval);
                     }
                 }

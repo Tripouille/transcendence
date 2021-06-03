@@ -16,7 +16,7 @@ $(function() {
 		selectModeView: new SelectModeView({el: $main}),
 
 		routes: {
-			"": "root",
+			"": "selectMode",
 			"game": "selectMode",
 			"game/lobby": "lobby",
 			"game/:id": "game",
@@ -31,22 +31,14 @@ $(function() {
 			callback.apply(this, args);
 		},
 
-		root: function() {
-			this.navigate('game', {trigger: true});
-		},
 		users: function() {
 			this.usersView.render($main);
 		},
 		selectMode: function() {
-			console.log("dans le select mode");
-			new SelectModeView({el: $('main')}).render();
-			console.log($('main'));
-
-			//this.selectModeView.render();
+			this.selectModeView.render();
 		},
 		lobby: function() {
-			console.log("dans le lobby");
-			this.lobbyView.render(this);
+			this.lobbyView.render();
 		},
 		game: function(id) {
 			if (id == null) {
@@ -56,15 +48,6 @@ $(function() {
 			this.gameView.render(id);
 		},
 	});
-	const router = new myRouter();
+	window.router = new myRouter();
 	Backbone.history.start();
-
-	$(document).on('turbolinks:click', function (event) {
-		const link = event.target.getAttribute('href');
-		if (link.charAt(0) === '#') {
-			event.preventDefault();
-			router.navigate(link.substring(1), {trigger: true});
-		}
-	});
-
 });

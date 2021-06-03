@@ -40,7 +40,7 @@ export function connect(matchId, serverSide) {
 	},
 	{
 		connected() {},
-		disconnected() {},
+		disconnected() {console.log('unsubscribing');},
 		received(data) {
 			//console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "initialize")
@@ -214,15 +214,10 @@ function paddleMove(data) {
 
 	setMatchFromServer(data.match);
 
-	if (data.dir == 'up' || data.dir == 'down') {
-		//updatePaddlePos(data, paddle);
+	if (data.dir == 'up' || data.dir == 'down')
 		startPaddleAnimation(paddle, data.dir);
-	}
 	else if (data.dir == 'stop')
-	{
 		stopPaddleAnimation(paddle);
-		//updatePaddlePos(data, paddle);
-	}
 
 	if (data.side == side) {
 		sendingMessage = false;

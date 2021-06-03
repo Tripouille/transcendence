@@ -88,6 +88,7 @@ class PongChannel < ApplicationCable::Channel
 			}
 		}
 		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
+			print 'w'
 			if @match[:status] == "ready"
 				PongChannel.broadcast_to @match, content: {
 					act: 'initialize',
@@ -112,17 +113,18 @@ class PongChannel < ApplicationCable::Channel
 
 	def start
 		updateMatchFromDB()
-		launchTimer()
-		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3s' do
-			@schedulers.delete(:timer)
-			resetGame()
-			broadcastGameStart()
-			gameLoop()
+		if @match[:status] != "timer" then
+			launchTimer()
+			@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3s' do
+				@schedulers.delete(:timer)
+				resetGame()
+				broadcastGameStart()
+				gameLoop()
+			end
 		end
 	end
 
 	def launchTimer
-		if @match[:status] == "timer" then return end
 		@match.update_attribute(:status, "timer")
 		PongChannel.broadcast_to @match, content: {
 			act: 'launchTimer'
@@ -184,9 +186,11 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def gameLoop
-		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.5s') do
+		@schedulers[:gameLoop] = Rufus::Scheduler.new(frequency: "0.1s").schedule_every('0.3s') do
+			print 'r'
+			print 's=' + @match[:status]
 			if @match[:status] == "playing"
-				puts 'in gameLoop, playing'
+				print 'p'
 				updateMatchFromDB()
 				updateMatch()
 			end
@@ -217,6 +221,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def broadcastMatch
+		puts 'b'
 		PongChannel.broadcast_to @match, content: {
 			act: 'updateMatch',
 			match: @match
@@ -262,6 +267,7 @@ class PongChannel < ApplicationCable::Channel
 			status: "running"
 		}
 		while ballData[:status] == "running"
+			puts 'u'
 			setBallBeforeBounce(ballData)
 			ballData[:elapsedTime] = totalTime - ballData[:remainingTime]
 		end
@@ -348,16 +354,25 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def score()
-		if @match[:ball_x] < 50.0
-			@match[:right_score] += 1
-		else
-			@match[:left_score] += 1
-		end
+		if @match[:ball_x] < 50.0 then @match[:right_score] += 1 else @match[:left_score] += 1 end
 		saveMatchToDB()
 		PongChannel.broadcast_to @match, content: {
 			act: 'score',
 			match: @match
 		}
-		resetMatch()
+		if @match[:left_score] >= 3 or @match[:right_score] >= 3
+			@match[:status] = "finished"
+			killScheduler(:gameLoop)
+			broadcastMatchEnd()
+		else
+			resetMatch()
+		end
+	end
+
+	def broadcastMatchEnd
+		PongChannel.broadcast_to(@match, content: {
+			act: "end",
+			match: @match
+		})
 	end
 end
