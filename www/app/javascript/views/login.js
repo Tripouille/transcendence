@@ -1,10 +1,8 @@
 export const LoginView = Backbone.View.extend({
 
-	el: 'main',
-
 	events: {
 		'click .retro-btn' : 'clickHandler'
-	  },
+	},
 
 	template: _.template( $('#login-blocTemplate').html()),
 

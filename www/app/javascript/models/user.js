@@ -2,8 +2,11 @@ export const User = Backbone.Model.extend({
 	urlRoot: '/users',
 	defaults: {
 		id: null,
+		username: "",
+		pictures: "",
+		email: "",
 		login: "",
-		username: ""
+		guild_id: null,
 	},
 	idAttribute: "id",
 	initialize: function() {
@@ -11,21 +14,14 @@ export const User = Backbone.Model.extend({
 	},
 
 	constructor: function() {
-		console.log("Constructor has been called")
+		console.log("Constructor User has been called")
 		Backbone.Model.apply(this, arguments);
 	},
 
 	validate: function (attr) {
-		if (attr.name.length < 2 || attr.name.length > 20) {
-			return "Invalid name length."
+		if (attr.username.length < 2 || attr.username.length > 20) {
+			console.log('Invalid name length.');
+			return "Invalid name length.";
 		}
-	},
-	save: function(attributes, options) {
-		var model = this;
-		var garbage = ["url", "created_at", "updated_at", "token"];
-		_.each(garbage, function(attr) {
-		  model.unset(attr);
-		});
-		Backbone.Model.prototype.save.call(this, attributes, options);
 	}
 });

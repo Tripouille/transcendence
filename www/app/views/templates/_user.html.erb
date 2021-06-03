@@ -1,11 +1,45 @@
-<script id="user-blocTemplate" type="text/template">
+<script id="user-display" type="text/template">
 
 	<div class="header-user">
-		<h1>Bienvenue </h1>
+		<h1>Bienvenue sur la page user</h1>
 	</div>
 
 	</br>
+	<ul>
+		<li>
+			<p>Login:</p>
+			<p><%%= login %></p>
+		</li>
+		<li>
+			<p>Username:</p>
+			<p><%%= username %></p>
+		</li>
+		<li>
+			<p>Email:</p>
+			<p><%%= email %></p>
+		</li>
+	</ul>
+
+	<button type="button" class="edit-btn">Edit User</button>
 
 
+</script>
+
+<script id="user-modify" type="text/template">
+
+	<div class="header-user">
+		<h1>Modification utilisateur</h1>
+	</div>
+
+	</br>
+	<form id="newGuildForm" name="newguilform">
+		<div class="field">
+			<label for="username">Username:</label>
+			<input type="text" id="username" name="username" required>
+		</div>
+		<div id="formSubmitUpdateUser" class="actions">
+			<input type="submit" value="Modify User" />
+		</div>
+	</form>
 
 </script>

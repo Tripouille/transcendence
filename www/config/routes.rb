@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :users
   root to:'application#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
@@ -10,6 +11,5 @@ Rails.application.routes.draw do
 
   get '/login', to: redirect('/#login')
   # Root users CRUD
-  resources :users
 
 end

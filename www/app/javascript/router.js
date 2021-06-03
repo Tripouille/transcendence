@@ -1,31 +1,41 @@
 
 //import { HomepageView } from 'views/homepageView';
 import { LoginView } from 'views/login';
-import { UserView } from './views/user';
+import { UserView } from './views/user/user';
+import { UserUpdateView } from './views/user/userUpdate';
 //import { GuildsCollection } from "collections/guildsCollection"
+
+console.log(initCurrentUserId);
 
 $(function() {
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
 
-		loginView:	new LoginView(),
-		userView: new UserView(),
+		loginView:	new LoginView({ el: $main }),
+		userView: new UserView({ el: $main }),
+		userUpdateView: new UserUpdateView({ el: $main }),
 
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
 			"user": "user",
+			"user/:id/edit": "updateUser",
 			"login": "login",
 		},
 
 		login: function() {
 			console.log("> Login - Page");
-			this.loginView.render($main);
+			this.loginView.render();
 		},
 
 		user: function() {
 			console.log("> User - Page")
 			this.userView.render();
+		},
+
+		updateUser: function(id) {
+			console.log("> Update User - Page - " + id)
+			this.userUpdateView.render(id);
 		}
 
 		// onClick: function(links) {
