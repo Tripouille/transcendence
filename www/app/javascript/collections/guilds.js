@@ -9,4 +9,10 @@ export const GuildsCollection = Backbone.Collection.extend({
 			return -model.get("score");
 		}
 	},
+
+	calculateRank: function () {
+		this.each(function (guild, i) {
+			guild.set({ "rank": i + 1 });
+		});
+	},
 });

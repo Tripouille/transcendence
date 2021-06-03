@@ -15,10 +15,6 @@
 	</table>
 </script>
 
-<script id="joinGuildButton" type="text/template">
-	<button id="" class="button1 favorite styled" type="button">Join</button>
-</script>
-
 <script id="guildRow" type="text/template">
 	<td><%%= rank %></td>
 	<td><%%= name %> (<%%= anagram %>)</td>
@@ -26,7 +22,13 @@
 	<td><%%= score %></td>
 </script>
 
-<script id="guildDisplay" type="text/template">
+<script id="mainGuildButtonTemplate" type="text/template">
+	<div id="mainGuildButton">
+		<span id=<%%= id %>><%%= name %></span>
+	</div>
+</script>
+
+<script id="guildFiguresTemplate" type="text/template">
 	<p><%%= name %> (<%%= anagram %>)</p>
 	<ul>
 		<li>
@@ -46,8 +48,10 @@
 			<p><%%= created_at %></p>
 		</li>
 	</ul>
+</script>
 
-	<table id="guildMembers">
+<script id="guildMembersTemplate" type="text/template">
+	<table id="guildMembersTable">
 		<thead>
 			<tr>
 				<th>Members</th>
@@ -59,10 +63,42 @@
 		<tbody id="guildMembersBody">
 		</tbody>
 	</table>
+</script>
 
-	<div class="joinGuild"></div>
+<script id="guildMemberRow" type="text/template">
+	<tr>
+		<td><%%= username %></td>
+		<td><%%= rank %></td>
+		<td><%%= mmr %></td>
+		<td><%%= contribution %></td>
+	</tr>
+</script>
+
+<!-- <script id="guildMembers" type="text/template">
 	<div class="onGoingWar"></div>
 	<div class="pendingInvites"></div>
+</script> -->
+
+<script id="guildWarHistory" type="text/template">
+	<table id="guildWarHistoryTable">
+		<thead>
+			<tr>
+				<th>War History</th>
+			</tr>
+		</thead>
+		<tbody id="guildWarHistoryBody">
+		</tbody>
+	</table>
+</script>
+
+<script id="guildWarHistoryRow" type="text/template">
+	<tr>
+		<td><%%= date %></td>
+		<td><%%= first_team %></td>
+		<td>VS</td>
+		<td><%%= second_team %></td>
+		<td><%%= result %></td>
+	</tr>
 </script>
 
 <script id="guildNewStatic" type="text/template">

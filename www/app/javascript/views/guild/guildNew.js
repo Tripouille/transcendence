@@ -1,4 +1,4 @@
-import { GuildModel } from '../models/guild';
+import { GuildModel } from '../../models/guild';
 
 export const GuildNewView = Backbone.View.extend({
 	initialize: function () {

@@ -1,5 +1,6 @@
 import { HomepageView } from 'views/homepage';
-import { GuildsView } from 'views/guilds';
+import { GuildsView } from 'views/guild/guilds';
+import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guildNew';
 import UsersView from 'views/users';
 import GameView from 'views/game';
@@ -17,6 +18,7 @@ $(function () {
 	const myRouter = Backbone.Router.extend({
 		homepageView: new HomepageView({ el: $main }),
 		guildsView: new GuildsView({ el: $main }),
+		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		usersView: new UsersView({ el: $main }),
@@ -25,6 +27,7 @@ $(function () {
 			"": "homepage",
 			"homepage": "homepage",
 			"guilds": "guilds",
+			"guild/:id": "displayguild",
 			"newguild": "newguild",
 			"game": "game",
 			"users": "users"
@@ -54,11 +57,13 @@ $(function () {
 
 		guilds: function () {
 			console.log("> guilds - page");
-			this.guildsView.render();
+			this.guildsView.render(router);
 
-			$("#newguild").on("click", function () {
-				router.navigate("#newguild", true, true);
-			});
+		},
+
+		displayguild: function (id) {
+			console.log("> guilds - No" + id);
+			this.guildView.render(id);
 		},
 
 		newguild: function () {
