@@ -55,6 +55,8 @@ export function connect(matchId, serverSide) {
 				setMatchFromServer(data.content.match);
 			else if (data.content.act == 'score')
 				score(data.content.match);
+			else if (data.content.act == 'end')
+				endMatch(data.content.match);
 			else
 				console.log('Error: unrecognized data');
 		}
@@ -337,4 +339,12 @@ function score(match) {
 	cleanGameIntervals();
 	$leftPoints.text(match.left_score);
 	$rightPoints.text(match.right_score);
+}
+
+function endMatch(match) {
+	console.log('endMatch');
+	setMatchFromServer(match);
+	GC.addTimeout(function() {
+		window.router.navigate('game', true);
+	}, 1000);
 }

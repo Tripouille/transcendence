@@ -362,8 +362,8 @@ class PongChannel < ApplicationCable::Channel
 		}
 		if @match[:left_score] >= 3 or @match[:right_score] >= 3
 			@match[:status] = "finished"
-			killScheduler(:gameLoop)
 			broadcastMatchEnd()
+			killScheduler(:gameLoop)
 		else
 			resetMatch()
 		end
