@@ -15,16 +15,19 @@ export const UserCreateView = Backbone.View.extend({
 	},
 
 	render: function() {
-		let _thisView = this;
-		this.model.fetch().done(function() {
-			if (_thisView.model.get('username').length > 0) {
-				Backbone.history.navigate("user", { trigger: true });
-			}
-			_thisView.$el.empty();
-			_thisView.$el.append(_thisView.template());
-			return _thisView;
-		});
-
+		if (initCurrentUserId == id) {
+			let _thisView = this;
+			this.model.fetch().done(function() {
+				if (_thisView.model.get('username').length > 0) {
+					Backbone.history.navigate("user", { trigger: true });
+				}
+				_thisView.$el.empty();
+				_thisView.$el.append(_thisView.template());
+				return _thisView;
+			});
+		} else {
+			Backbone.history.navigate("user", { trigger: true })
+		}
 	},
 
 	onFormSubmit: function(e) {

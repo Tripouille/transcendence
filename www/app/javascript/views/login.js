@@ -8,16 +8,14 @@ export const LoginView = Backbone.View.extend({
 
 	initialize: function() {
 		console.log("Login Page initialize");
-		console.log("Clear nav bar on login Page");
+	},
+
+	render: function(){
 		$("#mainNav").empty();
 		$("#contacts").empty();
 		$("#chat").empty();
 		$("main").empty();
         $("main").html(this.template);
-		this.render();
-	},
-
-	render: function(){
 		this.$el.html(this.template());
         return this;
 	},

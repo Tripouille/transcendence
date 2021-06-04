@@ -14,13 +14,17 @@ export const UserUpdateView = Backbone.View.extend({
 		console.log('User Update View has been init')
 	},
 
-	render: function() {
-		let _thisView = this;
-		this.model.fetch().done(function() {
-			_thisView.$el.empty();
-			_thisView.$el.append(_thisView.template());
-			return _thisView;
-		});
+	render: function(id) {
+		if (initCurrentUserId == id) {
+			let _thisView = this;
+			this.model.fetch().done(function() {
+				_thisView.$el.empty();
+				_thisView.$el.append(_thisView.template());
+				return _thisView;
+			});
+		} else {
+			Backbone.history.navigate("user", { trigger: true })
+		}
 	},
 
 	onFormSubmit: function(e) {

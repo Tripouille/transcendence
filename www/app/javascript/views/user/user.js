@@ -2,6 +2,9 @@ import { User } from "../../models/user";
 
 export const UserView = Backbone.View.extend({
 
+	events: {
+		'click .edit-btn' : 'clickHandler'
+	},
 
 	tagName: "li",
 	template: _.template($('#user-display').html()),
@@ -19,5 +22,10 @@ export const UserView = Backbone.View.extend({
 			return _thisView;
 		});
 	},
+
+	clickHandler : function(e ){
+		e.preventDefault()
+		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true })
+	}
 
 });
