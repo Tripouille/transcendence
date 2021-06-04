@@ -9,17 +9,15 @@ export const UserView = Backbone.View.extend({
 
 	initialize: function() {
 		console.log('User view has been initialized');
-		this.$el.empty();
-		let _thisView = this;
-		this.model.fetch().done(function() {
-			_thisView.render();
-		});
 	},
 
 	render: function() {
-		this.$el.empty();
-		this.$el.append(this.template(this.model.toJSON()));
-		return this;
+		let _thisView = this;
+		this.model.fetch().done(function() {
+			_thisView.$el.empty();
+			_thisView.$el.html(_thisView.template(_thisView.model.toJSON()));
+			return _thisView;
+		});
 	},
 
 });

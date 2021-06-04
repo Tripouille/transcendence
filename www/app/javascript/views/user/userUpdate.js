@@ -12,15 +12,15 @@ export const UserUpdateView = Backbone.View.extend({
 
 	initialize: function() {
 		console.log('User Update View has been init')
-		_.bindAll(this, "render");
-		this.model.fetch();
-		this.render;
 	},
 
 	render: function() {
-		this.$el.empty();
-		this.$el.append(this.template());
-		return this;
+		let _thisView = this;
+		this.model.fetch().done(function() {
+			_thisView.$el.empty();
+			_thisView.$el.append(_thisView.template());
+			return _thisView;
+		});
 	},
 
 	onFormSubmit: function(e) {

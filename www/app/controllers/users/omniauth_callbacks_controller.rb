@@ -21,7 +21,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def after_sign_in_path_for(user)
     if user.username.blank?
-      root_path(:anchor => 'user')
+      @root = 'user/' + @user.id.to_s + '/create'
+      root_path(:anchor => @root)
     else
       root_path(:anchor => 'homepage')
     end

@@ -32,13 +32,32 @@
 	</div>
 
 	</br>
-	<form id="newGuildForm" name="newguilform">
+	<form id="updateUserForm" name="updateuserform">
 		<div class="field">
 			<label for="username">Username:</label>
 			<input type="text" id="username" name="username" required>
 		</div>
 		<div id="formSubmitUpdateUser" class="actions">
 			<input type="submit" value="Modify User" />
+		</div>
+	</form>
+
+</script>
+
+<script id="user-create" type="text/template">
+
+	<div class="header-user">
+		<h1>Création utilisateur</h1>
+	</div>
+
+	</br>
+	<form id="newUserForm" name="newuserform">
+		<div class="field">
+			<label for="username">Username:</label>
+			<input type="text" id="username" name="username" required>
+		</div>
+		<div id="formSubmitCreateUser" class="actions">
+			<input type="submit" value="Create User" />
 		</div>
 	</form>
 

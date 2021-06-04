@@ -3,6 +3,7 @@
 import { LoginView } from 'views/login';
 import { UserView } from './views/user/user';
 import { UserUpdateView } from './views/user/userUpdate';
+import { UserCreateView } from './views/user/userCreate';
 //import { GuildsCollection } from "collections/guildsCollection"
 
 console.log(initCurrentUserId);
@@ -14,12 +15,14 @@ $(function() {
 		loginView:	new LoginView({ el: $main }),
 		userView: new UserView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
+		userCreateView: new UserCreateView({ el: $main }),
 
 		routes: {
 			"": "homepage",
 			"homepage": "homepage",
 			"user": "user",
 			"user/:id/edit": "updateUser",
+			"user/:id/create": "createUser",
 			"login": "login",
 		},
 
@@ -36,6 +39,11 @@ $(function() {
 		updateUser: function(id) {
 			console.log("> Update User - Page - " + id)
 			this.userUpdateView.render(id);
+		},
+
+		createUser: function(id) {
+			console.log("> Create User - Page - " + id)
+			this.userCreateView.render(id);
 		}
 
 		// onClick: function(links) {
