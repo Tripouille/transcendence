@@ -10,10 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_19_113856) do
+ActiveRecord::Schema.define(version: 2021_05_22_090749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "matches", force: :cascade do |t|
+    t.bigint "left_player"
+    t.bigint "right_player"
+    t.integer "left_score", default: 0
+    t.integer "right_score", default: 0
+    t.string "status", default: "lobby"
+    t.decimal "left_paddle_y", precision: 20, scale: 5, default: "50.0"
+    t.string "left_paddle_dir", default: "stop"
+    t.decimal "right_paddle_y", precision: 20, scale: 5, default: "50.0"
+    t.string "right_paddle_dir", default: "stop"
+    t.decimal "ball_x", precision: 20, scale: 5, default: "50.0"
+    t.decimal "ball_y", precision: 20, scale: 5, default: "50.0"
+    t.decimal "ball_dx", precision: 20, scale: 5
+    t.decimal "ball_dy", precision: 20, scale: 5
+    t.decimal "ball_speed", precision: 20, scale: 5
+    t.decimal "last_update", precision: 20, scale: 5
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "username"

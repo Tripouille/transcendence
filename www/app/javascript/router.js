@@ -1,6 +1,8 @@
 import UsersView from 'views/users';
+import SelectModeView from 'views/selectMode';
+import LobbyView from 'views/lobby';
 import GameView from 'views/game';
-import * as GC from 'views/animations/garbage_collector';
+import * as GC from 'views/garbage_collector';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -10,16 +12,20 @@ $(function() {
 	const myRouter = Backbone.Router.extend({
 		usersView: new UsersView(),
 		gameView: new GameView({el: $main}),
+		lobbyView: new LobbyView({el: $main}),
+		selectModeView: new SelectModeView({el: $main}),
 
 		routes: {
-			"": "game",
-			"game": "game",
+			"": "selectMode",
+			"game": "selectMode",
+			"game/lobby": "lobby",
+			"game/:id": "game",
 			"users": "users"
 		},
 
 		execute: function(callback, args, name) {
-			$main.empty();
 			GC.clearTimeoutsIntervals();
+			$main.empty();
 			$(document).off("keydown");
 			$(document).off("keyup");
 			callback.apply(this, args);
@@ -28,10 +34,20 @@ $(function() {
 		users: function() {
 			this.usersView.render($main);
 		},
-		game: function() {
-			this.gameView.render();
-		}
+		selectMode: function() {
+			this.selectModeView.render();
+		},
+		lobby: function() {
+			this.lobbyView.render();
+		},
+		game: function(id) {
+			if (id == null) {
+				this.navigate('game/lobby', {trigger: true});
+				return ;
+			}
+			this.gameView.render(id);
+		},
 	});
-	const router = new myRouter();
+	window.router = new myRouter();
 	Backbone.history.start();
 });
