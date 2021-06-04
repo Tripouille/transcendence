@@ -12,7 +12,7 @@ export const GuildModel = Backbone.Model.extend({
 		console.log('GuildModel has been initialized');
 	},
 	validate: function (attr) {
-		if (attr.name == "" || attr.name.length < 5 || attr.name.length > 20) {
+		if (attr.name == "" || attr.name.length < 5 || attr.name.length > 30) {
 			return "Invalid name length."
 		}
 		if (attr.anagram == "" || attr.anagram.length > 5) {

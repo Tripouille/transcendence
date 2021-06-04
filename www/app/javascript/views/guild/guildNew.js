@@ -2,52 +2,63 @@ import { GuildModel } from '../../models/guild';
 import { User } from '../../models/user';
 
 export const GuildNewView = Backbone.View.extend({
-
 	events: {
-		'click #formSubmitNewGuild input': 'onFormSubmit',
+		'click #formSubmitNewGuild a': 'onFormSubmit',
 		'blur input[required]': 'onInputChange',
 		'focus input[required]': function (e) {
 			this.resetInputErrors(e.target);
 		}
 	},
-
 	templates: {
 		'error': _.template('<span class="error"><%=error%></span>')
 	},
-
-	onFormSubmit: function (e) {
+	onFormSubmit: function () {
 		/* get data from form on submit button */
-		let model = new GuildModel();
-
-		e.preventDefault();
 		/* save the new guild and the guild_id to the current user databses */
-		model.set('name', $('#name').val());
-		model.set('anagram', $('#anagram').val());
-		model.set('owner_id', window.currentUser.get('id'));
-		model.save({}, {
-			success: function (model, response, options) {
-				console.log("Succes saving guild model");
-				let userModel = new User();
-				userModel.set('id', window.currentUser.get('id'))
-				$.when(userModel.fetch()).done(function () {
-					userModel.set('guild_id', model.get('id'));
-					userModel.save({
-						/* Pourquoi succes ne s'affiche pas */
-						success: function (userModel, resp, options) {
-							console.log("The guild_id has been saved to the user");
-						},
-						error: function (userModel, resp, options) {
-							console.log("Something went wrong while saving the guild_id to the user");
-							console.log(resp.responseJSON);
-						}
+		let showError = this;
+		window.currentUser.fetch().done(function () {
+			let model = new GuildModel();
+			model.set('name', $('#name').val());
+			model.set('anagram', $('#anagram').val());
+			model.set('owner_id', window.currentUser.get('id'));
+			var self = showError;
+			/* A VERIFIER Faire une verification pour voir si le current user a bien un id valid ou verif doit se faire avant? */
+			model.save({}, {
+				success: function (model, response, options) {
+					console.log("Succes saving guild model");
+					let userModel = new User();
+					userModel.set('id', window.currentUser.get('id'))
+					userModel.fetch().done(function () {
+						/* A VERIFIER si l'utilisateur ne possede pas deja une guild_id sinon supprimer la guilde qui vient d'etre save et renvoyer un message d'erreur */
+						userModel.set('guild_id', model.get('id'));
+						userModel.save({}, {
+							success: function (userModel, resp, options) {
+								console.log("The guild_id has been saved to the user");
+								/* A MODIFIER amener sur la page de la guilde nouvellement créée et non sur la liste des guilde */
+								Backbone.history.router.navigate("guilds", { trigger: true });
+							},
+							error: function (userModel, resp, options) {
+								console.log("Something went wrong while saving the guild_id to the user");
+								console.log(resp.responseText);
+							}
+						});
 					});
-				});
-				$("#guilds").trigger("click");
-			},
-			error: function (model, response, options) {
-				console.log("Something went wrong while saving the new guild");
-				console.log(response.responseJSON);
-			}
+				},
+				error: function (model, response, options) {
+					console.log("Something went wrong while saving the new guild");
+					/* Regex to match
+					   DETAIL:  Key (name)=(Olivier Lidon) already exists.
+					   |____________||__||_______________________________|
+							  1^      2^      1       3^  2                 3
+									 |--------^--------||-^||---------------^------------| */
+					let regexKey = /(?<=DETAIL:  Key \()(.*)(?=\)=\((.*)\) already exists)/g;
+					let label = response.responseText.match(regexKey)[0];
+					if (label == "name" || label == "anagram")
+						self.showInputErrors(label.charAt(0).toUpperCase() + label.slice(1) + " already exist.", label);
+					else
+						self.showInputErrors("Unknown server error.", "name");
+				}
+			});
 		});
 	},
 	/* render the form page */
@@ -60,19 +71,18 @@ export const GuildNewView = Backbone.View.extend({
 	/* validate the labels on the go */
 	validateOnChange: function (attr) {
 		if (attr.name == "name") {
-			if (attr.value.length < 5 || attr.name.length > 20) {
-				return "Invalid name length."
+			if (attr.value == "" || attr.value.length < 5 || attr.value.length > 30) {
+				return "Guild name must be between 5 and 30 characters long."
 			}
 		}
 		if (attr.name == "anagram") {
 			if (attr.value == "" || attr.value.length > 5) {
-				return "Invalid anagram length."
+				return "Anagram must be 5 characters max."
 			}
 		}
 		return true;
 	},
 	onInputChange: function (e) {
-		/* transformer e.target au format attr pour tout mettre avec la fonction validate */
 		var result = this.validateOnChange(e.target);
 
 		if (result !== true)

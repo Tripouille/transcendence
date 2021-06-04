@@ -5,12 +5,13 @@ import { GuildNewView } from 'views/guild/guildNew';
 import UsersView from 'views/users';
 import GameView from 'views/game';
 import * as GC from 'views/animations/garbage_collector';
+import { User } from 'models/user';
 
 window.intervals = new Array();
 window.timeouts = new Array();
 
 /* a voir pour supprimer plus tard */
-window.currentUser = new Backbone.Model(initCurrentUser);
+window.currentUser = new User({ id: initCurrentUser.id });
 
 $(function () {
 
@@ -24,7 +25,6 @@ $(function () {
 		usersView: new UsersView({ el: $main }),
 
 		routes: {
-			"": "root",
 			"homepage": "homepage",
 			"guilds": "guilds",
 			"guild/:id": "displayguild",
@@ -52,7 +52,7 @@ $(function () {
 
 		guilds: function () {
 			console.log("> guilds - page");
-			this.guildsView.render(router);
+			this.guildsView.render();
 		},
 
 		displayguild: function (id) {
@@ -75,11 +75,4 @@ $(function () {
 	});
 	const router = new myRouter();
 	Backbone.history.start();
-	$(document).on('turbolinks:click', function (event) {
-		const link = event.target.getAttribute('href');
-		if (link.charAt(0) === '#') {
-			event.preventDefault();
-			router.navigate(link.substring(1), { trigger: true });
-		}
-	});
 });

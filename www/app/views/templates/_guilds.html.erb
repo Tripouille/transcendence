@@ -1,6 +1,5 @@
 <script id="guildStaticContent" type="text/template">
-	<a href="#newguild"><div>Create your own Guild !</div></a>
-
+	<a>Other guilds :</a>
 	<table id="guildTable">
 		<thead>
 			<tr>
@@ -15,9 +14,29 @@
 	</table>
 </script>
 
+<script id="myGuildStaticContent" type="text/template">
+	<a>My guild :</a>
+	<table id="guildTable">
+		<thead>
+			<tr>
+				<th>Rank</th>
+				<th>Name (Anagram)</th>
+				<th>Owner</th>
+				<th>Score</th>
+			</tr>
+		</thead>
+		<tbody id="myGuildTableBody">
+		</tbody>
+	</table>
+</script>
+
+<script id="guildNewButton" type="text/template">
+	<a class="button" href="#newguild"><div>Create your own Guild !</div></a>
+</script>
+
 <script id="guildRow" type="text/template">
 	<td><%%= rank %></td>
-	<td><a href="<%%= route %>"><%%= name %> (<%%= anagram %>)</a></td>
+	<td><%%= name %> (<%%= anagram %>)</td>
 	<td><%%= owner_id %></td>
 	<td><%%= score %></td>
 </script>
@@ -102,18 +121,18 @@
 </script>
 
 <script id="guildNewStatic" type="text/template">
-	<p>New guild form :</p>
+	<p class="bandeau">Create a new guild</p>
 	<form id="newGuildForm" name="newguilform">
 		<div class="field">
-			<label for="name">Guild name:</label>
+			<label for="name">Name</label>
 			<input type="text" id="name" name="name" required>
 		</div>
 		<div class="field">
-			<label for="anagram">Guild anagram:</label>
+			<label for="anagram">Anagram</label>
 			<input type="text" id="anagram" name="anagram" required>
 		</div>
 		<div id="formSubmitNewGuild" class="actions">
-			<input type="submit" value="Create guild" />
+			<a class="button">Submit</a>
 		</div>
 	</form>
 </script>

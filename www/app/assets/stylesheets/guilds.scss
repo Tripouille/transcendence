@@ -24,7 +24,7 @@ header {
   padding-bottom: 10px;
 }
 #mainNav a {
-  color: darkgreen;
+  color: rgb(214, 214, 214);
   text-decoration: none;
   font-variant: small-caps;
   font-size: 1.3em;
@@ -42,4 +42,52 @@ header {
 
 main {
   margin-top: 50px;
+}
+#guildTable thead {
+  display:none;
+}
+#myGuildTableBody tr, #guildTableBody tr, #formSubmitNewGuild a {
+  cursor: pointer;
+}
+main form label, main p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 10px;
+  padding: 5px 32px;
+  font-size: 25px;
+}
+main form .error {
+  color: rgb(175, 0, 0);
+}
+.bandeau {
+  color: rgb(175, 157, 0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 10px;
+  padding: 5px 32px;
+  font-size: 25px;
+}
+input {
+  border: none;
+  margin: 25px 10px;
+  padding: 15px 32px;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 16px;
+  width: 100%;
+}
+.button {
+  background-color: #4CAF50;
+  border: none;
+  margin: 25px 10px;
+  color: white;
+  padding: 15px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 16px;
 }
