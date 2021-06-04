@@ -1,4 +1,4 @@
-import consumer from "../../channels/consumer"
+import consumer from "../../channels/consumer";
 import * as GC from '../garbage_collector';
 
 const UP_KEY = "ArrowUp";
@@ -27,22 +27,21 @@ let paddleSpeed, paddleHeight, paddleTopLimit, paddleBottomLimit;
 let ballInterval, status = 'ready';
 let paddleMessages = [];
 let sendingMessage = false;
-let pongSubscription;
 
 export function connect(matchId, serverSide) {
 	side = serverSide;
 	defineJqueryObjects();
 	$(window).resize(resizeGameArea);
-	console.log('subscribing to channel ' + matchId);
-	pongSubscription = consumer.subscriptions.create({
+	console.log('Subscribing to pong room ' + matchId + ', side ' + side);
+	window.pongSubscription = consumer.subscriptions.create({
 		channel: "PongChannel",
 		match_id: matchId
 	},
 	{
-		connected() {},
-		disconnected() {},
+		connected() {console.log('connected')},
+		disconnected() {console.log('disconnected');},
 		received(data) {
-			//console.log('Received data from pong channel : ', data.content);
+			console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "initialize")
 				initializeFromServer(data.content);
 			else if (data.content.act == "launchTimer")
@@ -56,7 +55,7 @@ export function connect(matchId, serverSide) {
 			else if (data.content.act == 'score')
 				score(data.content.match);
 			else if (data.content.act == 'end')
-				endMatch(data.content.match);
+				endMatch(data.content);
 			else
 				console.log('Error: unrecognized data');
 		}
@@ -165,7 +164,7 @@ function sendNextMessage() {
 	if (paddleMessages.length > 0) {
 		sendingMessage = true;
 		console.log('sending message');
-		pongSubscription.send(paddleMessages.pop());
+		window.pongSubscription.send(paddleMessages.pop());
 	}
 }
 
@@ -342,10 +341,15 @@ function score(match) {
 	$rightPoints.text(match.right_score);
 }
 
-function endMatch(match) {
-	setMatchFromServer(match);
+function endMatch(data) {
+	setMatchFromServer(data.match);
+	if (data.normal)
+		console.log('A player has won legally.');
+	else
+		console.log('Your opponent has left.');
 	GC.addTimeout(function() {
 		window.router.navigate('game', true);
 	}, 1000);
-	consumer.subscriptions.remove(pongSubscription);
+	consumer.subscriptions.remove(window.pongSubscription);
+	window.pongSubscription = null;
 }

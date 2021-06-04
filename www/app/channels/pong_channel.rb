@@ -32,11 +32,11 @@ class PongChannel < ApplicationCable::Channel
 		@schedulers = {}
 	end
 
-	def subscribed
+	def subscribed #reject if no match_id, if invalid, if bad status
 		@matchId = params["match_id"]
 		updateMatchFromDB()
 		stream_for @match
-
+		
 		if ["lobby", "ready"].include? @match[:status]
 			if playerIsLeft()
 				registerLeftPlayer()
@@ -48,7 +48,13 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		puts @SIDE.to_s + ' unsubscribing'
+		puts @SIDE.to_s + ' unsubscribing ' + Time.now.to_s
+		updateMatchFromDB()
+		if @match[:status] != "finished"
+			@match[:status] = "finished"
+			saveMatchToDB()
+			broadcastMatchEnd(normal: false)
+		end
 		@schedulers.each do |key, scheduler|
 			scheduler.unschedule
 			scheduler.kill
@@ -186,9 +192,15 @@ class PongChannel < ApplicationCable::Channel
 
 	def gameLoop
 		@schedulers[:gameLoop] = Rufus::Scheduler.new(frequency: "0.1s").schedule_every('0.3s') do
+			print 'r'
 			if @match[:status] == "playing"
 				updateMatchFromDB()
 				updateMatch()
+			elsif @match[:status] == "finished"
+				broadcastMatchEnd()
+				killScheduler(:timer)
+				#stop_stream_for @match
+				killScheduler(:gameLoop)
 			end
 		end
 	end
@@ -364,10 +376,11 @@ class PongChannel < ApplicationCable::Channel
 		end
 	end
 
-	def broadcastMatchEnd
+	def broadcastMatchEnd(normal: true)
 		PongChannel.broadcast_to(@match, content: {
 			act: "end",
-			match: @match
+			match: @match,
+			normal: normal
 		})
 	end
 end
