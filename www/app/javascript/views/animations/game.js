@@ -343,7 +343,6 @@ function score(match) {
 }
 
 function endMatch(match) {
-	console.log('endMatch');
 	setMatchFromServer(match);
 	GC.addTimeout(function() {
 		window.router.navigate('game', true);

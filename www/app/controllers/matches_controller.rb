@@ -35,16 +35,18 @@ class MatchesController < ApplicationController
 		render json: answer
 	end
 
-	def alreadyingame
-		if session[:user_id].blank? then return render json: nil, status: :unauthorized end
-		matches = Match.order(:created_at)
-				.where('(left_player = ' + session[:user_id].to_s + ' and right_player is not null)'\
-				' or (right_player = ' + session[:user_id].to_s + ' and left_player is not null)')
-				.where.not(status: "finished")
-		if matches.blank?
-			render json: nil
-		else
-			render json: matches.first
-		end
-	end
+	# def alreadyingame
+	# 	if session[:user_id].blank? then return render json: nil, status: :unauthorized end
+	# 	matches = Match.order(:created_at)
+	# 			.where('(left_player = ' + session[:user_id].to_s + ' and right_player is not null)'\
+	# 			' or (right_player = ' + session[:user_id].to_s + ' and left_player is not null)')
+	# 			.where.not(status: "finished")
+	# 	if matches.blank?
+	# 		puts "render nil"
+	# 		render json: nil
+	# 	else
+	# 		puts matches.first.inspect
+	# 		render json: matches.first
+	# 	end
+	# end
 end

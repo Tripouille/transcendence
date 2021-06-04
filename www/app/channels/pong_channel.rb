@@ -88,7 +88,6 @@ class PongChannel < ApplicationCable::Channel
 			}
 		}
 		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
-			print 'w'
 			if @match[:status] == "ready"
 				PongChannel.broadcast_to @match, content: {
 					act: 'initialize',
@@ -187,10 +186,7 @@ class PongChannel < ApplicationCable::Channel
 
 	def gameLoop
 		@schedulers[:gameLoop] = Rufus::Scheduler.new(frequency: "0.1s").schedule_every('0.3s') do
-			print 'r'
-			print 's=' + @match[:status]
 			if @match[:status] == "playing"
-				print 'p'
 				updateMatchFromDB()
 				updateMatch()
 			end
@@ -221,7 +217,6 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def broadcastMatch
-		puts 'b'
 		PongChannel.broadcast_to @match, content: {
 			act: 'updateMatch',
 			match: @match
@@ -267,7 +262,6 @@ class PongChannel < ApplicationCable::Channel
 			status: "running"
 		}
 		while ballData[:status] == "running"
-			puts 'u'
 			setBallBeforeBounce(ballData)
 			ballData[:elapsedTime] = totalTime - ballData[:remainingTime]
 		end
@@ -362,6 +356,7 @@ class PongChannel < ApplicationCable::Channel
 		}
 		if @match[:left_score] >= 3 or @match[:right_score] >= 3
 			@match[:status] = "finished"
+			saveMatchToDB()
 			broadcastMatchEnd()
 			killScheduler(:gameLoop)
 		else
