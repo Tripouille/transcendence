@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
 
 	def require_login
 		@session = session[:user_id]
-		puts @session
 		unless @session
 			unless flash[:redirect] == "Redirect login"
 				flash[:redirect] = "Redirect login"
