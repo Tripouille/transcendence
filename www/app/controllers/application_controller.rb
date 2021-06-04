@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
 
-	before_action :require_login, only: [ :show, :edit, :update, :destroy ]
+	before_action :require_login
 
 	def index
 		@session = session[:user_id]
@@ -9,9 +9,14 @@ class ApplicationController < ActionController::Base
 	private
 
 	def require_login
-		unless user_signed_in?
-		  flash[:error] = "You must be logged in to access this section"
-		  redirect_to root_path(:anchor => 'login')
+		@session = session[:user_id]
+		puts @session
+		unless @session
+			unless flash[:redirect] == "Redirect login"
+				flash[:redirect] = "Redirect login"
+				flash[:error] = "You must be logged in to access this section"
+				redirect_to root_path(:anchor => 'login')
+			end
 		end
 	end
 end

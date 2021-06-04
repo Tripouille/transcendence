@@ -2,6 +2,8 @@
 
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
+  skip_before_action :require_login
+
   def login
 
   end
