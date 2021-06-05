@@ -214,7 +214,6 @@ class PongChannel < ApplicationCable::Channel
 				stop_stream_for @match
 				killScheduler(:gameLoop)
 			end
-			@i += 1
 		end
 	end
 

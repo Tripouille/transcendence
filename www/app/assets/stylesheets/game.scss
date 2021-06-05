@@ -2,14 +2,13 @@
 	--ball-color: lightgreen;
 	--border-color: darkgreen;
 	--paddle-color: darkgreen;
-	--text-color: lightgreen;
 	--left-color: red;
 	--right-color: rgb(240, 230, 20);
 }
 
 #game, #game_container {
-	height: 100%;
-	width: 100%;
+	// height: 100%;
+	// width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

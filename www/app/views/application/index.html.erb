@@ -1,7 +1,2 @@
 <main>
 </main>
-<div>
-Session = <%= @session.inspect %> <br>
-<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
-<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
-</div>
