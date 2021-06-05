@@ -1,15 +1,14 @@
-import consumer from "channels/consumer";
 import * as GC from 'views/garbage_collector';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import LobbyView from 'views/lobby';
 import GameView from 'views/game';
+import * as Pong from 'views/animations/game';
 
 window.intervals = new Array();
 window.timeouts = new Array();
 
 $(function() {
-	console.log('loaded');
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
 		usersView: new UsersView(),
@@ -27,17 +26,11 @@ $(function() {
 
 		execute: function(callback, args, name) {
 			$main.empty();
-			this.clearPong();
+			Pong.removeSubscription();
+			this.clearAnimations();
 			callback.apply(this, args);
 		},
-		clearPong: function() { //mettre dans game.js et import ?
-			if (window.pongSubscription) {
-				console.log('removing pong subscription');
-				consumer.subscriptions.remove(window.pongSubscription);
-				window.pongSubscription = null;
-			}
-			else
-				console.log('no need to remove pong subscription');
+		clearAnimations: function() {
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");

@@ -358,3 +358,10 @@ function endMatch(data) {
 	consumer.subscriptions.remove(window.pongSubscription);
 	window.pongSubscription = null;
 }
+
+export function removeSubscription() {
+	if (window.pongSubscription) {
+		consumer.subscriptions.remove(window.pongSubscription);
+		window.pongSubscription = null;
+	}
+}

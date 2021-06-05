@@ -32,7 +32,7 @@ class PongChannel < ApplicationCable::Channel
 		@schedulers = {}
 	end
 
-	def subscribed #reject if no match_id, if invalid, if bad status
+	def subscribed
 		@matchId = params["match_id"]
 		updateMatchFromDB()
 		reject if @match[:status] == "finished"
