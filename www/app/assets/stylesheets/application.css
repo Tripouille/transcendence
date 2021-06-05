@@ -167,6 +167,7 @@ main a {
 	text-align: center;
 	font-size: 15em;
 	line-height: 100%;
+	display: none;
 }
 
 #lobby #timer {

@@ -29,10 +29,10 @@ let paddleMessages = [];
 let sendingMessage = false;
 
 export function connect(matchId, serverSide) {
+	BH.ball = null;
 	side = serverSide;
 	defineJqueryObjects();
-	$(window).resize(resizeGameArea);
-	console.log('Subscribing to pong room ' + matchId + ', side ' + side);
+	console.log('Subscribing to pong room ' + matchId);
 	window.pongSubscription = consumer.subscriptions.create({
 		channel: "PongChannel",
 		match_id: matchId
@@ -62,6 +62,19 @@ export function connect(matchId, serverSide) {
 	});
 }
 
+function defineJqueryObjects() {
+	$gameContainer = $('#game_container');
+	$gameArea = $('#game_area');
+	$ball = $('#ball_container');
+	$leftPoints = $('#player_infos_left .score');
+	$rightPoints = $('#player_infos_right .score');
+	$timer = $('#timer');
+	leftPaddle.$paddle = $('#paddle_left_container');
+	rightPaddle.$paddle = $('#paddle_right_container');
+	resizeGameArea();
+	$(window).resize(resizeGameArea);
+}
+
 function resizeGameArea() {
 	const ratio = 2.0;
 	const maxWidth = $(window).height() * 0.75 * ratio;
@@ -76,19 +89,13 @@ function resizeGameArea() {
 	$ball.css('width', $ball.height());
 }
 
-function defineJqueryObjects() {
-	$gameContainer = $('#game_container');
-	$gameArea = $('#game_area');
-	$ball = $('#ball_container');
-	$leftPoints = $('#player_infos_left .score');
-	$rightPoints = $('#player_infos_right .score');
-	$timer = $('#timer');
-	leftPaddle.$paddle = $('#paddle_left_container');
-	rightPaddle.$paddle = $('#paddle_right_container');
-	resizeGameArea();
+function isPlayer() {
+	return (["left", "right"].includes(side));
 }
 
 function initializeFromServer(data) {
+	if (BH.ball) return ;
+
 	// Initialize players infos
 	$('#player_infos_left .name').text(data.players.left.login);
 	$('#player_infos_right .name').text(data.players.right.login);
@@ -105,10 +112,11 @@ function initializeFromServer(data) {
 	BH.angles = data.angles;
 
 	// Keys
-	$(document).keydown(keyDownHandler);
-	$(document).keyup(keyUpHandler);
-
-	status = "ready";
+	if (isPlayer()) {
+		$(document).keydown(keyDownHandler);
+		$(document).keyup(keyUpHandler);
+		status = "ready";
+	}
 }
 
 function timerStart() {
@@ -163,7 +171,6 @@ function releaseKey(dir) {
 function sendNextMessage() {
 	if (paddleMessages.length > 0) {
 		sendingMessage = true;
-		console.log('sending message');
 		window.pongSubscription.send(paddleMessages.pop());
 	}
 }
@@ -225,11 +232,6 @@ function paddleMove(data) {
 		sendingMessage = false;
 		sendNextMessage();
 	}
-}
-
-function updatePaddlePos(data, paddle) {
-	paddle.$paddle.css({top: data.top + '%'});
-	paddle.y = Number(data.top);
 }
 
 function getNow() {
@@ -316,6 +318,7 @@ function updateBallSpeed() {
 }
 
 function setMatchFromServer(match) {
+	if (!BH.ball) return ;
 	const now = getNow();
 	leftPaddle.lastUpdate = now;
 	rightPaddle.lastUpdate = now;
@@ -343,10 +346,12 @@ function score(match) {
 
 function endMatch(data) {
 	setMatchFromServer(data.match);
-	if (data.normal)
-		console.log('A player has won legally.');
+	if (!data.normal)
+		console.log('A player has left.');
+	if (data.match.winner == data.match.left_player)
+		console.log('Left won !');
 	else
-		console.log('Your opponent has left.');
+		console.log('Right won !');
 	GC.addTimeout(function() {
 		window.router.navigate('game', true);
 	}, 1000);

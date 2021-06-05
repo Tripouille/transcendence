@@ -5,6 +5,7 @@ class CreateMatches < ActiveRecord::Migration[6.1]
       t.bigint :right_player
       t.integer :left_score, :default => 0
       t.integer :right_score, :default => 0
+	  t.bigint :winner
       t.string :status, :default => "lobby"
       t.decimal :left_paddle_y, :default => 50, :precision => 20, :scale => 5
       t.string :left_paddle_dir, :default => "stop"
