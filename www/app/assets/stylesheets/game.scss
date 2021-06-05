@@ -1,0 +1,124 @@
+ * {
+	--ball-color: lightgreen;
+	--border-color: darkgreen;
+	--paddle-color: darkgreen;
+	--text-color: lightgreen;
+	--left-color: red;
+	--right-color: rgb(240, 230, 20);
+}
+
+#game, #game_container {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#game #game_area,
+#game #player_infos_container {
+	background-color: var(--second-bg-color);
+}
+
+#game #player_infos_container {
+	box-sizing: border-box;
+	height: 10%;
+	width: 100%;
+	margin-bottom: 1%;
+	display: flex;
+	justify-content: space-between;
+	color: var(--text-color);
+	font-size: 4vmin;
+}
+
+#game .player_infos {
+	flex: 0.49;
+	text-align: center;
+	border: 1vw ridge var(--element-color);
+	border-style: ridge groove groove ridge;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+#game .player_infos img {
+	height: 100%;
+}
+
+#game #player_infos_left {
+	color: var(--left-color);
+}
+
+#game #player_infos_right {
+	color: var(--right-color);
+}
+
+#game #game_area {
+	box-sizing: border-box;
+	height: 75%;
+	width: 100%;
+	border: 1vw solid var(--border-color);
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+#game #ball_container {
+	height: 6%;
+	width: 6%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	display: none;
+}
+
+#game #ball {
+	background-color: var(--ball-color);
+	height: 100%;
+	width: 100%;
+	border: 1px black solid;
+	border-radius: 100%;
+	position: relative;
+	bottom: 50%;
+	right: 50%;
+}
+
+#game .paddle_container {
+	height: 25%;
+	width: 2%;
+	position: absolute;
+	top: 50%;
+}
+
+#game #paddle_left_container {
+	left: 1%;
+}
+
+#game #paddle_right_container {
+	right: 1%;
+}
+
+#game .paddle {
+	background-color: var(--paddle-color);
+	position: relative;
+	height: 100%;
+	width: 100%;
+	bottom: 50%;
+}
+
+#game #timer {
+	color: green;
+	text-align: center;
+	font-size: 15em;
+	line-height: 100%;
+	display: none;
+}
+
+@media (max-width: 800px) {
+	#game .player_infos img {
+		display: none;
+	}
+}
