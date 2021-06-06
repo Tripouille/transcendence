@@ -10,6 +10,7 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
+ *= require normalize-rails
  *= require_tree .
  *= require_self
  */
@@ -26,55 +27,16 @@
 	src: url('ScreenMatrix.ttf');
 }
 
-p {
-	margin: 0;
-}
-
 html {
 	height: 99.9%;
 	font-size: 1rem;
-}
-
-html, body {
-	margin: 0;
 }
 
 body {
 	height: 100%;
 	background-color: var(--bg-color);
 	color: white;
-}
-
-nav {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	margin: 0 auto;
-	width: 50%;
-	min-width: 500px;
-	height: 10%;
-	margin: auto;
-	display: flex;
-	flex-direction: row;
-	justify-content: left;
-	align-items: center;
-	background-color: var(--element-color);
-	border-left: 5px ridge green;
-	border-right: 5px groove green;
-	border-bottom: 5px groove green;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
-}
-
-nav a {
-	display: block;
-	background-color: blue;
-	margin: 5% 10px;
-}
-
-nav #account_link {
-	margin-left: auto;
+	font-family: 'screen';
 }
 
 main {
@@ -82,37 +44,20 @@ main {
 	bottom: 0;
 	height: 90%;
 	width: 90%;
-	font-family: 'screen';
-	color: white;
-
-	/* background-color: darkgrey; */
-}
-
-main a {
 	color: white;
 }
 
-#contacts {
-	position: fixed;
-	right: 0;
-	top: 10%;
-	width: 10%;
-	min-width: 30px;
-	height: 70%;
-	z-index: 2;
-
-	background-color: pink;
+p {
+	margin: 0;
 }
 
-#tchat {
-	position: fixed;
-	right: 0;
-	bottom: 0;
-	width: 20%;
-	min-width: 30px;
-	height: 20%;
-	min-height: 30px;
-	z-index: 2;
+a {
+	color: white;
+}
 
-	background-color: yellow;
+button {
+	padding: 0;
+	border: none;
+	outline: none;
+	color: inherit;
 }

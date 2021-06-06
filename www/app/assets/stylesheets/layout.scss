@@ -1,0 +1,192 @@
+$verydarkgreen: rgb(0, 70, 0);
+$border-color: rgb(0, 124, 50);
+$border-width: 8px;
+$bg-color: $verydarkgreen;
+
+nav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: 50%;
+	min-width: 500px;
+	height: 10vh;
+	min-height: 40px;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	align-items: center;
+	background-color: $bg-color;
+	border-left: $border-width ridge $border-color;
+	border-right: $border-width groove $border-color;
+	border-bottom: $border-width groove $border-color;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	z-index: 2;
+
+	a {
+		text-decoration: none;
+	}
+
+	& > a, & > button {
+		display: block;
+		margin: 0 20px;
+		height: 8vh;
+		min-height: 32px;
+		width: 8vh;
+		min-width: 32px;
+		text-align: center;
+		font-size: 3vh;
+		box-sizing: border-box;
+		text-transform: uppercase;
+	}
+
+	#game_link {
+		border: 5px green solid;
+		width: 12vh;
+		line-height: calc(8vh - 5px);
+		&:hover {
+			background-color: green;
+			border-color: darkgreen;
+		}
+	}
+
+	#rank_link {
+		border-radius: 100%;
+		background-color: darkgreen;
+		padding-top: 1px;
+		line-height: 8vh;
+		&:hover {
+			background-color: green;
+		}
+	}
+
+	#guild_link {
+		position: relative;
+		width: fit-content;
+		padding: 0 8px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		&:hover {
+			background-color: green;
+		}
+		&:after {
+			content: ' ';
+			border-left: 3px solid green;
+			border-right: 3px solid green;
+			position: absolute;
+			left: 0;
+			width: 100%;
+			height: 30%;
+			box-sizing: border-box;
+		}
+		&:hover:after {
+			border-color: darkgreen;
+		}
+	}
+	
+	#account_button {
+		margin-left: auto;
+		border-radius: 100%;
+		position: relative;
+		display: flex;
+		justify-content: center;
+		background: none;
+	
+		img {
+			width: 100%;
+			height: 100%;
+			opacity: 0.8;
+			border-radius: 100%;
+			&:hover {
+				cursor: pointer;
+			}
+		}
+	
+		#account_menu {
+			position: absolute;
+			top: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			font-size: 0.9vw;
+			border: 1px black solid;
+			background-color: darkgreen;
+			width: 9vw;
+			display: none;
+	
+			a {
+				box-sizing: border-box;
+				position: relative;
+				display: block;
+				width: 100%;
+				padding: 5px;
+				text-transform: none;
+				&:hover {
+					background-color: $bg-color;
+				}
+			}
+		}
+	}
+}
+
+%contacts {
+	position: fixed;
+	right: 1%;
+	width: 10%;
+	min-width: 30px;
+}
+#contacts {
+	@extend %contacts;
+	box-sizing: border-box;
+	top: 9%;
+	height: 65%;
+	z-index: 2;
+	border-left: $border-width ridge $border-color;
+	border-right: $border-width groove $border-color;
+	border-bottom: $border-width groove $border-color;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	background-color: $bg-color;
+	padding-top: 1%;
+	overflow: auto;
+	&.folded {
+		overflow: hidden;
+	}
+}
+#contacts_button {
+	@extend %contacts;
+	top: 2%;
+	height: 8%;
+	background-color: $bg-color;
+	border-left: $border-width ridge $border-color;
+	border-right: $border-width groove $border-color;
+	border-top: $border-width ridge $border-color;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	text-transform: uppercase;
+	&:hover {
+		cursor: pointer;
+	}
+	&.folded {
+		border-bottom: $border-width groove $border-color;
+		border-bottom-left-radius: 20px;
+		border-bottom-right-radius: 20px;
+	}
+}
+
+#tchat {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	width: 20%;
+	min-width: 30px;
+	height: 20%;
+	min-height: 30px;
+	z-index: 3;
+
+	background-color: yellow;
+}
