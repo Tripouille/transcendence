@@ -21,11 +21,9 @@ export const GuildsView = Backbone.View.extend({
                         guild.set({ "rank": i + 1 });
                         var guildRowView = new GuildRowView({ model: guild });
 
-                        var route = '#guild/' + guild.id;
+                        var route = '#guilds/' + guild.id;
                         guildRowView.$el.attr('data-href', route)
 
-                        // guild.set({ "route": route })
-                        // guildRowView.el.id = "guild" + guild.id;
                         if (guild.get('id') == window.currentUser.get('guild_id'))
                             $('#myGuildTableBody').append(guildRowView.render().el);
                         else

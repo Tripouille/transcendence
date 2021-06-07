@@ -6,6 +6,8 @@ import { WarHistoryView } from 'views/guild/warhistory';
 
 import { GuildsCollection } from 'collections/guilds';
 
+import { GuildModel } from 'models/guild';
+
 export const GuildView = Backbone.View.extend({
 
     figuresView: new FiguresView(),
@@ -13,26 +15,33 @@ export const GuildView = Backbone.View.extend({
     warHistoryView: new WarHistoryView(),
     // warSummaryView: new WarSummaryView(),
     // invitesView: new InvitesView(),
+    guild: new GuildModel(),
 
     mainButtonClick: function (evt) {
         let clicked = $(evt.target);
-        if (clicked.text() == 'Join')
+        let self = evt.data.self;
+
+        if (clicked.text() == 'Destroy')
         {
-            /* changer la base de donne de user pour avoir la guild id */
-            $('#mainGuildButton span').attr('id', 'LeaveButton');
-            $('#mainGuildButton span').text('Leave');
-            $('#LeaveButton').on("click", this.mainButtonClick);
+            confirm("You are about to destroy this guild. Are you sure ?");
+            self.guild.destroy({
+                success: function(model, response) {
+                    console.log("seems like the guild is destroyed");
+                    Backbone.history.navigate("guilds", { trigger: true });
+                },
+            });
         }
-        else if (clicked.text() == 'Leave')
+        else
         {
-            /* changer la base de donne de user pour avoir la guild id */
-            $('#mainGuildButton span').attr('id', 'JoinButton');
-            $('#mainGuildButton span').text('Join');
-            $('#JoinButton').on("click", this.mainButtonClick);
-        }
-        else if (clicked.text() == 'Destroy')
-        {
-            confirm("are you sure ?");
+            window.currentUser.fetch().done(function() {
+                let value = (clicked.text() == 'Join') ? self.guild.get('id') : null;
+                window.currentUser.save({ 'guild_id': value }, {
+                    success: function (userModel, resp, options) {
+                        $('#' + (clicked.text() == 'Join' ? 'Leave' : 'Join')  + 'Button').off("click", self.mainButtonClick);
+                        self.render(self.guild.get('id'));                    
+                    },
+                });
+            });
         }
     },
 
@@ -40,55 +49,44 @@ export const GuildView = Backbone.View.extend({
 
         let joinButtonTemplate = _.template($('#mainGuildButtonTemplate').html());
         let buttonText;
+        
+        this.guild.set("id", parseInt(guildId));
         let self = this;
-        if (window.currentUser.has("guild_id"))
-        {
-            // console.log(guildId);
-            // console.log(typeof guildId);
-            // console.log(parseInt(guildId));
-            // console.log(typeof parseInt(guildId));
-            // console.log(window.currentUser.attributes.guild_id);
-            // console.log(typeof window.currentUser.attributes.guild_id);
-            if (window.currentUser.attributes.guild_id != parseInt(guildId))
-                return ;
-            else if (window.currentUser.attributes.guild_id == parseInt(guildId))
+
+        $.when(this.guild.fetch()).done(function () {
+
+            if (window.currentUser.has("guild_id"))
             {
-                console.log("from THIS guild")
-                let guilds = new GuildsCollection();
-                let guildsFetch = guilds.fetch();
-    
-                $.when(guildsFetch).done(function () {
-                    let guild = guilds.findWhere({ id: parseInt(guildId) });
-                    if (guild.owner == window.currentUser.attributes.username)
-                        buttonText = "Destroy";
-                    else
-                        buttonText = "Leave";
-                    console.log("creating button if fro mguild")
+                if (window.currentUser.get("guild_id") != parseInt(guildId))
+                    return ;
+                else if (window.currentUser.get("guild_id") == parseInt(guildId))
+                {    
+                    buttonText = (self.guild.get("owner_id") == window.currentUser.get("id")) ? "Destroy" : "Leave";
+
                     let model = new Backbone.Model({ name: buttonText, id: buttonText + 'Button' });
                     self.$el.append(joinButtonTemplate(model.toJSON()));
-                    $('#' + buttonText + 'Button').on("click", self.mainButtonClick);
-                });
+                    $('#' + buttonText + 'Button').on("click", { self: self }, self.mainButtonClick);
+                }
             }
-        }
-        else
-        {
-            buttonText = "Join";
-            let model = new Backbone.Model({ name: buttonText, id: buttonText + 'Button' });
-            this.$el.append(joinButtonTemplate(model.toJSON()));
-            $('#' + buttonText + 'Button').on("click", this.mainButtonClick);
-        }
-        // let model = new Backbone.Model({ name: buttonText, id: buttonText + 'Button' });
-        // this.$el.append(joinButtonTemplate(model.toJSON()));
-        // $('#' + buttonText + 'Button').on("click", this.mainButtonClick);
+            else
+            {
+                buttonText = "Join";
+                let model = new Backbone.Model({ name: buttonText, id: buttonText + 'Button' });
+                self.$el.append(joinButtonTemplate(model.toJSON()));
+                $('#' + buttonText + 'Button').on("click", { self: self }, self.mainButtonClick);
+            }
+        });
     },
 
     render: function(guildId) {
-        
+
+        console.log("RENDER")
         this.$el.html(this.figuresView.render(guildId).el);
         this.addMainButton(guildId);
         
         this.$el.append(this.membersView.render(guildId).el);
         this.$el.append(this.warHistoryView.render(guildId).el);
+
 
         // if (guild = atWar)
         //     this.$el.append(this.warSummaryView.render(guildId).el);
