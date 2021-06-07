@@ -35,12 +35,11 @@ $(function () {
 			"game/lobby": "lobby",
 			"game/:id": "game",
 			"guilds": "guilds",
+			"guilds/new": "newguild",
 			"guilds/:id": "displayguild",
-			"newguild": "newguild",
 			"game": "game",
 			"users": "users"
 		},
-
 		execute: function(callback, args, name) {
 			GC.clearTimeoutsIntervals();
 			$main.empty();
