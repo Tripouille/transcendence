@@ -26,20 +26,21 @@ export const GuildNewView = Backbone.View.extend({
 			model.save({}, {
 				success: function (model, response, options) {
 					console.log("Succes saving guild model");
-					let userModel = new User();
-					userModel.set('id', window.currentUser.get('id'))
-					userModel.fetch().done(function () {
+					window.currentUser.fetch().done(function () {
 						/* A VERIFIER si l'utilisateur ne possede pas deja une guild_id sinon supprimer la guilde qui vient d'etre save et renvoyer un message d'erreur */
-						userModel.set('guild_id', model.get('id'));
-						userModel.save({}, {
+						window.currentUser.set('guild_id', model.get('id'));
+						let routeId = "guilds/" + model.get('id');
+						if (window.currentUser.isValid() != true)
+							model.destroy();
+							window.currentUser.save({}, {
 							success: function (userModel, resp, options) {
 								console.log("The guild_id has been saved to the user");
-								/* A MODIFIER amener sur la page de la guilde nouvellement créée et non sur la liste des guilde */
-								Backbone.history.navigate("guilds", { trigger: true });
+								Backbone.history.navigate(routeId, { trigger: true });
 							},
 							error: function (userModel, resp, options) {
 								console.log("Something went wrong while saving the guild_id to the user");
 								console.log(resp.responseText);
+								model.destroy(); // VERIFIER si fonctionnel
 							}
 						});
 					});
@@ -53,6 +54,7 @@ export const GuildNewView = Backbone.View.extend({
 									 |--------^--------||-^||---------------^------------| */
 					let regexKey = /(?<=DETAIL:  Key \()(.*)(?=\)=\((.*)\) already exists)/g;
 					let label = response.responseText.match(regexKey)[0];
+					/* AJOUTER reset error */
 					if (label == "name" || label == "anagram")
 						self.showInputErrors(label.charAt(0).toUpperCase() + label.slice(1) + " already exist.", label);
 					else
@@ -63,10 +65,20 @@ export const GuildNewView = Backbone.View.extend({
 	},
 	/* render the form page */
 	render: function () {
-		let template = _.template($('#guildNewStatic').html());
-
-		this.$el.html(template);
-		return this;
+		let that = this;
+		window.currentUser.fetch().done(function () {
+			let guildId = window.currentUser.get('guild_id');
+			if (guildId != null) {
+				console.log("redirection propre guilde")
+				Backbone.history.navigate("guilds/" + guildId, { trigger: true });
+			}
+			else {
+				console.log("new form")
+				let template = _.template($('#guildNewStatic').html());
+				that.$el.html(template);
+			}
+			return this;
+		});
 	},
 	/* validate the labels on the go */
 	validateOnChange: function (attr) {

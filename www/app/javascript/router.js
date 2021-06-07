@@ -34,29 +34,18 @@ $(function () {
 			"game": "selectMode",
 			"game/lobby": "lobby",
 			"game/:id": "game",
-			"homepage": "homepage",
 			"guilds": "guilds",
-			"guild/:id": "displayguild",
-			"newguild": "newguild",
+			"guilds/new": "newguild",
+			"guilds/:id": "displayguild",
 			"game": "game",
 			"users": "users"
 		},
-
-		execute: function (callback, args, name) {
-			$main.empty();
-		},
-
 		execute: function(callback, args, name) {
 			GC.clearTimeoutsIntervals();
 			$main.empty();
 			$(document).off("keydown");
 			$(document).off("keyup");
-			callback.apply(this, args);
-		},
-
-		homepage: function () {
-			console.log("> homepage");
-			this.homepageView.render();
+			callback.apply(this, args);6
 		},
 
 		guilds: function () {
