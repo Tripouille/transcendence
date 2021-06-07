@@ -1,14 +1,17 @@
 version: '3'
 services:
   www:
-    build: .
     user: "root:root"
-    command: sh /launch.sh
-    privileged: true
+    build: .
+    env_file:
+      - .environment/default.env
+      #- .environment/production.env #Uncomment for production mode
     volumes:
-        - ./www/app:/www/app
-        - ./www/db:/www/db
-        - ./www/config:/www/config
+      - ./www:/www
+      #- ./data:/var/lib/postgresql/11/main #Uncomment to bind database
     ports:
-      - "80:80"
-      - "81:81"
+      - "80:3000" #Puma
+      - "5432:5432" #Postgresql
+      - "6379:6379" #Redis
+    command:
+      bash /start.sh #srcs/start.sh
