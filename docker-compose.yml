@@ -1,30 +1,17 @@
 version: '3'
 services:
   www:
-    build: .
     user: "root:root"
-    command: sh /launch.sh
-    privileged: true
+    build: .
+    env_file:
+      - .environment/default.env
+      #- .environment/production.env #Uncomment for production mode
     volumes:
-       #- C:\Users\jean-\Documents\42\transcendence\www:/www #
-       #- C:\Users\jean-\Documents\42\transcendence\data:/var/lib/postgresql/data #
-       #- /Users/jgambard/transcendence/www:/www #
-       #- /Users/jgambard/transcendence/data:/var/lib/postgresql/data #
-       #- /Users/aalleman/transcendence/www:/www #
-       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
-       #- /Users/aalleman/transcendence/www:/www #
-       #- /Users/aalleman/transcendence/data:/var/lib/postgresql/data #
-       #- /root/transcendence/www:/www
-       #- ./www/app:/www/app
-       #- ./www/db:/www/db
-       #- ./www/config:/www/config
-       # - /root/transcendence/www/app:/www/app
-       # - /root/transcendence/www/db:/www/db
-       # - /root/transcendence/www/config:/www/config
-
-        - ./www/app:/www/app
-        - ./www/db:/www/db
-        - ./www/config:/www/config
+      - ./www:/www
+      #- ./data:/var/lib/postgresql/11/main #Uncomment to bind database
     ports:
-      - "80:80"
-      - "81:81"
+      - "80:3000" #Puma
+      - "5432:5432" #Postgresql
+      - "6379:6379" #Redis
+    command:
+      bash /start.sh #srcs/start.sh
