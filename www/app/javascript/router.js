@@ -3,9 +3,11 @@ import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
 import UsersView from 'views/users';
+import SelectModeView from 'views/selectMode';
+import LobbyView from 'views/lobby';
 import GameView from 'views/game';
-import * as GC from 'views/animations/garbage_collector';
 import { User } from 'models/user';
+import * as GC from 'views/garbage_collector';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -22,9 +24,16 @@ $(function () {
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
 		gameView: new GameView({ el: $main }),
-		usersView: new UsersView({ el: $main }),
+		usersView: new UsersView(),
+		gameView: new GameView({el: $main}),
+		lobbyView: new LobbyView({el: $main}),
+		selectModeView: new SelectModeView({el: $main}),
 
 		routes: {
+			"": "selectMode",
+			"game": "selectMode",
+			"game/lobby": "lobby",
+			"game/:id": "game",
 			"homepage": "homepage",
 			"guilds": "guilds",
 			"guild/:id": "displayguild",
@@ -35,14 +44,14 @@ $(function () {
 
 		execute: function (callback, args, name) {
 			$main.empty();
+		},
+
+		execute: function(callback, args, name) {
 			GC.clearTimeoutsIntervals();
+			$main.empty();
 			$(document).off("keydown");
 			$(document).off("keyup");
 			callback.apply(this, args);
-		},
-
-		root: function () {
-			this.navigate('homepage', { trigger: true });
 		},
 
 		homepage: function () {
@@ -69,10 +78,20 @@ $(function () {
 			this.usersView.render();
 		},
 
-		game: function () {
-			this.gameView.render();
-		}
+		selectMode: function() {
+			this.selectModeView.render();
+		},
+		lobby: function() {
+			this.lobbyView.render();
+		},
+		game: function(id) {
+			if (id == null) {
+				this.navigate('game/lobby', {trigger: true});
+				return ;
+			}
+			this.gameView.render(id);
+		},
 	});
-	const router = new myRouter();
+	window.router = new myRouter();
 	Backbone.history.start();
 });

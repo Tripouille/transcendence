@@ -2,297 +2,372 @@ class PongChannel < ApplicationCable::Channel
 	def initialize(connection, id, params)
 		super
 
-		@minAngle = {
-			dx: 0.984,
-			dy: 0.174
+		@AREA_RATIO = 2.0
+		@ANGLE = {
+			min_dx: 0.984,
+			min_dy: 0.174,
+			max_dx: 0.342,
+			max_dy: 0.939,
+			inc_x: (0.984 - 0.342) / 100.0,
+			inc_y: (0.939 - 0.174) / 100.0
 		}
-		@maxAngle = {
-			dx: 0.342,
-			dy: 0.939
-		}
-		@angleIncrement = {
-			dx: (@minAngle[:dx] - @maxAngle[:dx]) / 100.0,
-			dy: (@maxAngle[:dy] - @minAngle[:dy]) / 100.0
-		}
-		@paddles = {
-			speed: 0.09,
+		@PADDLES = {
+			speed: 0.08,
 			height: 25.0,
 			width: 2.0,
-			offset: 1.0,
-			active: false,
-			left: {
-				y: 50.0,
-				lastUpdate: 0,
-				dir: "stop"
-			},
-			right: {
-				y: 50.0,
-				lastUpdate: 0,
-				dir: "stop"
-			}
+			offset: 1.0
 		}
 		@BALL_RADIUS = 3.0
-		@AREA_RATIO = 2.0
-		@BASE_BALL_SPEED = 0.025
-		@MAX_BALL_SPEED = 0.2
-		@BALL_SPEED_MULTIPLIER = 1.2
-		@ball = {
-			speed: @BASE_BALL_SPEED,
+		@BALL = {
 			radius: @BALL_RADIUS,
 			topLimit: @BALL_RADIUS,
-			bottomLimit: 100 - @BALL_RADIUS,
-			leftLimit: @paddles[:offset] + @paddles[:width] + (@BALL_RADIUS / @AREA_RATIO),
-			rightLimit: 100 - @paddles[:width] - @paddles[:offset] - (@BALL_RADIUS / @AREA_RATIO),
-			posX: 50.0,
-			posY: 50.0,
-			deltaX: 0.707,
-			deltaY: 0.707,
-			lastUpdate: 0
+			bottomLimit: 100.0 - @BALL_RADIUS,
+			leftLimit: @PADDLES[:offset] + @PADDLES[:width] + (@BALL_RADIUS / @AREA_RATIO),
+			rightLimit: 100.0 - @PADDLES[:width] - @PADDLES[:offset] - (@BALL_RADIUS / @AREA_RATIO),
+			base_speed: 0.06,
+			speed_multiplier: 1.2,
+			max_speed: 0.15
 		}
-		@starting = false
+		
+		@schedulers = {}
 	end
 
 	def subscribed
-		stream_from "pong_channel"
+		@matchId = params["match_id"]
+		updateMatchFromDB()
+		stream_for @match
 
-		playerIsHost = true
-		if playerIsHost
-			sleep(0.5) # verifier que les 2 joueurs sont connectes au channel
-
-			ActionCable.server.broadcast "pong_channel", content: {
-				act: 'connection',
-				paddles: @paddles
-			}
-			start()
+		if ["lobby", "ready"].include? @match[:status]
+			if playerIsLeft()
+				registerLeftPlayer()
+				waitForOpponent()
+			elsif playerIsRight()
+				registerRightPlayer()
+			end
 		end
 	end
 
 	def unsubscribed
-		@scheduler.stop
+		puts @SIDE.to_s + ' unsubscribing'
+		@schedulers.each do |key, scheduler|
+			scheduler.unschedule
+			scheduler.kill
+		end
+		stop_stream_for @match
+	end
+
+	def playerIsLeft
+		@match[:left_player] == connection.session[:user_id]
+	end
+
+	def playerIsRight
+		@match[:right_player] == connection.session[:user_id]
+	end
+
+	def registerLeftPlayer
+		@SIDE = "left"
+		@SIDE_PADDLE_Y = :left_paddle_y
+		@SIDE_PADDLE_DIR = :left_paddle_dir
+	end
+
+	def registerRightPlayer
+		@SIDE = "right"
+		@SIDE_PADDLE_Y = :right_paddle_y
+		@SIDE_PADDLE_DIR = :right_paddle_dir
+		@match[:status] = "ready"
+		saveMatchToDB()
+	end
+
+	def waitForOpponent
+		players = {
+			left: {
+				login: User.find(@match[:left_player]).login
+			},
+			right: {
+				login: User.find(@match[:right_player]).login
+			}
+		}
+		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
+			if @match[:status] == "ready"
+				PongChannel.broadcast_to @match, content: {
+					act: 'initialize',
+					match: @match,
+					players: players,
+					paddles: @PADDLES,
+					ball: @BALL,
+					angles: @ANGLE
+				}
+				start()
+				killScheduler(:waitForOpponent)
+			end
+			updateMatchFromDB()
+		end
+	end
+
+	def killScheduler(key)
+		@schedulers[key].unschedule
+		@schedulers[key].kill
+		@schedulers.delete(key)
 	end
 
 	def start
-		if @starting then return end
-		@starting = true
-		@paddles[:active] = false
-		ActionCable.server.broadcast "pong_channel", content: {
-			act: 'timerStart'
-		}
-		Rufus::Scheduler.new.in '3s' do
-			resetPaddles()
-			resetBall()
-			ActionCable.server.broadcast "pong_channel", content: {
-				act: 'gameStart',
-				ball: @ball
-			}
-			@starting = false
-
-			@scheduler = Rufus::Scheduler.new
-			@scheduler.every '0.3s' do
-				puts "in scheduler"
-				updateBall()
+		updateMatchFromDB()
+		if @match[:status] != "timer" then
+			launchTimer()
+			@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3s' do
+				@schedulers.delete(:timer)
+				resetGame()
+				broadcastGameStart()
+				gameLoop()
 			end
+		end
+	end
+
+	def launchTimer
+		@match.update_attribute(:status, "timer")
+		PongChannel.broadcast_to @match, content: {
+			act: 'launchTimer'
+		}
+	end
+
+	def broadcastGameStart
+		PongChannel.broadcast_to @match, content: {
+			act: 'gameStart',
+			match: @match
+		}
+	end
+
+	def resetMatch
+		updateMatchFromDB()
+		launchTimer()
+		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3s' do
+			@schedulers.delete(:timer)
+			resetGame()
+			broadcastGameStart()
 		end
 	end
 
 	def initializeRandomBallDirection
 		srand()
 		randIncrement = rand(100)
-		@ball[:deltaX] = [-1, 1].sample * (@minAngle[:dx] - @angleIncrement[:dx] * randIncrement)
-		@ball[:deltaY] = [-1, 1].sample * (@minAngle[:dy] + @angleIncrement[:dy] * randIncrement)
+		@match[:ball_dx] = [-1, 1].sample * (@ANGLE[:min_dx] - @ANGLE[:inc_x] * randIncrement)
+		@match[:ball_dy] = [-1, 1].sample * (@ANGLE[:min_dy] + @ANGLE[:inc_y] * randIncrement)
 	end
 
-	def resetPaddles
-		@paddles[:active] = true
-		@paddles[:left] = {
-			y: 50.0,
-			lastUpdate: 0,
-			dir: "stop"
-		}
-		@paddles[:right] = {
-			y: 50.0,
-			lastUpdate: 0,
-			dir: "stop"
-		}
-	end
-
-	def resetBall
-		@ball[:lastUpdate] = Time.now.to_f * 1000.0
-		@ball[:posX] = 50
-		@ball[:posY] = 50
-		@ball[:speed] = @BASE_BALL_SPEED
+	def resetGame
+		@match[:left_paddle_y] = 50.0
+		@match[:left_paddle_dir] = "stop"
+		@match[:right_paddle_y] = 50.0
+		@match[:right_paddle_dir] = "stop"
+		@match[:ball_x] = 50.0
+		@match[:ball_y] = 50.0
+		@match[:ball_speed] = @BALL[:base_speed]
 		initializeRandomBallDirection()
+		@match[:last_update] = getNow()
+		@match[:status] = "playing"
+		saveMatchToDB()
+	end
+
+	def getNow
+		Time.now.to_f * 1000.0
+	end
+
+	def updateMatchFromDB()
+		ActiveRecord::Base.connection_pool.with_connection do
+			@match = Match.find(@matchId)
+		end
+	end
+
+	def saveMatchToDB()
+		ActiveRecord::Base.connection_pool.with_connection do
+			@match.save
+		end
+	end
+
+	def gameLoop
+		@schedulers[:gameLoop] = Rufus::Scheduler.new(frequency: "0.1s").schedule_every('0.3s') do
+			if @match[:status] == "playing"
+				updateMatchFromDB()
+				updateMatch()
+			end
+		end
+	end
+
+	def updateMatch()
+		now = getNow()
+		totalTime = now - @match[:last_update]
+		@match[:last_update] = now
+		updatePaddlePos(:left_paddle_y, @match[:left_paddle_dir], totalTime * @PADDLES[:speed])
+		updatePaddlePos(:right_paddle_y, @match[:right_paddle_dir], totalTime * @PADDLES[:speed])
+		updateBall(now, totalTime)
+		saveMatchToDB()
+		if @match[:status] == "scoring" then score() end
 	end
 
 	def receive(data)
-		if data["request"] == "ball" and @paddles[:active]
-			updateBall()
-		elsif not data["dir"].blank? and not data["act"].blank? and not data["side"].blank? \
-		and @paddles[:active] = true
-			updatePaddles(data)
-		end
-	end
-  
-	def updatePaddles(data)
-		puts data.inspect
-		newTime = Time.now.to_f * 1000.0 #ms
-		if @paddles[data["side"].to_sym][:lastUpdate] == 0
-			@paddles[data["side"].to_sym][:lastUpdate] = newTime
-			@paddles[data["side"].to_sym][:dir] = data["dir"]
-			broadcastPaddleInfos(data)
-			return
-		end
-		timeDelta = newTime - @paddles[data["side"].to_sym][:lastUpdate]
-
-		if data["act"] == "press"
-			pressKey(data, newTime, timeDelta)
-		elsif data["act"] == "release" and @paddles[data["side"].to_sym][:dir] == data["dir"]
-			releaseKey(data, newTime, timeDelta)
+		updateMatchFromDB()
+		if @match[:status] == "playing" and isValidAction(data["dir"])
+			updateMatch()
+			handleAndBroadcastPaddleMovement(data["dir"])
 		end
 	end
 
-	def movePaddle(side, dir, delta)
+	def isValidAction(dir)
+		return ["stop", "up", "down"].include? dir
+	end
+
+	def broadcastMatch
+		PongChannel.broadcast_to @match, content: {
+			act: 'updateMatch',
+			match: @match
+		}
+	end
+
+	def handleAndBroadcastPaddleMovement(dir)
+		@match[@SIDE_PADDLE_DIR] = dir
+		broadcastPaddleMovement(dir)
+		saveMatchToDB()
+	end
+
+	def updatePaddlePos(side, dir, delta)
 		if dir == "up"
-			@paddles[side][:y] -= delta
+			@match[side] -= delta
 		elsif dir == "down"
-			@paddles[side][:y] += delta
+			@match[side] += delta
 		end
 		handlePaddleOverflow(side)
 	end
 
-	def pressKey(data, newTime, timeDelta)
-		side = data["side"].to_sym
-		movePaddle(side, @paddles[side][:dir], timeDelta * @paddles[:speed])
-		@paddles[side][:dir] = data["dir"]
-		@paddles[side][:lastUpdate] = newTime
-		broadcastPaddleInfos(data)
-	end
-
-	def releaseKey(data, newTime, timeDelta)
-		side = data["side"].to_sym
-		movePaddle(side, data["dir"], timeDelta * @paddles[:speed])
-		@paddles[side][:dir] = "stop"
-		@paddles[side][:lastUpdate] = newTime
-		broadcastPaddleInfos(data)
-	end
-
 	def handlePaddleOverflow(side)
-		if @paddles[side][:y] - @paddles[:height] / 2.0 < 0.0
-			@paddles[side][:y] = @paddles[:height] / 2.0
-		elsif @paddles[side][:y] + @paddles[:height] / 2.0 > 100.0
-			@paddles[side][:y] = 100.0 - @paddles[:height] / 2.0
+		if @match[side] - @PADDLES[:height] / 2.0 < 0.0
+			@match[side] = @PADDLES[:height] / 2.0
+		elsif @match[side] + @PADDLES[:height] / 2.0 > 100.0
+			@match[side] = 100.0 - @PADDLES[:height] / 2.0
 		end
 	end
 
-	def broadcastPaddleInfos(data)
-		ActionCable.server.broadcast("pong_channel", content: {
-			act: data["act"],
-			dir: data["dir"],
-			side: data["side"],
-			y: @paddles[data["side"].to_sym][:y]
+	def broadcastPaddleMovement(dir)
+		PongChannel.broadcast_to(@match, content: {
+			dir: dir,
+			side: @SIDE,
+			match: @match
 		})
 	end
 
-	def updateBall
-		newTime = Time.now.to_f * 1000.0 #ms
-		timeDelta = newTime - @ball[:lastUpdate] #ms
-		
-		remainingTime = timeDelta
-		while remainingTime > 0.0
-			remainingTime = setBallBeforeBounce(remainingTime, timeDelta - remainingTime)
+	def updateBall(now, totalTime)
+		ballData = {
+			remainingTime: totalTime,
+			elapsedTime: 0.0,
+			hit: false,
+			status: "running"
+		}
+		while ballData[:status] == "running"
+			setBallBeforeBounce(ballData)
+			ballData[:elapsedTime] = totalTime - ballData[:remainingTime]
 		end
-		if remainingTime > -1.0
-			@ball[:lastUpdate] = newTime
-			broadcastBall()
+		if ballData[:hit] then broadcastMatch() end
+		if ballData[:status] == "score" then @match[:status] = "scoring" end
+	end
+
+	def ballTouchBorder(ballRemainingTime, timeToBorder)
+		timeToBorder <= ballRemainingTime
+	end
+
+	def ballTouchVertBeforeHori(timeToTopBottom, timeToLeftRight)
+		timeToTopBottom < timeToLeftRight
+	end
+
+	def updateBallSpeed
+		if @match[:ball_speed] < @BALL[:max_speed]
+			@match[:ball_speed] *= @BALL[:speed_multiplier]
 		end
 	end
 
-	def setBallBeforeBounce(remainingTime, elapsedTime)
+	def setBallBeforeBounce(ballData)
 		timeToTopBottom, timeToLeftRight = getTraveledTime()
-		minTime = [timeToTopBottom, timeToLeftRight].min
-		side = @ball[:deltaX] < 0 ? :left : :right
+		side = @match[:ball_dx] < 0 ? :left : :right
 
-		if remainingTime < minTime
-			updateBallPosition(remainingTime * @ball[:speed])
-			remainingTime = 0.0
-		elsif timeToTopBottom < timeToLeftRight
-			updateBallPosition(timeToTopBottom * @ball[:speed])
-			@ball[:deltaY] *= -1.0
-			remainingTime -= timeToTopBottom
-		else #above left or right limit
-			time = @ball[:lastUpdate] + elapsedTime + timeToLeftRight - @paddles[side][:lastUpdate]
-			movePaddle(side, @paddles[side][:dir], time * @paddles[:speed])
-			updateBallPosition(timeToLeftRight * @ball[:speed])
+		if not ballTouchBorder(ballData[:remainingTime], [timeToTopBottom, timeToLeftRight].min)
+			updateBallPosition(ballData[:remainingTime] * @match[:ball_speed])
+			ballData[:status] = "stop"
+		elsif ballTouchVertBeforeHori(timeToTopBottom, timeToLeftRight)
+			updateBallPosition(timeToTopBottom * @match[:ball_speed])
+			@match[:ball_dy] *= -1.0
+			ballData[:remainingTime] -= timeToTopBottom
+			ballData[:hit] = true
+		else #touch hori
+			updateBallPosition(timeToLeftRight * @match[:ball_speed])
 			if ballHitPaddle(side)
 				updateBallDirection(side)
-				if @ball[:speed] < @MAX_BALL_SPEED
-					@ball[:speed] *= @BALL_SPEED_MULTIPLIER
-				end
+				updateBallSpeed()
+				ballData[:hit] = true
 			else
-				score(side)
-				return -1.0
+				ballData[:status] = "score"
 			end
-			remainingTime -= timeToLeftRight
+			ballData[:remainingTime] -= timeToLeftRight
 		end
-		return remainingTime
 	end
 
 	def updateBallPosition(traveledDistance)
-		@ball[:posX] += traveledDistance * @ball[:deltaX]
-		@ball[:posY] += traveledDistance * @ball[:deltaY]
+		@match[:ball_x] += traveledDistance * @match[:ball_dx]
+		@match[:ball_y] += traveledDistance * @match[:ball_dy]
 	end
 
 	def updateBallDirection(side)
-		distBallPaddleCenter = getDistBallPaddleCenter(side)
-		@ball[:deltaX] = (side == :left ? 1 : -1) * (@minAngle[:dx] - @angleIncrement[:dx] * distBallPaddleCenter)
-		@ball[:deltaY] = (@ball[:deltaY] < 0 ? -1 : 1) * (@minAngle[:dy] + @angleIncrement[:dy] * distBallPaddleCenter)
+		distBallPaddleCenter = [getDistBallPaddleCenter(side), 100.0].min
+		@match[:ball_dx] = (side == :left ? 1 : -1) * (@ANGLE[:min_dx] - @ANGLE[:inc_x] * distBallPaddleCenter)
+		@match[:ball_dy] = (@match[:ball_dy] < 0 ? -1 : 1) * (@ANGLE[:min_dy] + @ANGLE[:inc_y] * distBallPaddleCenter)
 	end
 
 	def getDistBallPaddleCenter(side)
-		100 * (@paddles[side][:y] - @ball[:posY]).abs / (@paddles[:height] / 2.0)
+		if side == :left
+			100 * (@match[:left_paddle_y] - @match[:ball_y]).abs / (@PADDLES[:height] / 2.0)
+		else
+			100 * (@match[:right_paddle_y] - @match[:ball_y]).abs / (@PADDLES[:height] / 2.0)
+		end
 	end
 
 	def getTraveledTime
-		toTopBottom = @ball[:deltaY] > 0 ? \
-		(@ball[:bottomLimit] - @ball[:posY]) / @ball[:deltaY] \
-		: (@ball[:posY] - @ball[:topLimit]) / -@ball[:deltaY]
-		toLeftRight = @ball[:deltaX] > 0 ? \
-		(@ball[:rightLimit] - @ball[:posX]) / @ball[:deltaX] \
-		: (@ball[:posX] - @ball[:leftLimit]) / -@ball[:deltaX]
-		return toTopBottom / @ball[:speed], toLeftRight / @ball[:speed]
-	end
-
-	def broadcastBall
-		ActionCable.server.broadcast "pong_channel", content: {
-			act: 'ballUpdate',
-			ball: @ball
-		}
+		toTopBottom = @match[:ball_dy] > 0 ? \
+		(@BALL[:bottomLimit] - @match[:ball_y]) / @match[:ball_dy] \
+		: (@match[:ball_y] - @BALL[:topLimit]) / -@match[:ball_dy]
+		toLeftRight = @match[:ball_dx] > 0 ? \
+		(@BALL[:rightLimit] - @match[:ball_x]) / @match[:ball_dx] \
+		: (@match[:ball_x] - @BALL[:leftLimit]) / -@match[:ball_dx]
+		return toTopBottom / @match[:ball_speed], toLeftRight / @match[:ball_speed]
 	end
 
 	def ballHitPaddle(side)
-		return true
-		@ball[:posY] + @ball[:radius] >= @paddles[side][:y] - @paddles[:height] / 2 \
-		and @ball[:posY] - @ball[:radius] <= @paddles[side][:y] + @paddles[:height] / 2
-	end
-
-	def score(side)
-		puts 'score'
-		@scheduler.stop
-		start()
-	end
-
-	def calculatePaddlePosition(paddle)
-		if paddle[:lastUpdate] == 0
-			return
+		if side == :left
+			@match[:ball_y] + @BALL[:radius] >= @match[:left_paddle_y] - @PADDLES[:height] / 2 \
+			and @match[:ball_y] - @BALL[:radius] <= @match[:left_paddle_y] + @PADDLES[:height] / 2
+		else
+			@match[:ball_y] + @BALL[:radius] >= @match[:right_paddle_y] - @PADDLES[:height] / 2 \
+			and @match[:ball_y] - @BALL[:radius] <= @match[:right_paddle_y] + @PADDLES[:height] / 2
 		end
-		timeDelta = newTime - paddle[:lastUpdate]
-
-		if paddle[:dir] == "up"
-			paddle[:y] -= timeDelta * @paddles[:speed]
-		elsif paddle[:dir] == "down"
-			paddle[:y] += timeDelta * @paddles[:speed]
-		end
-		handlePaddleOverflow()
 	end
 
+	def score()
+		if @match[:ball_x] < 50.0 then @match[:right_score] += 1 else @match[:left_score] += 1 end
+		saveMatchToDB()
+		PongChannel.broadcast_to @match, content: {
+			act: 'score',
+			match: @match
+		}
+		if @match[:left_score] >= 3 or @match[:right_score] >= 3
+			@match[:status] = "finished"
+			saveMatchToDB()
+			broadcastMatchEnd()
+			killScheduler(:gameLoop)
+		else
+			resetMatch()
+		end
+	end
+
+	def broadcastMatchEnd
+		PongChannel.broadcast_to(@match, content: {
+			act: "end",
+			match: @match
+		})
+	end
 end

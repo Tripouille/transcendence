@@ -35,7 +35,7 @@ export const GuildNewView = Backbone.View.extend({
 							success: function (userModel, resp, options) {
 								console.log("The guild_id has been saved to the user");
 								/* A MODIFIER amener sur la page de la guilde nouvellement créée et non sur la liste des guilde */
-								Backbone.history.router.navigate("guilds", { trigger: true });
+								Backbone.history.navigate("guilds", { trigger: true });
 							},
 							error: function (userModel, resp, options) {
 								console.log("Something went wrong while saving the guild_id to the user");

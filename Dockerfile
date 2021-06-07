@@ -1,16 +1,11 @@
 FROM alpine
 
-ENV FT_ID f4b37cbaf338086eb088d7718e257cc856bb60c3758ca802a941ce8ed8c35ba9
-ENV FT_SECRET eca37713c88c7150d8032c0ce111a5ac5e5d1d640e4bb4fccdf379109924f5c5
+#ENV FT_ID f4b37cbaf338086eb088d7718e257cc856bb60c3758ca802a941ce8ed8c35ba9
+#ENV FT_SECRET eca37713c88c7150d8032c0ce111a5ac5e5d1d640e4bb4fccdf379109924f5c5
+ENV FT_ID 08945e8a1ae27ef838e519617ecf3f5e3037a75dfb16804532ca69fa061b725e
+ENV FT_SECRET 534eb12ccf1396dbc5252790b60d4b9b812eca31d18e03d294430d7cfd7bcc21
 
 RUN apk -U upgrade && apk add build-base ruby-full ruby-dev zlib-dev postgresql-dev nodejs yarn tzdata postgresql
-
-# Ruby on Rails
-RUN gem install pg rails
-COPY www/ /www/
-WORKDIR /www
-RUN bundle install
-RUN bundle exec rake webpacker:install
 
 # Postgresql
 RUN su -c "initdb /var/lib/postgresql/data" - postgres
@@ -36,5 +31,12 @@ RUN mv /var/www/localhost/htdocs/adminer-4.8.0.php /var/www/localhost/htdocs/ind
 	&& mkdir /var/run/lighttpd \
     && touch /var/run/lighttpd/php-fastcgi.socket \
     && chown -R lighttpd:lighttpd /var/run/lighttpd
+
+# Ruby on Rails
+RUN gem install pg rails
+COPY www/ /www/
+WORKDIR /www
+RUN bundle install
+RUN echo "n" | bundle exec rake webpacker:install
 
 COPY srcs/launch.sh /
