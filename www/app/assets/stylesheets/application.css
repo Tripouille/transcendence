@@ -10,10 +10,12 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
+ *= require normalize-rails
  *= require_tree .
  *= require_self
  */
 
+<<<<<<< HEAD
 * {
   --bg-color: black;
   --second-bg-color: black;
@@ -24,6 +26,13 @@
   --text-color: lightgreen;
   --left-color: red;
   --right-color: rgb(240, 230, 20);
+=======
+ * {
+	--bg-color: black;
+	--second-bg-color: black;
+	--element-color: darkgreen;
+	--text-color: lightgreen;
+>>>>>>> f22944aa01efa5426160bde7e2a2eb7cc52010c9
 }
 
 @font-face {
@@ -31,6 +40,7 @@
   src: url("ScreenMatrix.ttf");
 }
 
+<<<<<<< HEAD
 p {
   margin: 0;
 }
@@ -45,10 +55,18 @@ body {
   margin: 0;
 }
 
+=======
+html {
+	height: 99.9%;
+	font-size: 1rem;
+}
+
+>>>>>>> f22944aa01efa5426160bde7e2a2eb7cc52010c9
 body {
 	height: 100%;
 	background-color: var(--bg-color);
 	color: white;
+<<<<<<< HEAD
 }
 
 main {
@@ -162,22 +180,38 @@ main a {
   height: 100%;
   width: 100%;
   bottom: 50%;
+=======
+	font-family: 'screen';
 }
 
-#game #timer {
-	color: green;
-	text-align: center;
-	font-size: 15em;
-	line-height: 100%;
+main {
+	position: absolute;
+	bottom: 0;
+	height: 90%;
+	width: 90%;
+	color: white;
+>>>>>>> f22944aa01efa5426160bde7e2a2eb7cc52010c9
 }
 
-#lobby #timer {
-	font-size: 15em;
-	display: none;
+p {
+	margin: 0;
 }
 
+a {
+	color: white;
+}
+
+<<<<<<< HEAD
 @media (max-width: 800px) {
   .player_infos img {
     display: none;
   }
 }
+=======
+button {
+	padding: 0;
+	border: none;
+	outline: none;
+	color: inherit;
+}
+>>>>>>> f22944aa01efa5426160bde7e2a2eb7cc52010c9

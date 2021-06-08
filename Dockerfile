@@ -1,42 +1,35 @@
-FROM alpine
+FROM debian:buster
+RUN apt update && apt -y full-upgrade && apt install -y aptitude
+RUN aptitude install -y curl wget gcc make
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && aptitude update
 
-#ENV FT_ID f4b37cbaf338086eb088d7718e257cc856bb60c3758ca802a941ce8ed8c35ba9
-#ENV FT_SECRET eca37713c88c7150d8032c0ce111a5ac5e5d1d640e4bb4fccdf379109924f5c5
-ENV FT_ID 08945e8a1ae27ef838e519617ecf3f5e3037a75dfb16804532ca69fa061b725e
-ENV FT_SECRET 534eb12ccf1396dbc5252790b60d4b9b812eca31d18e03d294430d7cfd7bcc21
-
-RUN apk -U upgrade && apk add build-base ruby-full ruby-dev zlib-dev postgresql-dev nodejs yarn tzdata postgresql
-
-# Postgresql
-RUN su -c "initdb /var/lib/postgresql/data" - postgres
-COPY srcs/pg_hba.conf /var/lib/postgresql/data/
-COPY srcs/postgresql.conf /var/lib/postgresql/data/
-RUN chmod -R 700 /var/lib/postgresql/data/ \
-	&& chown -R postgres:postgres /var/lib/postgresql/data/ \
-	&& mkdir -p /var/run/postgresql \
-	&& chown -R postgres:postgres /var/run/postgresql/
-RUN su -c "pg_ctl start -D /var/lib/postgresql/data" - postgres \
-	&& echo "create user trans with encrypted password 'trans';" | su -c "psql" - postgres \
-	&& echo "create database trans;" | su -c "psql" - postgres \
-	&& echo "grant all privileges on database trans to trans;" | su -c "psql" - postgres
-
-# phppgadmin
-RUN apk add lighttpd php7-common php7-session php7-iconv php7-json php7-gd php7-curl \
-php7-xml php7-mysqli php7-imap php7-cgi fcgi php7-pdo php7-pdo_mysql php7-soap \
-php7-xmlrpc php7-posix php7-mcrypt php7-gettext php7-ldap php7-ctype php7-dom \
-postgresql postgresql-client php-pgsql php-mbstring
-COPY srcs/lighttpd.conf /etc/lighttpd/lighttpd.conf
-COPY srcs/adminer-4.8.0.php /var/www/localhost/htdocs/
-RUN mv /var/www/localhost/htdocs/adminer-4.8.0.php /var/www/localhost/htdocs/index.php \
-	&& mkdir /var/run/lighttpd \
-    && touch /var/run/lighttpd/php-fastcgi.socket \
-    && chown -R lighttpd:lighttpd /var/run/lighttpd
-
-# Ruby on Rails
+#[Rails]
+USER root
+WORKDIR /usr/local
+RUN wget -O ruby-install-0.8.1.tar.gz https://github.com/postmodern/ruby-install/archive/v0.8.1.tar.gz && tar -xzvf ruby-install-0.8.1.tar.gz && rm -f ruby-install-0.8.1.tar.gz
+RUN make install -C ruby-install-0.8.1 && ruby-install --system ruby 3.0.1
+RUN gem update --system 
+RUN aptitude install -y nodejs yarn libpq-dev
 RUN gem install pg rails
-COPY www/ /www/
-WORKDIR /www
-RUN bundle install
-RUN echo "n" | bundle exec rake webpacker:install
 
-COPY srcs/launch.sh /
+#[Postgresql]
+RUN aptitude install -y postgresql postgresql-client
+USER postgres
+WORKDIR /etc/postgresql/11/main/
+COPY --chown=postgres:postgres srcs/pg_hba.conf .
+COPY --chown=postgres:postgres srcs/postgresql.conf .
+RUN service postgresql start && createuser root && createuser admin && createdb transcendence -O admin
+
+#[Redis]
+USER root
+RUN aptitude install -y redis
+
+#[Dependencies]
+WORKDIR /www
+COPY www/Gemfile .
+RUN bundle install --jobs 42 --no-prune
+COPY www/package.json .
+RUN yarn
+
+COPY srcs/start.sh /

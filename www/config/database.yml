@@ -19,10 +19,10 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: 40
-  socket: /tmp/.s.PGSQL.5432
-  username: trans
-  database: trans
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  socket: /var/run/postgresql/.s.PGSQL.5432
+  database: transcendence
+
 
 development:
   <<: *default
@@ -82,5 +82,3 @@ test:
 #
 production:
   <<: *default
-  #username: www
-  #password: <%= ENV['WWW_DATABASE_PASSWORD'] %>

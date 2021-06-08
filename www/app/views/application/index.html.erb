@@ -1,19 +1,2 @@
-<header id="mainNav">
-	<ul>
-		<a href=""><li>Game</li></a>
-		<a href="#competition"><li>Competition</li></a>
-		<a href="#guilds" id="guildsNav"><li>Guilds</li></a>
-		<a href="#admin"><li>Admin</li></a>
-		<a href="#sign-in">
-			<li>
-				<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path unless current_user %>
-				<%= link_to "Sign out", destroy_user_session_path, method: :delete if current_user %>
-				Session = <%= @session.inspect %>
-			</li>
-		</a>
-	</ul>
-</header>
-
-<main></main>
-
-<footer></footer>
+<main>
+</main>

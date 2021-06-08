@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2021_05_26_102611) do
     t.bigint "right_player"
     t.integer "left_score", default: 0
     t.integer "right_score", default: 0
+    t.bigint "winner"
     t.string "status", default: "lobby"
     t.decimal "left_paddle_y", precision: 20, scale: 5, default: "50.0"
     t.string "left_paddle_dir", default: "stop"

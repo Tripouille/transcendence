@@ -35,8 +35,9 @@ class PongChannel < ApplicationCable::Channel
 	def subscribed
 		@matchId = params["match_id"]
 		updateMatchFromDB()
-		stream_for @match
+		reject if @match[:status] == "finished"
 
+		stream_for @match
 		if ["lobby", "ready"].include? @match[:status]
 			if playerIsLeft()
 				registerLeftPlayer()
@@ -44,11 +45,20 @@ class PongChannel < ApplicationCable::Channel
 			elsif playerIsRight()
 				registerRightPlayer()
 			end
+		elsif not playerIsLeft() and not playerIsRight()
+			broadcastInitialize()
 		end
 	end
 
 	def unsubscribed
 		puts @SIDE.to_s + ' unsubscribing'
+		updateMatchFromDB()
+		if @match[:status] != "finished"
+			@match[:status] = "finished"
+			@match[:winner] = @SIDE == "left" ? @match[:right_player] : @match[:left_player] 
+			saveMatchToDB()
+			broadcastMatchEnd(normal: false)
+		end
 		@schedulers.each do |key, scheduler|
 			scheduler.unschedule
 			scheduler.kill
@@ -79,7 +89,19 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def waitForOpponent
-		players = {
+		setPlayers()
+		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
+			if @match[:status] == "ready"
+				broadcastInitialize()
+				start()
+				killScheduler(:waitForOpponent)
+			end
+			updateMatchFromDB()
+		end
+	end
+
+	def setPlayers()
+		@players = {
 			left: {
 				login: User.find(@match[:left_player]).login
 			},
@@ -87,21 +109,18 @@ class PongChannel < ApplicationCable::Channel
 				login: User.find(@match[:right_player]).login
 			}
 		}
-		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
-			if @match[:status] == "ready"
-				PongChannel.broadcast_to @match, content: {
-					act: 'initialize',
-					match: @match,
-					players: players,
-					paddles: @PADDLES,
-					ball: @BALL,
-					angles: @ANGLE
-				}
-				start()
-				killScheduler(:waitForOpponent)
-			end
-			updateMatchFromDB()
-		end
+	end
+
+	def broadcastInitialize
+		setPlayers()
+		PongChannel.broadcast_to @match, content: {
+			act: 'initialize',
+			match: @match,
+			players: @players,
+			paddles: @PADDLES,
+			ball: @BALL,
+			angles: @ANGLE
+		}
 	end
 
 	def killScheduler(key)
@@ -185,10 +204,15 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def gameLoop
-		@schedulers[:gameLoop] = Rufus::Scheduler.new(frequency: "0.1s").schedule_every('0.3s') do
+		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.3s') do
+			updateMatchFromDB()
 			if @match[:status] == "playing"
-				updateMatchFromDB()
 				updateMatch()
+			elsif @match[:status] == "finished"
+				broadcastMatchEnd()
+				killScheduler(:timer)
+				stop_stream_for @match
+				killScheduler(:gameLoop)
 			end
 		end
 	end
@@ -356,6 +380,7 @@ class PongChannel < ApplicationCable::Channel
 		}
 		if @match[:left_score] >= 3 or @match[:right_score] >= 3
 			@match[:status] = "finished"
+			@match[:winner] = @match[:left_score] >= 3 ? @match[:left_player] : @match[:right_player]
 			saveMatchToDB()
 			broadcastMatchEnd()
 			killScheduler(:gameLoop)
@@ -364,10 +389,11 @@ class PongChannel < ApplicationCable::Channel
 		end
 	end
 
-	def broadcastMatchEnd
+	def broadcastMatchEnd(normal: true)
 		PongChannel.broadcast_to(@match, content: {
 			act: "end",
-			match: @match
+			match: @match,
+			normal: normal
 		})
 	end
 end

@@ -2,12 +2,13 @@ import { HomepageView } from 'views/homepage';
 import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
+import * as GC from 'views/garbage_collector';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import LobbyView from 'views/lobby';
 import GameView from 'views/game';
 import { User } from 'models/user';
-import * as GC from 'views/garbage_collector';
+import * as Pong from 'views/animations/game';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -41,11 +42,15 @@ $(function () {
 			"users": "users"
 		},
 		execute: function(callback, args, name) {
-			GC.clearTimeoutsIntervals();
 			$main.empty();
+			Pong.removeSubscription();
+			this.clearAnimations();
+			callback.apply(this, args);
+		},
+		clearAnimations: function() {
+			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
-			callback.apply(this, args);
 		},
 
 		guilds: function () {

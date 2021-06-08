@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Www</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+	<head>
+		<title>Transcendence</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<%= csrf_meta_tags %>
+		<%= csp_meta_tag %>
 
   	<%= render 'templates/main' %>
   	<%= render 'templates/guilds' %>
@@ -20,7 +20,37 @@
 
   </head>
 
-  <body>
-    <%= yield %>
-  </body>
+	<body>
+		<nav>
+			<a id="game_link" href="#game">Game</a>
+			<a id="rank_link" href="#game">Rank</a>
+			<a id="guild_link" href="#game">Guild</a>
+			<button id="account_button" href="#game">
+				<img src="assets/default.png" alt="Avatar" width="100" height="100">
+				<div id="account_menu">
+					<% if current_user then %>
+						<%= link_to "Modify account", "#game" %>
+						<%= link_to "Test for a big textttttttt", "#game" %>
+						<%= link_to "Sign out", destroy_user_session_path, method: :delete %>
+					<% else %>
+						<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path %>
+					<% end %>
+				</div>
+			</div>
+		</nav>
+		<div>
+			Session = <%= @session.inspect %> <br>
+		</div>
+		<button id="contacts_button">Contacts</button>
+		<aside id="contacts">
+			<p>Joueur 1</p>
+			<p>Joueur 2</p>
+			<p>Joueur 3</p>
+			<p>Joueur 4</p>
+		</aside>
+		<aside id="tchat">
+			<p>Tchat</p>
+		</aside>
+		<%= yield %>
+	</body>
 </html>
