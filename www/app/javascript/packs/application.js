@@ -26,9 +26,5 @@ Backbone.sync = function (method, model, options) {
   return Backbone._sync(method, model, options);
 };
 
-<<<<<<< HEAD
-require('router');
-=======
 require('views/animations/layout');
 require('router');
->>>>>>> f22944aa01efa5426160bde7e2a2eb7cc52010c9
