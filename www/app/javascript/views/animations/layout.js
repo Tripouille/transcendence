@@ -2,22 +2,17 @@ let $contacts, $contacts_button;
 let contacts_out = true;
 
 export function foldContacts() {
-	if (!$contacts) return ;
 	contacts_out = false;
-	$contacts.addClass('folded');
+	$contacts.addClass('folded'); //transformer en .css si qu'1 propriété
+	//$contacts_button.addClass('folded', 1000);
 	$contacts.animate({
-		'height': 0,
-		'padding-top': 0
-		}, function() {
-			$contacts.toggle();
-			$contacts_button.addClass('folded');
+			'height': '6%'
+		},
+		400,
+		function() {
+			//$contacts_button.addClass('folded');
 		}
 	);
-	$contacts_button.animate({
-		'border-bottom': '$border-width groove $border-color',
-		'border-bottom-left-radius': '20px',
-		'border-bottom-right-radius': '20px'
-	});
 }
 
 $(function() {
@@ -43,6 +38,7 @@ $(function() {
 	$contacts_button = $('#contacts_button');
 	$contacts = $('#contacts');
 	$contacts_button.on('click', function() {
+		console.log('click on contacts button');
 		contacts_out = !contacts_out;
 		if (contacts_out) {
 			$contacts_button.removeClass('folded');
@@ -57,6 +53,5 @@ $(function() {
 		}
 		else
 			foldContacts();
-		$contacts.addClass('red', 1000); //test en cours
 	});
 });
