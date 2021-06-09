@@ -1,4 +1,5 @@
 import * as Pong from './animations/game';
+import * as Layout from './animations/layout';
 
 const GameView = Backbone.View.extend({
 	template: _.template($('#gameTemplate').html()),
@@ -6,6 +7,7 @@ const GameView = Backbone.View.extend({
     render: function(matchId) {
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
+		Layout.foldContacts();
         $.ajax('matchside/' + matchId, {
             success: function(data) {
 				console.log('from game view : ', data);

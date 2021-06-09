@@ -36,14 +36,18 @@ body {
 	background-color: var(--bg-color);
 	color: white;
 	font-family: 'screen';
+	margin: 0;
 }
 
 main {
 	position: absolute;
-	bottom: 0;
+	top: 10%;
+	padding: 10px;
 	height: 90%;
-	width: 90%;
+	min-height: 270px;
+	width: 100%;
 	color: white;
+	box-sizing: border-box;
 }
 
 p {
@@ -59,4 +63,5 @@ button {
 	border: none;
 	outline: none;
 	color: inherit;
+	font-family: inherit;
 }

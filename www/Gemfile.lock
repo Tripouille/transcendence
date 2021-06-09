@@ -132,7 +132,6 @@ GEM
     nio4r (2.5.7)
     nokogiri (1.11.7-x86_64-linux)
       racc (~> 1.4)
-    normalize-rails (8.0.1)
     oauth2 (1.4.7)
       faraday (>= 0.8, < 2.0)
       jwt (>= 1.0, < 3.0)
@@ -278,7 +277,6 @@ DEPENDENCIES
   devise
   jbuilder (~> 2.7)
   listen (~> 3.3)
-  normalize-rails
   omniauth-marvin (~> 1.2.0)
   pg (~> 1.1)
   puma (~> 5.0)

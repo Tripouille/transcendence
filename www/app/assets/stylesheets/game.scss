@@ -6,16 +6,20 @@
 	--right-color: rgb(240, 230, 20);
 }
 
-#game, #game_container {
-	// height: 100%;
-	// width: 100%;
+#game,
+#game #game_container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 }
-	
+
 #game {
+	#game_container {
+		height: 100%;
+		visibility: hidden;
+	}
+
 	#game_area,
 	#player_infos_container {
 		background-color: var(--second-bg-color);

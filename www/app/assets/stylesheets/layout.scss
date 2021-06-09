@@ -11,7 +11,7 @@ nav {
 	margin: 0 auto;
 	width: 50%;
 	min-width: 500px;
-	height: 10vh;
+	height: 10%;
 	min-height: 40px;
 	margin: auto;
 	display: flex;
@@ -25,6 +25,7 @@ nav {
 	border-bottom-left-radius: 20px;
 	border-bottom-right-radius: 20px;
 	z-index: 2;
+	box-sizing: border-box;
 
 	a {
 		text-decoration: none;
