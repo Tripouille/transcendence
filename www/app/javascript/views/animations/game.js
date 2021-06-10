@@ -79,7 +79,7 @@ function resizeGameArea() {
 	const ratio = 2.0;
 	const maxWidth = $(window).height() * 0.75 * ratio;
 	if ($(window).width() < maxWidth) {
-		$gameContainer.css('width', '100%');
+		$gameContainer.css('width', '75%');
 		$gameArea.css('height', $gameArea.width() / ratio);
 	}
 	else {
@@ -99,6 +99,7 @@ function initializeFromServer(data) {
 	// Initialize players infos
 	$('#player_infos_left .name').text(data.players.left.login);
 	$('#player_infos_right .name').text(data.players.right.login);
+	$gameContainer.css('visibility', 'visible');
 
 	// Initialize paddle infos
 	paddleSpeed = data.paddles.speed;
