@@ -2,16 +2,19 @@ $verydarkgreen: rgb(0, 70, 0);
 $border-color: rgb(0, 124, 50);
 $border-width: 8px;
 $bg-color: $verydarkgreen;
+$nav-height: 10%;
+$nav-font-size: 3vh;
+$nav-top-position: 1%;
 
 nav {
 	position: fixed;
-	top: 1%;
+	top: $nav-top-position;
 	left: 0;
 	right: 0;
 	margin: 0 auto;
 	width: 50%;
 	min-width: 500px;
-	height: 10%;
+	height: $nav-height;
 	min-height: 40px;
 	margin: auto;
 	display: flex;
@@ -22,9 +25,9 @@ nav {
 	border-width: $border-width;
 	border-color: $border-color;
 	border-style: ridge groove groove ridge;
-	border-radius: 20px;
 	z-index: 2;
 	box-sizing: border-box;
+	font-size: $nav-font-size;
 
 	a {
 		text-decoration: none;
@@ -38,7 +41,6 @@ nav {
 		width: 8vh;
 		min-width: 32px;
 		text-align: center;
-		font-size: 3vh;
 		box-sizing: border-box;
 		text-transform: uppercase;
 	}
@@ -141,40 +143,28 @@ nav {
 	background-color: $bg-color;
 	border-width: $border-width;
 	border-color: $border-color;
+	box-sizing: border-box;
 }
 #contacts {
 	@extend %contacts;
-	box-sizing: border-box;
-	top: 4%;
+	top: 10%;
 	height: 65%;
 	z-index: 2;
 	border-style: none groove groove ridge;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
 	background-color: $bg-color;
-	padding-top: 3%;
+	padding-top: 1%;
 	overflow: auto;
-	&.folded {
-		overflow: hidden;
-	}
 }
 #contacts_button {
 	@extend %contacts;
-	box-sizing: border-box;
-	top: 2%;
-	height: 7%;
-	padding-top: 0.5%;
+	font-size: $nav-font-size;
+	top: $nav-top-position;
+	height: $nav-height;
 	border-style: ridge groove none ridge;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
 	text-transform: uppercase;
 	z-index: 3;
 	&:hover {
 		cursor: pointer;
-	}
-	&.folded {
-		border-bottom-style: groove;
-		border-radius: 20px;
 	}
 }
 
