@@ -26,10 +26,12 @@ USER root
 RUN aptitude install -y redis
 
 #[Dependencies]
+COPY www /
 WORKDIR /www
-COPY www/Gemfile .
-RUN bundle install --jobs 42 --no-prune
-COPY www/package.json .
-RUN yarn
+RUN bundle install --jobs 42
+ENV REDIS_DB 0
+ENV REDIS_URL redis://127.0.0.1
+ENV REDIS_PORT 6379
+RUN bundle exec rake webpacker:install
 
 COPY srcs/start.sh /
