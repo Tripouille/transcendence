@@ -21,10 +21,10 @@ class GuildsController < ApplicationController
 
   # POST /guilds or /guilds.json
   def create
-    @guild = Guild.new(guild_params)
+    @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation
 
     respond_to do |format|
-      if @guild.save
+      if self.check_user && self.set_owner_id && @guild.save && self.set_guild_id        
         format.html { redirect_to @guild, notice: "Guild was successfully created." }
         format.json { render :show, status: :created, location: @guild }
       else
@@ -37,7 +37,7 @@ class GuildsController < ApplicationController
   # PATCH/PUT /guilds/1 or /guilds/1.json
   def update
     respond_to do |format|
-      if @guild.update(guild_params)
+      if self.check_owner_user && @guild.update(params.require(:guild).permit(:name, :anagram))
         format.html { redirect_to @guild, notice: "Guild was successfully updated." }
         format.json { render :show, status: :ok, location: @guild }
       else
@@ -49,10 +49,11 @@ class GuildsController < ApplicationController
 
   # DELETE /guilds/1 or /guilds/1.json
   def destroy
-    @guild.destroy
-    respond_to do |format|
-      format.html { redirect_to guilds_url, notice: "Guild was successfully destroyed." }
-      format.json { head :no_content }
+    if self.check_owner_user && @guild.destroy
+      respond_to do |format|
+        format.html { redirect_to guilds_url, notice: "Guild was successfully destroyed." }
+        format.json { head :no_content }
+      end
     end
   end
 
@@ -64,6 +65,34 @@ class GuildsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def guild_params
-      params.require(:guild).permit(:name, :anagram, :score, :owner_id)
+      params.require(:guild).permit(:name, :anagram, :score)
     end
+
+    # A function to check if user is authenticated and if the user doesn't have a guild yet
+    def check_user
+      return (session[:user_id] && User.find(session[:user_id]) && !User.find(session[:user_id])[:guild_id]) ? 1 : nil
+    end
+
+    # A function to check if user is authenticated as the guild owner
+    def check_owner_user
+      return (session[:user_id] && User.find(session[:user_id]) && @guild[:owner_id] == session[:user_id]) ? 1 : nil
+    end
+
+    # A function to set the owner_id corresponding to the current session user id
+    def set_owner_id
+      @guild[:owner_id] = session[:user_id]
+      return 1
+    end
+
+    # A function to set the owner_id corresponding to the current session user id
+    def set_guild_id
+      @user = User.find(session[:user_id])
+      @user[:guild_id] = @guild[:id]
+      if @user.save
+        return 1
+      else
+        @guild.destroy
+      end
+    end
+
 end

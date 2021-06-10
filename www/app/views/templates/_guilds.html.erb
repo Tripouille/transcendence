@@ -136,3 +136,31 @@
 		</div>
 	</form>
 </script>
+
+<!-- Template for guild Invites -->
+<script id="guildInvitesTemplate" type="text/template">
+	<p>Pending Invites</p>
+	<table id="guildInvitesTable">
+		<thead>
+			<tr>
+				<th>username</th>
+				<th>MMR</th>
+				<th>Invite Date</th>
+				<th>Accept</th>
+				<th>Refuse</th>
+			</tr>
+		</thead>
+		<tbody id="guildInvitesBody">
+		</tbody>
+	</table>
+</script>
+
+<script id="guildInviteRow" type="text/template">
+	<tr>
+		<td><%%= username %></td>
+		<td><%%= mmr %></td>
+		<td><%%= created_at %></td>
+		<td id="<%%= accept %>">Accept</td>
+		<td id="<%%= refuse %>">Refuse</td>
+	</tr>
+</script>

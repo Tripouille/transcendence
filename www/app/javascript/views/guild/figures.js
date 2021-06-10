@@ -7,6 +7,7 @@ export const FiguresView = Backbone.View.extend({
     template: _.template($('#guildFiguresTemplate').html()),
 
     render: function(guildId) {
+        this.$el.empty();
         let el = this.$el;
         let self = this;
 
