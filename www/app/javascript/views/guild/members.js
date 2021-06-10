@@ -6,6 +6,7 @@ export const MembersView = Backbone.View.extend({
     template: _.template($('#guildMembersTemplate').html()),
 
     render: function(guildId) {
+        this.$el.empty();
         this.$el.html(this.template);
 
         let users = new Users();

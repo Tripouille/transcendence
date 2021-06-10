@@ -28,3 +28,4 @@ Backbone.sync = function (method, model, options) {
 
 require('views/animations/layout');
 require('router');
+require('packs/jquery.timeago'); /* additional jquery plugin library for displaying elapsed time */

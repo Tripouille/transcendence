@@ -2,16 +2,19 @@ $verydarkgreen: rgb(0, 70, 0);
 $border-color: rgb(0, 124, 50);
 $border-width: 8px;
 $bg-color: $verydarkgreen;
+$nav-height: 10%;
+$nav-font-size: 3vh;
+$nav-top-position: 1%;
 
 nav {
 	position: fixed;
-	top: 0;
+	top: $nav-top-position;
 	left: 0;
 	right: 0;
 	margin: 0 auto;
 	width: 50%;
 	min-width: 500px;
-	height: 10vh;
+	height: $nav-height;
 	min-height: 40px;
 	margin: auto;
 	display: flex;
@@ -19,12 +22,12 @@ nav {
 	justify-content: left;
 	align-items: center;
 	background-color: $bg-color;
-	border-left: $border-width ridge $border-color;
-	border-right: $border-width groove $border-color;
-	border-bottom: $border-width groove $border-color;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
+	border-width: $border-width;
+	border-color: $border-color;
+	border-style: ridge groove groove ridge;
 	z-index: 2;
+	box-sizing: border-box;
+	font-size: $nav-font-size;
 
 	a {
 		text-decoration: none;
@@ -38,7 +41,6 @@ nav {
 		width: 8vh;
 		min-width: 32px;
 		text-align: center;
-		font-size: 3vh;
 		box-sizing: border-box;
 		text-transform: uppercase;
 	}
@@ -65,7 +67,7 @@ nav {
 
 	#guild_link {
 		position: relative;
-		width: fit-content;
+		// width: fit-content;
 		padding: 0 8px;
 		display: flex;
 		flex-direction: column;
@@ -138,43 +140,31 @@ nav {
 	right: 1%;
 	width: 10%;
 	min-width: 30px;
+	background-color: $bg-color;
+	border-width: $border-width;
+	border-color: $border-color;
+	box-sizing: border-box;
 }
 #contacts {
 	@extend %contacts;
-	box-sizing: border-box;
-	top: 9%;
+	top: 10%;
 	height: 65%;
 	z-index: 2;
-	border-left: $border-width ridge $border-color;
-	border-right: $border-width groove $border-color;
-	border-bottom: $border-width groove $border-color;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
+	border-style: none groove groove ridge;
 	background-color: $bg-color;
 	padding-top: 1%;
 	overflow: auto;
-	&.folded {
-		overflow: hidden;
-	}
 }
 #contacts_button {
 	@extend %contacts;
-	top: 2%;
-	height: 8%;
-	background-color: $bg-color;
-	border-left: $border-width ridge $border-color;
-	border-right: $border-width groove $border-color;
-	border-top: $border-width ridge $border-color;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
+	font-size: $nav-font-size;
+	top: $nav-top-position;
+	height: $nav-height;
+	border-style: ridge groove none ridge;
 	text-transform: uppercase;
+	z-index: 3;
 	&:hover {
 		cursor: pointer;
-	}
-	&.folded {
-		border-bottom: $border-width groove $border-color;
-		border-bottom-left-radius: 20px;
-		border-bottom-right-radius: 20px;
 	}
 }
 

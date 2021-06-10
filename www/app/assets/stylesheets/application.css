@@ -10,12 +10,11 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
- *= require normalize-rails
  *= require_tree .
  *= require_self
  */
 
- * {
+* {
 	--bg-color: black;
 	--second-bg-color: black;
 	--element-color: darkgreen;
@@ -37,14 +36,18 @@ body {
 	background-color: var(--bg-color);
 	color: white;
 	font-family: 'screen';
+	margin: 0;
 }
 
 main {
 	position: absolute;
-	bottom: 0;
-	height: 90%;
-	width: 90%;
+	top: 11%;
+	padding: 10px;
+	height: 89%;
+	min-height: 270px;
+	width: 100%;
 	color: white;
+	box-sizing: border-box;
 }
 
 p {
@@ -60,4 +63,5 @@ button {
 	border: none;
 	outline: none;
 	color: inherit;
+	font-family: inherit;
 }

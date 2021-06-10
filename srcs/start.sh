@@ -15,7 +15,6 @@ redis-server --daemonize yes
 #Rails
 cd /www
 bundle install --jobs 42
-#echo "n" | rails webpacker:install
 rails db:migrate
 if [ "$RAILS_ENV" == "production" ]; then rails assets:precompile; fi
 rm -f /www/tmp/pids/server.pid
