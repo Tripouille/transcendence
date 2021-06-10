@@ -1,55 +1,51 @@
 // Place all the styles related to the Guilds controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+$verydarkgreen: rgb(0, 70, 0);
 
-header {
-  background-color: darkblue;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 300;
-  height: 40px;
-  display: grid;
-  grid-template-columns: 40px, 1fr, 40px;
-}
-/* li {
-	  color: royalblue;
-	  font-size: 30px;
-	  text-shadow: 2px 2px 1px slategray;
-	  list-style-type: none;
-  } */
-#mainNav {
-  position: absolute;
-  top: 0px;
-  padding-bottom: 10px;
-}
-#mainNav a {
-  color: rgb(214, 214, 214);
-  text-decoration: none;
-  font-variant: small-caps;
-  font-size: 1.3em;
-}
-#mainNav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  grid-gap: 10px;
-}
-#mainNav a:hover {
-  text-decoration: underline;
-}
 
-main {
-  margin-top: 50px;
-}
-#guildTable thead {
-  display:none;
-}
-#myGuildTableBody tr, #guildTableBody tr, #formSubmitNewGuild a {
-  cursor: pointer;
-}
-main form label, main p {
+// header {
+//   background-color: rgb(2, 47, 114);
+//   position: fixed;
+//   width: 100%;
+//   top: 0;
+//   z-index: 300;
+//   height: 40px;
+//   display: grid;
+//   grid-template-columns: 40px, 1fr, 40px;
+// }
+// /* li {
+// 	  color: royalblue;
+// 	  font-size: 30px;
+// 	  text-shadow: 2px 2px 1px slategray;
+// 	  list-style-type: none;
+//   } */
+// #mainNav {
+//   position: absolute;
+//   top: 0px;
+//   padding-bottom: 10px;
+// }
+// #mainNav a {
+//   color: rgb(214, 214, 214);
+//   text-decoration: none;
+//   font-variant: small-caps;
+//   font-size: 1.3em;
+// }
+// #mainNav ul {
+//   list-style: none;
+//   padding: 0;
+//   margin: 0;
+//   display: flex;
+//   grid-gap: 10px;
+// }
+// #mainNav a:hover {
+//   text-decoration: underline;
+// }
+
+// main {
+//   margin-top: 50px;
+// }
+main form label {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -62,7 +58,6 @@ main form .error {
 }
 .bandeau {
   color: rgb(175, 157, 0);
-  display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 5px 10px;
@@ -81,7 +76,7 @@ input {
   box-sizing:border-box;
 }
 .button {
-  background-color: #4CAF50;
+  background-color: $verydarkgreen;
   border: none;
   margin: 25px 10px;
   color: white;
@@ -91,4 +86,35 @@ input {
   justify-content: center;
   text-decoration: none;
   font-size: 16px;
+}
+.guildTable thead {
+  display:none;
+}
+#myGuildTableBody tr, #guildTableBody tr, #formSubmitNewGuild a {
+  cursor: pointer;
+}
+tbody, tbody tr {
+  border: none;
+  margin: 25px 10px;
+  padding: 15px 32px;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 16px;
+  display: table;
+  width: 100%;
+  box-sizing:border-box;
+}
+
+/* For Mobile */
+@media screen and (max-width: 1080px) {
+  main form label {
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* For Tablets */
+@media screen and (min-width: 540px) and (max-width: 780px) {
+  
 }
