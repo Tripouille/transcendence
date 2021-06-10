@@ -1,3 +1,2 @@
 /www/Gemfile.lock
 *.lock
-/.environment/default.env
