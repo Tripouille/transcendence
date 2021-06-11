@@ -26,24 +26,7 @@ export const GuildNewView = Backbone.View.extend({
 			model.save({}, {
 				success: function (model, response, options) {
 					console.log("Succes saving guild model");
-					window.currentUser.fetch().done(function () {
-						/* A VERIFIER si l'utilisateur ne possede pas deja une guild_id sinon supprimer la guilde qui vient d'etre save et renvoyer un message d'erreur */
-						window.currentUser.set('guild_id', model.get('id'));
-						let routeId = "guilds/" + model.get('id');
-						if (window.currentUser.isValid() != true)
-							model.destroy();
-							window.currentUser.save({}, {
-							success: function (userModel, resp, options) {
-								console.log("The guild_id has been saved to the user");
-								Backbone.history.navigate(routeId, { trigger: true });
-							},
-							error: function (userModel, resp, options) {
-								console.log("Something went wrong while saving the guild_id to the user");
-								console.log(resp.responseText);
-								model.destroy(); // VERIFIER si fonctionnel
-							}
-						});
-					});
+					Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
 				},
 				error: function (model, response, options) {
 					console.log("Something went wrong while saving the new guild");
@@ -83,8 +66,8 @@ export const GuildNewView = Backbone.View.extend({
 	/* validate the labels on the go */
 	validateOnChange: function (attr) {
 		if (attr.name == "name") {
-			if (attr.value == "" || attr.value.length < 5 || attr.value.length > 30) {
-				return "Guild name must be between 5 and 30 characters long."
+			if (attr.value == "" || attr.value.length < 2 || attr.value.length > 30) {
+				return "Guild name must be between 2 and 30 characters long."
 			}
 		}
 		if (attr.name == "anagram") {

@@ -30,4 +30,17 @@ export const User = Backbone.Model.extend({
 	// 	});
 	// 	Backbone.Model.prototype.save.call(this, attributes, options);
 	// }
+
+	/* A function to call to kick members from their guild: modification of their own guild_id value */
+	kick: function (evt) {
+		Backbone.sync("patch", evt.data.model, {
+			url: 'users/' + evt.data.model.id + '/kick',
+			success: function () {
+				evt.data.membersView.render(evt.data.guildId);
+			},
+			error: function () {
+				evt.data.membersView.render(evt.data.guildId);
+			}
+		});
+	},
 });

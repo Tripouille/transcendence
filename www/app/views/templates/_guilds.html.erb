@@ -35,10 +35,12 @@
 </script>
 
 <script id="guildRow" type="text/template">
-	<td><%%= rank %></td>
-	<td><%%= name %> (<%%= anagram %>)</td>
-	<td><%%= owner_id %></td>
-	<td><%%= score %></td>
+	<tr data-href="<%%= route %>">
+		<td><%%= rank %></td>
+		<td><%%= name %> (<%%= anagram %>)</td>
+		<td><%%= owner_id %></td>
+		<td><%%= score %></td>
+	</tr>
 </script>
 
 <script id="mainGuildButtonTemplate" type="text/template">
@@ -84,13 +86,19 @@
 	</table>
 </script>
 
-<script id="guildMemberRow" type="text/template">
+<script id="guildMemberRowTemplate" type="text/template">
 	<tr>
 		<td><%%= username %></td>
 		<td><%%= rank %></td>
 		<td><%%= mmr %></td>
 		<td><%%= contribution %></td>
 	</tr>
+</script>
+
+<script id="guildKickMemberTableData" type="text/template">
+	<td id="<%%= kick %>">
+		<img src="assets/kick_img.svg" width="50" alt="accept">
+	</td>
 </script>
 
 <!-- <script id="guildMembers" type="text/template">
@@ -146,8 +154,8 @@
 				<th>username</th>
 				<th>MMR</th>
 				<th>Invite Date</th>
-				<th>Accept</th>
-				<th>Refuse</th>
+				<th></th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody id="guildInvitesBody">
@@ -160,7 +168,11 @@
 		<td><%%= username %></td>
 		<td><%%= mmr %></td>
 		<td><%%= created_at %></td>
-		<td id="<%%= accept %>">Accept</td>
-		<td id="<%%= refuse %>">Refuse</td>
+		<td id="<%%= accept %>">
+			<img src="assets/tick_img.png" alt="accept">
+		</td>
+		<td id="<%%= refuse %>">
+			<img src="assets/cross_img.png" alt="refuse">
+		</td>
 	</tr>
 </script>

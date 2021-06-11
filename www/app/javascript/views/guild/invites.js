@@ -19,32 +19,35 @@ export const InvitesView = Backbone.View.extend({
 
         $.when(invites.fetch(), users.fetch()).done(function () {
 
-            $(invites.where({ guild_id: parseInt(guildId) })).each(function (i, invite) {
+            let filteredInvites = invites.where({ guild_id: parseInt(guildId) });
+            if (filteredInvites)
+            {
                 self.$el.html(self.staticTemplate);
+                $(filteredInvites).each(function (i, invite) {
+    
+                    let dynamicTemplate = _.template($('#guildInviteRow').html());
+        
+                    invite.set({
+                        username: users.findWhere({ id: invite.get("user_id") }).get('username'),
+                        mmr: 1200,
+                        created_at: $.timeago(new Date(invite.get("created_at"))),
+                        accept: "accept" + invite.id,
+                        refuse: "refuse" + invite.id,
+                    });
 
-                let dynamicTemplate = _.template($('#guildInviteRow').html());
-
-                let cloneInvite = invite.clone();
-
-                invite.set({
-                    username: users.findWhere({ id: invite.get("user_id") }).get('username'),
-                    mmr: 1200,
-                    created_at: $.timeago(new Date(invite.get("created_at"))),
-                    accept: "accept" + invite.id,
-                    refuse: "refuse" + invite.id,
+                    $('#guildInvitesBody').append(dynamicTemplate(invite.toJSON()));
+                
+                    let data = { 
+                        model: invite,
+                        guildId: guildId,
+                        guildView: guildView,
+                        invitesView: self
+                    };
+                    $('#accept' + invite.id).one("click", data, invite.accept);
+                    $('#refuse' + invite.id).one("click", data, invite.refuse);
                 });
 
-                $('#guildInvitesBody').append(dynamicTemplate(invite.toJSON()));
-            
-                let data = { 
-                    model: cloneInvite,
-                    guildId: guildId,
-                    guildView: guildView,
-                    invitesView: self
-                };
-                $('#accept' + invite.id).one("click", data, cloneInvite.accept);
-                $('#refuse' + invite.id).one("click", data, cloneInvite.refuse);
-            });
+            }
         });
         return this;
     }

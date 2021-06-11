@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :set_user, only: %i[ show edit update destroy kick ]
 
   # GET /users or /users.json
   def index
@@ -56,6 +56,19 @@ class UsersController < ApplicationController
     end
   end
 
+  # PATCH /users/1/kick or /users/1.json/kick : to kick players from guilds
+  def kick
+    respond_to do |format|
+      if self.check_user && self.check_is_guild_owner && self.check_kicked_user_from_guild && @user.update(guild_id: :nullify)
+        format.html { redirect_to users_url, notice: "User was successfully updated." }
+        format.json { head :no_content }
+      else
+        format.html { head :no_content, status: :unprocessable_entity }
+        format.json { head :no_content }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
@@ -66,4 +79,21 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:username, :pictures, :email, :login, :provider, :uid, :guild_id)
     end
+
+    # A function to check if user is authenticated and if the user doesn't have a guild yet
+    def check_user
+      return (session[:user_id] && User.find(session[:user_id])) ? 1 : nil
+    end
+
+    # A function to check if user is authenticated as the guild owner
+    def check_is_guild_owner
+      @guild = Guild.find(User.find(session[:user_id])[:guild_id])
+      return (@guild[:owner_id] == session[:user_id]) ? 1 : nil
+    end
+
+    # A function to check if user is authenticated as the guild owner
+    def check_kicked_user_from_guild
+      return (@guild[:id] == @user[:guild_id] && @user[:id] != @guild[:owner_id]) ? 1 : nil
+    end
+
 end

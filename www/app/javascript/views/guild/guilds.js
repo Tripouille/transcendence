@@ -1,4 +1,3 @@
-import { GuildRowView } from './guildRow';
 import { GuildsCollection } from 'collections/guilds';
 
 export const GuildsView = Backbone.View.extend({
@@ -8,27 +7,28 @@ export const GuildsView = Backbone.View.extend({
         this.$el.html(template);
         let self = this;
         window.currentUser.fetch().done(function () {
-            if (window.currentUser.get('guild_id') === null)
+
+            if (!window.currentUser.has('guild_id'))
                 self.$el.prepend(_.template($('#guildNewButton').html()));
-            else {
+            else
                 self.$el.prepend(_.template($('#myGuildStaticContent').html()));
-            }
 
             let collection = new GuildsCollection();
             collection.fetch({
                 success: function (collection, response, options) {
                     collection.each(function (guild, i) {
                         guild.set({ "rank": i + 1 });
-                        var guildRowView = new GuildRowView({ model: guild });
+                        guild.set({ "route": '#guilds/' + guild.id });
 
-                        var route = '#guilds/' + guild.id;
-                        guildRowView.$el.attr('data-href', route)
+                        let dynamicTemplate = _.template( $('#guildRow').html());
 
                         if (guild.get('id') == window.currentUser.get('guild_id'))
-                            $('#myGuildTableBody').append(guildRowView.render().el);
+                            $('#myGuildTableBody').append(dynamicTemplate(guild.toJSON()));
                         else
-                            $('#guildTableBody').append(guildRowView.render().el);
-                    }, this);
+                            $('#guildTableBody').append(dynamicTemplate(guild.toJSON()));
+
+                    });
+                    
                     $('tr[data-href]').on("click", function (evt) {
                         Backbone.history.navigate($(evt.currentTarget).data('href'), true, true);
                     });
