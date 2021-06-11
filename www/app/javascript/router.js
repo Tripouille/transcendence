@@ -28,6 +28,7 @@ $(function() {
 			$main.empty();
 			Pong.removeSubscription();
 			this.clearAnimations();
+			$('nav > a').removeClass('selected');
 			callback.apply(this, args);
 		},
 		clearAnimations: function() {
@@ -37,9 +38,11 @@ $(function() {
 		},
 
 		users: function() {
+			$('#rank_link').addClass('selected');
 			this.usersView.render($main);
 		},
 		selectMode: function() {
+			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
 		lobby: function() {

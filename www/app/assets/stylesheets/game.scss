@@ -1,7 +1,7 @@
 * {
-	--ball-color: lightgreen;
+	--ball-color: white;
 	--border-color: darkgreen;
-	--paddle-color: darkgreen;
+	--paddle-color: white;
 	--left-color: red;
 	--right-color: rgb(240, 230, 20);
 }
@@ -83,8 +83,6 @@
 		background-color: var(--ball-color);
 		height: 100%;
 		width: 100%;
-		border: 1px black solid;
-		border-radius: 100%;
 		position: relative;
 		bottom: 50%;
 		right: 50%;

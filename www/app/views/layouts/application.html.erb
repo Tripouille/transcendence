@@ -20,24 +20,38 @@
 	<body>
 		<nav>
 			<a id="game_link" href="#game">Game</a>
-			<a id="rank_link" href="#game">Rank</a>
+			<a id="rank_link" href="#users">Rank</a>
 			<a id="guild_link" href="#game">Guild</a>
-			<button id="account_button" href="#game">
-				<img src="assets/default.png" alt="Avatar" width="100" height="100">
-				<div id="account_menu">
-					<% if current_user then %>
-						<%= link_to "Modify account", "#game" %>
-						<%= link_to "Test for a big textttttttt", "#game" %>
-						<%= link_to "Sign out", destroy_user_session_path, method: :delete %>
-					<% else %>
-						<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path %>
-					<% end %>
-				</div>
+			<div id="account_div">
+				<button id="account_button" href="#game">
+					<%= current_user ? session[:user]['login'] : 'login' %>
+					<div id="account_menu">
+						<% if current_user then %>
+							<div class="option">
+								<div class="ball_selector"></div>
+								<%= link_to "Modify account", "#game" %>
+							</div>
+							<div class="option">
+								<div class="ball_selector"></div>
+								<%= link_to "Test for a big textttttttt", "#game" %>
+							</div>
+							<div class="option">
+								<div class="ball_selector"></div>
+								<%= link_to "Sign out", destroy_user_session_path, method: :delete %>
+							</div>
+						<% else %>
+							<div class="option">
+								<div class="ball_selector"></div>
+								<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path %>
+							</div>
+						<% end %>
+					</div>
+				</button>
 			</div>
 		</nav>
-		<div>
+		<!--<div>
 			Session = <%= @session.inspect %> <br>
-		</div>
+		</div>-->
 		<button id="contacts_button">Contacts</button>
 		<aside id="contacts">
 			<p>Joueur 1</p>
