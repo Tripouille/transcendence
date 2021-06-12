@@ -25,7 +25,7 @@ function unfoldFriends() {
 	});
 }
 
-function foldTchat() {
+export function foldTchat() {
 	$tchat.addClass('folded');
 	tchat_out = false;
 }
