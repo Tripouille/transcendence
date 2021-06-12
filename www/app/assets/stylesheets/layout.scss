@@ -1,4 +1,5 @@
 $verydarkgreen: rgb(0, 70, 0);
+$veryverydarkgreen: rgb(0, 50, 0);
 $border-color: green;
 $border-width: calc(min(1vh, 0.75vw));
 $link-border-width: calc(min(1vh, 0.75vw) * 0.5);
@@ -6,7 +7,7 @@ $bg-color: $verydarkgreen;
 $nav-height: calc(min(10vh, 7.5vw));
 $nav-font-size: calc(min(5.5vh, 4.125vw));
 $nav-link-padding: calc(min(1vh, 0.75vw));
-$account-menu-font-size: calc(min(2.5vh, 1.875vw));
+$account-menu-font-size: calc(min(2vh, 1.5vw));
 $friends-button-padding: calc(min(1vh, 0.75vw) * 2);
 $friends-font-size: calc(min(3vh, 2vw));
 $friends-top-position: calc(min(10vh, 7.5vw) - 1vh);
@@ -74,6 +75,7 @@ nav {
 			#account_menu {
 				position: absolute;
 				top: 100%;
+				width: 100%;
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-end;
@@ -162,6 +164,10 @@ nav {
 		display: flex;
 		align-items: center;
 
+		&:hover {
+			background-color: $veryverydarkgreen;
+		}
+
 		span {
 			display: inline-block;
 
@@ -217,7 +223,11 @@ nav {
 
 	#chans {
 		flex: 1;
-		border-right: 1px rgb(0, 41, 0) solid;
+		border-right: 1px $veryverydarkgreen solid;
+		overflow: auto;
+		&::-webkit-scrollbar {
+			width: 0;
+		}
 
 		#arrow_div {
 			width: 25px;
@@ -236,11 +246,32 @@ nav {
 		}
 
 		p {
-			margin-top: 5px;
+			margin: 3px;
+			&:hover {
+				cursor: pointer;
+				background-color: $veryverydarkgreen;
+			}
 		}
 	}
 	#tchat_body {
 		flex: 2;
+		overflow: auto;
+		padding: 5px;
+		&::-webkit-scrollbar {
+			width: 0;
+		}
 
+		p {
+			font-family: sans-serif;
+			margin-bottom: 10px;
+			&.mine {
+				text-align: right;
+			}
+
+			span:first-child {
+				display: block;
+				font-family: 'screen';
+			}
+		}
 	}
 }

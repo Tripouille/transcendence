@@ -33,10 +33,6 @@
 							</div>
 							<div class="option">
 								<div class="ball_selector"></div>
-								<%= link_to "Test for a big textttttttt", "#game" %>
-							</div>
-							<div class="option">
-								<div class="ball_selector"></div>
 								<%= link_to "Sign out", destroy_user_session_path, method: :delete %>
 							</div>
 						<% else %>
@@ -84,6 +80,22 @@
 				<p>A looooooooong name</p>
 			</div>
 			<div id="tchat_body">
+				<p class="mine">
+					<span>Me</span>
+					<span>Salut !</span>
+				</p>
+				<p>
+					<span>Not me</span>
+					<span>Hey !</span>
+				</p>
+				<p class="mine">
+					<span>Me</span>
+					<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</span>
+				</p>
+				<p>
+					<span>Another not me</span>
+					<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</span>
+				</p>
 			</div>
 		</aside>
 		<%= yield %>
