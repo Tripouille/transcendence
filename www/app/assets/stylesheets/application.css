@@ -39,6 +39,10 @@ body {
 	margin: 0;
 }
 
+* {
+	box-sizing: border-box;
+}
+
 main {
 	position: absolute;
 	top: 11%;
@@ -47,7 +51,6 @@ main {
 	min-height: 270px;
 	width: 100%;
 	color: white;
-	box-sizing: border-box;
 }
 
 p {

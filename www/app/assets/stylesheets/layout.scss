@@ -4,11 +4,15 @@ $border-width: calc(min(1vh, 0.75vw));
 $link-border-width: calc(min(1vh, 0.75vw) * 0.5);
 $bg-color: $verydarkgreen;
 $nav-height: calc(min(10vh, 7.5vw));
-$nav-font-size: calc(min(6vh, 4.5vw));
+$nav-font-size: calc(min(5.5vh, 4.125vw));
+$nav-link-padding: calc(min(1vh, 0.75vw));
 $account-menu-font-size: calc(min(2.5vh, 1.875vw));
-$contacts-button-padding: calc(min(1vh, 0.75vw) * 2);
-$contacts-font-size: calc(min(3vh, 2vw));
-$contacts-top-position: calc(min(10vh, 7.5vw) - 1vh);
+$friends-button-padding: calc(min(1vh, 0.75vw) * 2);
+$friends-font-size: calc(min(3vh, 2vw));
+$friends-top-position: calc(min(10vh, 7.5vw) - 1vh);
+$pellet-size: calc(min(1.5vh, 1vw));
+$friends-height: 65vh;
+$tchat-height: calc(100vh - min(10vh, 7.5vw) - 64vh);
 
 nav {
 	position: fixed;
@@ -26,7 +30,6 @@ nav {
 	border-color: $border-color;
 	border-style: ridge groove groove ridge;
 	z-index: 2;
-	box-sizing: border-box;
 
 	a {
 		text-decoration: none;
@@ -37,8 +40,7 @@ nav {
 		display: block;
 		margin: 0 1%;
 		padding: 0 1%;
-		text-align: center;
-		box-sizing: border-box;
+		padding-top: $nav-link-padding;
 		text-transform: uppercase;
 		font-size: $nav-font-size;
 	}
@@ -57,7 +59,7 @@ nav {
 
 	#account_div {
 		margin-left: auto;
-	
+
 		#account_button {
 			position: relative;
 			max-width: 10ch;
@@ -68,7 +70,7 @@ nav {
 			&:hover {
 				cursor: pointer;
 			}
-		
+
 			#account_menu {
 				position: absolute;
 				top: 100%;
@@ -82,7 +84,7 @@ nav {
 				border-style: none groove groove ridge;
 				background-color: $verydarkgreen;
 				display: none;
-				
+
 				div.option {
 					display: flex;
 
@@ -106,7 +108,6 @@ nav {
 
 					a {
 						flex: 9;
-						box-sizing: border-box;
 						position: relative;
 						display: block;
 						padding: 2% 0;
@@ -119,22 +120,21 @@ nav {
 	}
 }
 
-%contacts {
+%friends {
 	position: fixed;
 	right: 0;
 	width: 15vw;
 	background-color: $bg-color;
 	border-width: $border-width;
 	border-color: $border-color;
-	box-sizing: border-box;
 }
-#contacts_button {
-	@extend %contacts;
+#friends_button {
+	@extend %friends;
 	font-size: 2.5vw;
 	top: 0;
 	height: $nav-height;
 	border-style: ridge groove none ridge;
-	padding: $contacts-button-padding 0;
+	padding: $friends-button-padding 0;
 	line-height: 100%;
 	text-transform: uppercase;
 	z-index: 3;
@@ -142,31 +142,105 @@ nav {
 		cursor: pointer;
 	}
 }
-#contacts {
-	@extend %contacts;
-	top: $contacts-top-position;
+#friends {
+	@extend %friends;
+	top: $friends-top-position;
 	padding-top: 1vh;
-	height: 65vh;
+	height: $friends-height;
 	z-index: 2;
 	border-style: none groove groove ridge;
 	background-color: $bg-color;
-	overflow: auto;
-	font-size: $contacts-font-size;
+	font-size: $friends-font-size;
 	text-align: center;
+	overflow: auto;
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+
+	p {
+		text-align: left;
+		display: flex;
+		align-items: center;
+
+		span {
+			display: inline-block;
+
+			&:first-child {
+				width: $pellet-size;
+				height: $pellet-size;
+				border-radius: 100%;
+				margin-right: $pellet-size;
+				background-color: red;
+			}
+			&.online {
+				background-color: lightgreen;
+			}
+			&.ingame {
+				background-color: white;
+			}
+
+			&:last-child {
+				flex: 1;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+	}
 }
 
 #tchat {
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	width: 20%;
-	min-width: 30px;
-	height: 20%;
-	min-height: 30px;
+	width: 25vw;
+	height: $tchat-height;
 	z-index: 3;
 	border-width: $border-width;
 	border-color: $border-color;
 	border-style: ridge groove groove ridge;
-
 	background-color: $verydarkgreen;
+	display: flex;
+	transition: height 0.4s, width 0.4s;
+
+	&.folded {
+		height: 25px;
+		width: 25px;
+		border-width: 3px;
+		#chans #arrow_div #arrow {
+			border-width: 20px 20px 0 0;
+		}
+	}
+
+	#chans {
+		flex: 1;
+		border-right: 1px rgb(0, 41, 0) solid;
+
+		#arrow_div {
+			width: 25px;
+			height: 25px;
+			margin-bottom: 5px;
+			#arrow {
+				position: absolute;
+				border-color: white transparent white transparent;
+				border-style: solid;
+				border-width: 0 0 20px 20px;
+				transition: none;
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+
+		p {
+			margin-top: 5px;
+		}
+	}
+	#tchat_body {
+		flex: 2;
+
+	}
 }

@@ -46,9 +46,11 @@ $(function() {
 			this.selectModeView.render();
 		},
 		lobby: function() {
+			$('#game_link').addClass('selected');
 			this.lobbyView.render();
 		},
 		game: function(id) {
+			$('#game_link').addClass('selected');
 			if (id == null) {
 				this.navigate('game/lobby', {trigger: true});
 				return ;

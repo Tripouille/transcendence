@@ -1,27 +1,37 @@
-let $contacts, $contacts_button;
-let contacts_out = true;
+let $friends, $friends_button;
+let $tchat, $tchat_arrow;
+let friends_out = true, tchat_out = true;
 let animating = false;
 
-export function foldContacts() {
+export function foldFriends() {
 	animating = true;
-	$contacts.css('overflow', 'hidden');
-	$contacts.animate({'height': 0}, 300, function() {
-		$contacts_button.css('border-bottom-style', 'groove');
-		$contacts.css('padding-top', 0);
-		contacts_out = false;
+	$friends.css('overflow', 'hidden');
+	$friends.animate({'height': 0}, 300, function() {
+		$friends_button.css('border-bottom-style', 'groove');
+		$friends.css('padding-top', 0);
+		friends_out = false;
 		animating = false;
 	});
 }
 
-function unfoldContacts() {
+function unfoldFriends() {
 	animating = true;
-	$contacts_button.css('border-bottom-style', 'none');
-	$contacts.css('padding-top', '1vh');
-	$contacts.animate({'height': '65%'}, 300, function() {
-		$contacts.css('overflow', 'auto');
-		contacts_out = true;
+	$friends_button.css('border-bottom-style', 'none');
+	$friends.css('padding-top', '1vh');
+	$friends.animate({'height': '65vh'}, 300, function() {
+		$friends.css('overflow', 'auto');
+		friends_out = true;
 		animating = false;
 	});
+}
+
+function foldTchat() {
+	$tchat.addClass('folded');
+	tchat_out = false;
+}
+function unfoldTchat() {
+	$tchat.removeClass('folded');
+	tchat_out = true;
 }
 
 $(function() {
@@ -31,13 +41,23 @@ $(function() {
 		$account_menu.toggle();
 	});
 
-	$contacts_button = $('#contacts_button');
-	$contacts = $('#contacts');
-	$contacts_button.on('click', function() {
+	$friends_button = $('#friends_button');
+	$friends = $('#friends');
+	$friends_button.on('click', function() {
 		if (animating) return ;
-		if (contacts_out)
-			foldContacts();
+		if (friends_out)
+			foldFriends();
 		else
-			unfoldContacts();
+			unfoldFriends();
+	});
+
+	$tchat_arrow = $('#tchat #arrow');
+	$tchat = $('#tchat');
+	$tchat_arrow.on('click', function() {
+		if (animating) return ;
+		if (tchat_out)
+			foldTchat();
+		else
+			unfoldTchat();
 	});
 });
