@@ -70,32 +70,33 @@
 			<p><span></span><span>Joueur 6</span></p>
 		</aside>
 		<aside id="tchat">
+			<div id="tchat_banner">Tchat</div>
 			<div id="chans">
-				<div id="arrow_div">
-					<div id="arrow"></div>
-				</div>
 				<p>General</p>
 				<p>Myguild</p>
 				<p>Friend</p>
 				<p>A looooooooong name</p>
 			</div>
-			<div id="tchat_body">
-				<p class="mine">
-					<span>Me</span>
-					<span>Salut !</span>
-				</p>
-				<p>
-					<span>Not me</span>
-					<span>Hey !</span>
-				</p>
-				<p class="mine">
-					<span>Me</span>
-					<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</span>
-				</p>
-				<p>
-					<span>Another not me</span>
-					<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</span>
-				</p>
+			<div id="tchat_body_container">
+				<input type="text" placeholder="Write here">
+				<div id="tchat_body">
+					<p class="mine">
+						<span>Me</span>
+						<span>Salut !</span>
+					</p>
+					<p>
+						<span>Not me</span>
+						<span>Hey !</span>
+					</p>
+					<p class="mine">
+						<span>Me</span>
+						<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</span>
+					</p>
+					<p>
+						<span>Another not me</span>
+						<span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</span>
+					</p>
+				</div>
 			</div>
 		</aside>
 		<%= yield %>

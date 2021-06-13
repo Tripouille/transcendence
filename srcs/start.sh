@@ -19,3 +19,4 @@ rails db:migrate
 if [ "$RAILS_ENV" == "production" ]; then rails assets:precompile; fi
 rm -f /www/tmp/pids/server.pid
 rails s -b "0.0.0.0"
+tail -f

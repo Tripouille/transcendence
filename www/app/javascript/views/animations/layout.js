@@ -1,28 +1,16 @@
 let $friends, $friends_button;
-let $tchat, $tchat_arrow;
+let $tchat, $tchat_banner;
 let friends_out = true, tchat_out = true;
 let animating = false;
 
 export function foldFriends() {
-	animating = true;
-	$friends.css('overflow', 'hidden');
-	$friends.animate({'height': 0}, 300, function() {
-		$friends_button.css('border-bottom-style', 'groove');
-		$friends.css('padding-top', 0);
-		friends_out = false;
-		animating = false;
-	});
+	$friends.addClass('folded');
+	friends_out = false;
 }
 
 function unfoldFriends() {
-	animating = true;
-	$friends_button.css('border-bottom-style', 'none');
-	$friends.css('padding-top', '1vh');
-	$friends.animate({'height': '65vh'}, 300, function() {
-		$friends.css('overflow', 'auto');
-		friends_out = true;
-		animating = false;
-	});
+	$friends.removeClass('folded');
+	friends_out = true;
 }
 
 export function foldTchat() {
@@ -51,9 +39,9 @@ $(function() {
 			unfoldFriends();
 	});
 
-	$tchat_arrow = $('#tchat #arrow');
+	$tchat_banner = $('#tchat_banner');
 	$tchat = $('#tchat');
-	$tchat_arrow.on('click', function() {
+	$tchat_banner.on('click', function() {
 		if (animating) return ;
 		if (tchat_out)
 			foldTchat();

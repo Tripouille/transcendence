@@ -25,13 +25,13 @@ $(function() {
 		},
 
 		execute: function(callback, args, name) {
-			$main.empty();
-			Pong.removeSubscription();
 			this.clearAnimations();
+			$main.empty();
 			$('nav > a').removeClass('selected');
 			callback.apply(this, args);
 		},
 		clearAnimations: function() {
+			Pong.removeSubscription();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
