@@ -1,5 +1,4 @@
 import { GuildModel } from '../../models/guild';
-import { User } from '../../models/user';
 
 export const GuildNewView = Backbone.View.extend({
 	events: {
@@ -15,35 +14,28 @@ export const GuildNewView = Backbone.View.extend({
 	onFormSubmit: function () {
 		/* get data from form on submit button */
 		/* save the new guild and the guild_id to the current user databses */
-		let showError = this;
-		window.currentUser.fetch().done(function () {
-			let model = new GuildModel();
-			model.set('name', $('#name').val());
-			model.set('anagram', $('#anagram').val());
-			model.set('owner_id', window.currentUser.get('id'));
-			var self = showError;
-			/* A VERIFIER Faire une verification pour voir si le current user a bien un id valid ou verif doit se faire avant? */
-			model.save({}, {
-				success: function (model, response, options) {
-					console.log("Succes saving guild model");
-					Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
-				},
-				error: function (model, response, options) {
-					console.log("Something went wrong while saving the new guild");
-					/* Regex to match
-					   DETAIL:  Key (name)=(Olivier Lidon) already exists.
-					   |____________||__||_______________________________|
-							  1^      2^      1       3^  2                 3
-									 |--------^--------||-^||---------------^------------| */
-					let regexKey = /(?<=DETAIL:  Key \()(.*)(?=\)=\((.*)\) already exists)/g;
-					let label = response.responseText.match(regexKey)[0];
-					/* AJOUTER reset error */
-					if (label == "name" || label == "anagram")
-						self.showInputErrors(label.charAt(0).toUpperCase() + label.slice(1) + " already exist.", label);
-					else
-						self.showInputErrors("Unknown server error.", "name");
-				}
-			});
+		let model = new GuildModel();
+		var self = this;
+		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
+			success: function (model, response, options) {
+				Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
+			},
+			error: function (model, response, options) {
+				console.log("Something went wrong while saving the new guild");
+				// /* Regex to match
+				//    DETAIL:  Key (name)=(Olivier Lidon) already exists.
+				//    |____________||__||_______________________________|
+				// 		  1^      2^      1       3^  2                 3
+				// 				 |--------^--------||-^||---------------^------------| */
+				// let regexKey = /(?<=DETAIL:  Key \()(.*)(?=\)=\((.*)\) already exists)/g;
+				// let label = response.responseText.match(regexKey)[0];
+				// /* AJOUTER reset error */
+				// $('#newGuildForm').find('.error').remove();
+				// if (label == "name" || label == "anagram")
+				// 	self.showInputErrors(label.charAt(0).toUpperCase() + label.slice(1) + " already exist.", label);
+				// else
+				self.showInputErrors("Unknown server error.", "name");
+			}
 		});
 	},
 	/* render the form page */
@@ -52,11 +44,9 @@ export const GuildNewView = Backbone.View.extend({
 		window.currentUser.fetch().done(function () {
 			let guildId = window.currentUser.get('guild_id');
 			if (guildId != null) {
-				console.log("redirection propre guilde")
 				Backbone.history.navigate("guilds/" + guildId, { trigger: true });
 			}
 			else {
-				console.log("new form")
 				let template = _.template($('#guildNewStatic').html());
 				that.$el.html(template);
 			}
@@ -67,12 +57,12 @@ export const GuildNewView = Backbone.View.extend({
 	validateOnChange: function (attr) {
 		if (attr.name == "name") {
 			if (attr.value == "" || attr.value.length < 2 || attr.value.length > 30) {
-				return "Guild name must be between 2 and 30 characters long."
+				return "Guild name must be 2 to 30 characters long."
 			}
 		}
 		if (attr.name == "anagram") {
 			if (attr.value == "" || attr.value.length > 5) {
-				return "Anagram must be 5 characters max."
+				return "Anagram must be 1 to 5 characters long."
 			}
 		}
 		return true;

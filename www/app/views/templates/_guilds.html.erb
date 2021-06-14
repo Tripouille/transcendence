@@ -1,133 +1,106 @@
-<script id="guildStaticContent" type="text/template">
-	<a>Other guilds :</a>
-	<table id="guildTable">
-		<thead>
-			<tr>
-				<th>Rank</th>
-				<th>Name (Anagram)</th>
-				<th>Owner</th>
-				<th>Score</th>
-			</tr>
-		</thead>
-		<tbody id="guildTableBody">
-		</tbody>
-	</table>
-</script>
-
-<script id="myGuildStaticContent" type="text/template">
-	<a>My guild :</a>
-	<table id="guildTable">
-		<thead>
-			<tr>
-				<th>Rank</th>
-				<th>Name (Anagram)</th>
-				<th>Owner</th>
-				<th>Score</th>
-			</tr>
-		</thead>
-		<tbody id="myGuildTableBody">
-		</tbody>
-	</table>
-</script>
-
+<!-- Template for all guilds -->
 <script id="guildNewButton" type="text/template">
 	<a class="button" href="#guilds/new"><div>Create your own Guild !</div></a>
 </script>
 
 <script id="guildRow" type="text/template">
-	<tr data-href="<%%= route %>">
-		<td><%%= rank %></td>
-		<td><%%= name %> (<%%= anagram %>)</td>
-		<td><%%= owner_id %></td>
-		<td><%%= score %></td>
-	</tr>
+	<div class="<%% if (my_guild == true) { %>myGuildRow<%% } else { %>guildRow<%% } %> cursorButton" data-href="<%%= route %>">
+		<div>
+			<p class="uppercase">Rank</p>
+			<p><%%= rank %></p>
+		</div>
+		<div class="uppercase"><%%= name %> (<%%= anagram %>)</div>
+		<div>
+			<p class="uppercase">Owner</p>
+			<p><%%= owner_name %></p>
+		</div>
+		<div>
+			<p class="uppercase">Score<p>
+			<p><%%= score %></p>
+		</div>
+	</div>
 </script>
 
+<!-- Template for specific guild view -->
 <script id="mainGuildButtonTemplate" type="text/template">
-	<div id="mainGuildButton">
+	<div id="mainGuildButton" class="button">
 		<span id=<%%= id %>><%%= name %></span>
 	</div>
 </script>
 
 <script id="guildFiguresTemplate" type="text/template">
-	<p><%%= name %> (<%%= anagram %>)</p>
-	<ul>
-		<li>
-			<p>Rank</p>
-			<p><%%= rank %></p>
-		</li>
-		<li>
-			<p>Owner</p>
-			<p><%%= owner_id %></p>
-		</li>
-		<li>
-			<p>Active Members</p>
-			<p><%%= active_members %></p>
-		</li>
-		<li>
-			<p>Formed</p>
-			<p><%%= created_at %></p>
-		</li>
-	</ul>
+	<div class="uppercase" id="guildName"><%%= name %> (<%%= anagram %>)</div>
+	<div>
+		<p class="uppercase">Rank</p>
+		<p><%%= rank %></p>
+	</div>
+	<div>
+		<p class="uppercase">Owner</p>
+		<p><%%= owner_name %></p>
+	</div>
+	<div>
+		<p class="uppercase">Active Members</p>
+		<p><%%= active_members %></p>
+	</div>
+	<div>
+		<p class="uppercase">Formed</p>
+		<p><%%= created_at %></p>
+	</div>
 </script>
 
+<!-- Template for listing guild members -->
 <script id="guildMembersTemplate" type="text/template">
-	<table id="guildMembersTable">
-		<thead>
-			<tr>
-				<th>Members</th>
-				<th>Rank</th>
-				<th>MMR</th>
-				<th>Contribution</th>
-			</tr>
-		</thead>
-		<tbody id="guildMembersBody">
-		</tbody>
-	</table>
+	<p class="bandeau">Guild members</p>
+	<div id="guildMembersBody">
+	</div>
 </script>
 
 <script id="guildMemberRowTemplate" type="text/template">
-	<tr>
-		<td><%%= username %></td>
-		<td><%%= rank %></td>
-		<td><%%= mmr %></td>
-		<td><%%= contribution %></td>
-	</tr>
+	<div class="guildMemberRow">
+		<div>
+			<p class="uppercase"><%%= username %></p>
+			<p><%%= rank %></p>
+		</div>
+		<div>
+			<p class="uppercase">MMR</p>
+			<p><%%= mmr %></p>
+		</div>
+		<div>
+			<p class="uppercase">Contribution</p>
+			<p><%%= contribution %></p>
+		</div>
+	</div>
 </script>
 
 <script id="guildKickMemberTableData" type="text/template">
-	<td id="<%%= kick %>">
+	<div id="<%%= kick %>" class="cursorButton">
 		<img src="assets/kick_img.svg" width="50" alt="accept">
-	</td>
+	</div>
 </script>
 
+<!-- Template for war history -->
 <!-- <script id="guildMembers" type="text/template">
 	<div class="onGoingWar"></div>
 	<div class="pendingInvites"></div>
 </script> -->
 
 <script id="guildWarHistory" type="text/template">
-	<table id="guildWarHistoryTable">
-		<thead>
-			<tr>
-				<th>War History</th>
-			</tr>
-		</thead>
-		<tbody id="guildWarHistoryBody">
-		</tbody>
-	</table>
+	<p class="bandeau">War History</p>
+	<div id="guildWarHistoryBody">
+	</div>
 </script>
 
 <script id="guildWarHistoryRow" type="text/template">
-	<tr>
-		<td><%%= date %></td>
-		<td><%%= first_team %></td>
-		<td>VS</td>
-		<td><%%= second_team %></td>
-		<td><%%= result %></td>
-	</tr>
+	<div>
+		<div><%%= date %></div>
+		<div><%%= first_team %></div>
+		<p>VS</p>
+		<div><%%= second_team %></div>
+		<div><%%= result %></div>
+	</div>
 </script>
 
+<!-- Template for new guild form -->
 <script id="guildNewStatic" type="text/template">
 	<p class="bandeau">Create a new guild</p>
 	<form id="newGuildForm" name="newguilform">
@@ -140,39 +113,28 @@
 			<input type="text" id="anagram" name="anagram" required>
 		</div>
 		<div id="formSubmitNewGuild" class="actions">
-			<a class="button">Submit</a>
+			<a class="button cursorButton">Submit</a>
 		</div>
 	</form>
 </script>
 
 <!-- Template for guild Invites -->
 <script id="guildInvitesTemplate" type="text/template">
-	<p>Pending Invites</p>
-	<table id="guildInvitesTable">
-		<thead>
-			<tr>
-				<th>username</th>
-				<th>MMR</th>
-				<th>Invite Date</th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody id="guildInvitesBody">
-		</tbody>
-	</table>
+	<p class="bandeau">Pending Invites</p>
+	<div id="guildInvitesBody">
+	</div>
 </script>
 
 <script id="guildInviteRow" type="text/template">
-	<tr>
-		<td><%%= username %></td>
-		<td><%%= mmr %></td>
-		<td><%%= created_at %></td>
-		<td id="<%%= accept %>">
+	<div class="guildInvitesRow">
+		<div><%%= username %></div>
+		<div><%%= mmr %></div>
+		<div><%%= created_at %></div>
+		<div id="<%%= accept %>" class="cursorButton">
 			<img src="assets/tick_img.png" alt="accept">
-		</td>
-		<td id="<%%= refuse %>">
+		</div>
+		<div id="<%%= refuse %>" class="cursorButton">
 			<img src="assets/cross_img.png" alt="refuse">
-		</td>
-	</tr>
+		</div>
+	</div>
 </script>

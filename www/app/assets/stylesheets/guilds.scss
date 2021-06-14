@@ -65,6 +65,7 @@ main form .error {
   font-size: 25px;
 }
 input {
+  font-family: 'screen';
   border: none;
   margin: 25px 10px;
   padding: 15px 32px;
@@ -72,8 +73,8 @@ input {
   justify-content: center;
   text-decoration: none;
   font-size: 16px;
-  width: 100%;
-  box-sizing:border-box;
+  box-sizing: border-box;
+  width: calc(100% - 20px);
 }
 .button {
   background-color: $verydarkgreen;
@@ -86,24 +87,60 @@ input {
   justify-content: center;
   text-decoration: none;
   font-size: 16px;
-}
-.guildTable thead {
-  display:none;
-}
-#myGuildTableBody tr, #guildTableBody tr, #formSubmitNewGuild a {
   cursor: pointer;
 }
-tbody, tbody tr {
-  border: none;
-  margin: 25px 10px;
-  padding: 15px 32px;
+.button:hover {
+  background-color: green;
+}
+.cursorButton {
+  cursor: pointer;
+}
+.guildRow, .myGuildRow, .guildFigures, .guildInviteRow, .guildMemberRow {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 16px;
-  display: table;
-  width: 100%;
-  box-sizing:border-box;
+  margin: 5px 10px;
+  padding: 5px 32px;
+  font-size: 25px;
+  text-align: center;
+  border-width: 1px;
+}
+.guildRow, .myGuildRow {
+  /* Animation on hover guild row */
+  background: linear-gradient(to right, darkgray 50%, black 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  transition: all 1s ease;
+}
+.guildRow:nth-child(odd)/*, .guildInviteRow:nth-child(odd), .guildMemberRow:nth-child(odd)*/ {
+  background-color: darkgrey;
+}
+.guildRow:nth-child(odd) {
+  /* Animation on hover guild row */
+  background: linear-gradient(to right, black 50%, darkgray 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  transition: all 1s ease;
+}
+.myGuildRow {
+  border-style: solid;
+}
+.guildRow, .guildInviteRow, .guildMemberRow {
+  border-left: solid;
+  border-right: solid;
+}
+.guildRow:first-child, .guildInviteRow:first-child, .guildMemberRow:first-child {
+  border-top: solid;
+}
+.guildRow:last-child, .guildInviteRow:last-child, .guildMemberRow:last-child {
+  border-bottom: solid;
+}
+.myGuildRow:hover, .guildRow:hover {
+  background-position: left bottom;
+  // background-color: darkgray;
+}
+.uppercase {
+  text-transform: uppercase;
 }
 
 /* For Mobile */
@@ -116,5 +153,5 @@ tbody, tbody tr {
 
 /* For Tablets */
 @media screen and (min-width: 540px) and (max-width: 780px) {
-  
+
 }
