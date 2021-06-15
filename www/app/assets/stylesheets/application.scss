@@ -14,12 +14,9 @@
  *= require_self
  */
 
-* {
-	--bg-color: black;
-	--second-bg-color: black;
-	--element-color: darkgreen;
-	--text-color: lightgreen;
-}
+$verydarkgreen: rgb(0, 70, 0);
+$veryverydarkgreen: rgb(0, 50, 0);
+$text-color: white;
 
 @font-face {
 	font-family: 'screen';
@@ -33,10 +30,14 @@ html {
 
 body {
 	height: 100%;
-	background-color: var(--bg-color);
-	color: white;
+	background-color: black;
+	color: $text-color;
 	font-family: 'screen';
 	margin: 0;
+
+	&.stop-transitions * {
+		transition: none !important;
+	}
 }
 
 * {
@@ -48,9 +49,7 @@ main {
 	top: 11%;
 	padding: 10px;
 	height: 89%;
-	min-height: 270px;
 	width: 100%;
-	color: white;
 }
 
 p {
@@ -58,7 +57,7 @@ p {
 }
 
 a {
-	color: white;
+	color: $text-color;
 }
 
 button {

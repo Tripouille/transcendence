@@ -1,29 +1,26 @@
-$verydarkgreen: rgb(0, 70, 0);
-$veryverydarkgreen: rgb(0, 50, 0);
+@import "application";
+
 $border-color: green;
 $bg-color: $verydarkgreen;
 $responsive-ratio: Min(1vh, 0.75vw);
-$border-width: Min(1vh, 0.75vw);
-$link-border-width: calc(Min(1vh, 0.75vw) * 0.5);
-$nav-height: calc(10 * #{$responsive-ratio});
-$nav-font-size: calc(#{$nav-height} / 2);
-$nav-link-padding: #{$responsive-ratio};
-$account-menu-font-size: calc(2 * #{$responsive-ratio});
-$banners-font-size: calc(2 * #{$responsive-ratio});
+$border-width: $responsive-ratio;
 $banners-height: calc(4.5 * #{$responsive-ratio});
-$friends-top-position: $banners-height;
-$friends-button-padding: calc(0.4 * #{$responsive-ratio});
-$friends-font-size: calc(2 * #{$responsive-ratio});
-$pellet-size: calc(1.5 * #{$responsive-ratio});
-$friends-height: 55vh;
-$tchat-height: calc(100vh - #{$banners-height} - #{$friends-height});
-$tchat-banner-offset: calc(-1 * #{$responsive-ratio});
-$tchat-banner-width: calc(100% + 2 * #{$border-width});
-$tchat-padding-top: calc(4 * #{$responsive-ratio});
-$messages-font-size: calc(1.6 * #{$responsive-ratio});
-$message-input-width: calc(25vw * 2 / 3 - min(1vh, 0.75vw) * 2);
+$banners-font-size: calc(2 * #{$responsive-ratio});
+$banners-padding-top: calc(0.2 * #{$responsive-ratio});
+$aside-font-size: calc(2 * #{$responsive-ratio});
 
+%bordered {
+	border-width: $border-width;
+	border-color: $border-color;
+	border-style: ridge groove groove ridge;
+}
+
+$nav-height: calc(10 * #{$responsive-ratio});
+$nav-font-size: calc(0.5 * #{$nav-height});
+$nav-link-padding: calc(0.5 * #{$responsive-ratio});
+$link-border-width: calc(0.5 * #{$border-width});
 nav {
+	@extend %bordered;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -35,9 +32,6 @@ nav {
 	justify-content: left;
 	align-items: center;
 	background-color: $bg-color;
-	border-width: $border-width;
-	border-color: $border-color;
-	border-style: ridge groove groove ridge;
 	z-index: 2;
 
 	a {
@@ -80,6 +74,7 @@ nav {
 			}
 
 			#account_menu {
+				$account-menu-font-size: calc(2 * #{$responsive-ratio});
 				position: absolute;
 				top: 100%;
 				width: 100%;
@@ -91,7 +86,7 @@ nav {
 				border-width: $border-width;
 				border-color: $border-color;
 				border-style: none groove groove ridge;
-				background-color: $verydarkgreen;
+				background-color: $bg-color;
 				display: none;
 
 				div.option {
@@ -129,37 +124,43 @@ nav {
 	}
 }
 
+%banner {
+	@extend %bordered;
+	font-size: $banners-font-size;
+	height: $banners-height;
+	padding-top: $banners-padding-top;
+	text-transform: uppercase;
+	z-index: 3;
+	background-color: $bg-color;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
 %friends {
 	position: fixed;
 	right: 0;
 	width: 15vw;
 	background-color: $bg-color;
-	border-width: $border-width;
-	border-color: $border-color;
 }
-#friends_button {
+#friends_banner {
 	@extend %friends;
-	font-size: $banners-font-size;
+	@extend %banner;
 	top: 0;
-	height: $banners-height;
-	border-style: ridge groove groove ridge;
-	padding-top: $friends-button-padding;
-	line-height: 100%;
-	text-transform: uppercase;
-	z-index: 3;
-	&:hover {
-		cursor: pointer;
-	}
 }
+$friends-height: 55vh;
+$friends-top-position: $banners-height;
+$pellet-size: calc(0.4 * #{$aside-font-size});
 #friends {
 	@extend %friends;
+	@extend %bordered;
+	border-top: none;
 	top: $friends-top-position;
 	padding-top: 1vh;
 	height: $friends-height;
 	z-index: 2;
-	border-style: none groove groove ridge;
 	background-color: $bg-color;
-	font-size: $friends-font-size;
+	font-size: $aside-font-size;
 	text-align: center;
 	overflow: auto;
 	transition: height 0.4s, top 0.4s;
@@ -177,6 +178,7 @@ nav {
 		text-align: left;
 		display: flex;
 		align-items: center;
+		margin-bottom: 1%;
 
 		&:hover {
 			background-color: $veryverydarkgreen;
@@ -212,19 +214,28 @@ nav {
 	}
 }
 
+$tchat-height: calc(100vh - #{$banners-height} - #{$friends-height});
+$tchat-banner-offset: calc(-1 * #{$border-width});
+$tchat-banner-width: calc(100% + 2 * #{$border-width});
+$tchat-padding-top: calc(0.8 * #{$banners-height});
+$messages-font-size: calc(1.6 * #{$responsive-ratio});
+$tchat-width: 25vw;
+$tchat-body-padding: 5px;
+$tchat-input-width: calc((#{$tchat-width} - 2 * #{$border-width}) * 2 / 3 - #{$tchat-body-padding});
+$tchat-input-left: calc((#{$tchat-width} - 2 * #{$border-width}) / 3 + #{$tchat-body-padding} / 2);
+$tchat-body-bottom-space: calc(0.08 * #{$tchat-height});
+$tchat-input-padding: calc(0.03 * #{$tchat-height}) 3px;
 #tchat {
+	@extend %bordered;
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	width: 25vw;
+	width: $tchat-width;
 	height: $tchat-height;
 	padding-top: $tchat-padding-top;
-	z-index: 3;
-	border-width: $border-width;
-	border-color: $border-color;
-	border-style: ridge groove groove ridge;
-	background-color: $verydarkgreen;
-	font-size: $friends-font-size;
+	z-index: 2;
+	background-color: $bg-color;
+	font-size: $aside-font-size;
 	display: flex;
 	transition: height 0.4s, padding-top 0.4s;
 
@@ -239,29 +250,19 @@ nav {
 	}
 
 	#tchat_banner {
+		@extend %banner;
 		position: absolute;
 		top: $tchat-banner-offset;
 		left: $tchat-banner-offset;
 		width: $tchat-banner-width;
-		background-color: $verydarkgreen;
-		border-width: $border-width;
-		border-color: $border-color;
-		border-style: ridge groove groove ridge;
-		text-transform: uppercase;
 		text-align: center;
-		font-size: $banners-font-size;
-		padding: 2px 10%;
-		height: $banners-height;
-		&:hover {
-			cursor: pointer;
-		}
 	}
 
 	#chans {
 		flex: 1;
 		border-right: 1px $veryverydarkgreen solid;
 		overflow-y: auto;
-		padding: 2px;
+		padding: 3px;
 		overflow-wrap: break-word;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
@@ -269,7 +270,7 @@ nav {
 		}
 
 		p {
-			margin: 3px;
+			margin: 2px 0.5%;;
 			&:hover {
 				cursor: pointer;
 				background-color: $veryverydarkgreen;
@@ -279,14 +280,14 @@ nav {
 	#tchat_body_container {
 		flex: 2;
 		overflow-y: auto;
-		padding: 5px;
+		padding: $tchat-body-padding;
+		margin-bottom: $tchat-body-bottom-space;
 		font-size: $messages-font-size;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
 			display: none;
 		}
 		#tchat_body {
-			padding-bottom: 6%;
 			p {
 				font-family: sans-serif;
 				margin-bottom: 10px;
@@ -305,18 +306,23 @@ nav {
 		}
 		input {
 			position: absolute;
+			left: $tchat-input-left;
 			bottom: 0;
 			background-color: green;
-			width: $message-input-width;
+			width: $tchat-input-width;
 			height: 5%;
+			border: 1px gray solid;
 			border-radius: 3px;
-			caret-color: $veryverydarkgreen;
+			padding: $tchat-input-padding;
+			caret-color: white;
 			outline: none;
-			border: none;
-			color: $veryverydarkgreen;
+			color: white;
 			font-size: $messages-font-size;
 			&::placeholder {
 				color: darkgreen;
+			}
+			&:focus {
+				border-color: lightgray;
 			}
 		}
 	}

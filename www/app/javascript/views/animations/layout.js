@@ -1,7 +1,7 @@
-let $friends, $friends_button;
+let $friends, $friends_banner;
 let $tchat, $tchat_banner;
 let friends_out = true, tchat_out = true;
-let animating = false;
+let animating = false, timer = null;
 
 export function foldFriends() {
 	$friends.addClass('folded');
@@ -23,15 +23,28 @@ function unfoldTchat() {
 }
 
 $(function() {
+	$(window).on('resize', function() {
+		if (timer) {
+			clearTimeout(timer);
+			timer = null;
+		}
+		else
+			$(document.body).addClass('stop-transitions');
+		timer = setTimeout(function() {
+			$(document.body).removeClass('stop-transitions');
+			timer = null;
+		}, 100);
+	});
+
 	const $account_menu = $('#account_menu');
 	const $account_button = $('#account_button');
 	$account_button.on('click', function() {
 		$account_menu.toggle();
 	});
 
-	$friends_button = $('#friends_button');
+	$friends_banner = $('#friends_banner');
 	$friends = $('#friends');
-	$friends_button.on('click', function() {
+	$friends_banner.on('click', function() {
 		if (animating) return ;
 		if (friends_out)
 			foldFriends();
@@ -47,5 +60,10 @@ $(function() {
 			foldTchat();
 		else
 			unfoldTchat();
+	});
+
+	$(document).on('click', function(e) {
+		if (e.target !== $account_button[0])
+			$account_menu.hide();
 	});
 });
