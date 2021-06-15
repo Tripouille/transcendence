@@ -17,6 +17,8 @@
 $verydarkgreen: rgb(0, 70, 0);
 $veryverydarkgreen: rgb(0, 50, 0);
 $text-color: white;
+$chat-width: 25vw;
+$main-width: calc(100vw - $chat-width);
 
 @font-face {
 	font-family: 'screen';
@@ -49,7 +51,7 @@ main {
 	top: 11%;
 	padding: 10px;
 	height: 89%;
-	width: 100%;
+	width: $main-width;
 }
 
 p {

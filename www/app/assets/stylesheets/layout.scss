@@ -214,25 +214,24 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 	}
 }
 
-$tchat-height: calc(100vh - #{$banners-height} - #{$friends-height});
-$tchat-banner-offset: calc(-1 * #{$border-width});
-$tchat-banner-width: calc(100% + 2 * #{$border-width});
-$tchat-padding-top: calc(0.8 * #{$banners-height});
+$chat-height: calc(100vh - #{$banners-height} - #{$friends-height});
+$chat-banner-offset: calc(-1 * #{$border-width});
+$chat-banner-width: calc(100% + 2 * #{$border-width});
+$chat-padding-top: calc(0.8 * #{$banners-height});
 $messages-font-size: calc(1.6 * #{$responsive-ratio});
-$tchat-width: 25vw;
-$tchat-body-padding: 5px;
-$tchat-input-width: calc((#{$tchat-width} - 2 * #{$border-width}) * 2 / 3 - #{$tchat-body-padding});
-$tchat-input-left: calc((#{$tchat-width} - 2 * #{$border-width}) / 3 + #{$tchat-body-padding} / 2);
-$tchat-body-bottom-space: calc(0.08 * #{$tchat-height});
-$tchat-input-padding: calc(0.03 * #{$tchat-height}) 3px;
-#tchat {
+$chat-body-padding: 5px;
+$chat-input-width: calc((#{$chat-width} - 2 * #{$border-width}) * 2 / 3 - #{$chat-body-padding});
+$chat-input-left: calc((#{$chat-width} - 2 * #{$border-width}) / 3 + #{$chat-body-padding} / 2);
+$chat-body-bottom-space: calc(0.08 * #{$chat-height});
+$chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
+#chat {
 	@extend %bordered;
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	width: $tchat-width;
-	height: $tchat-height;
-	padding-top: $tchat-padding-top;
+	width: $chat-width;
+	height: $chat-height;
+	padding-top: $chat-padding-top;
 	z-index: 2;
 	background-color: $bg-color;
 	font-size: $aside-font-size;
@@ -242,19 +241,19 @@ $tchat-input-padding: calc(0.03 * #{$tchat-height}) 3px;
 	&.folded {
 		height: $banners-height;
 		padding-top: 0;
-		#tchat_body_container {
+		#chat_body_container {
 			input {
 				display: none;
 			}
 		}
 	}
 
-	#tchat_banner {
+	#chat_banner {
 		@extend %banner;
 		position: absolute;
-		top: $tchat-banner-offset;
-		left: $tchat-banner-offset;
-		width: $tchat-banner-width;
+		top: $chat-banner-offset;
+		left: $chat-banner-offset;
+		width: $chat-banner-width;
 		text-align: center;
 	}
 
@@ -277,17 +276,17 @@ $tchat-input-padding: calc(0.03 * #{$tchat-height}) 3px;
 			}
 		}
 	}
-	#tchat_body_container {
+	#chat_body_container {
 		flex: 2;
 		overflow-y: auto;
-		padding: $tchat-body-padding;
-		margin-bottom: $tchat-body-bottom-space;
+		padding: $chat-body-padding;
+		margin-bottom: $chat-body-bottom-space;
 		font-size: $messages-font-size;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
 			display: none;
 		}
-		#tchat_body {
+		#chat_body {
 			p {
 				font-family: sans-serif;
 				margin-bottom: 10px;
@@ -306,14 +305,14 @@ $tchat-input-padding: calc(0.03 * #{$tchat-height}) 3px;
 		}
 		input {
 			position: absolute;
-			left: $tchat-input-left;
+			left: $chat-input-left;
 			bottom: 0;
 			background-color: green;
-			width: $tchat-input-width;
+			width: $chat-input-width;
 			height: 5%;
 			border: 1px gray solid;
 			border-radius: 3px;
-			padding: $tchat-input-padding;
+			padding: $chat-input-padding;
 			caret-color: white;
 			outline: none;
 			color: white;

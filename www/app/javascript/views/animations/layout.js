@@ -1,6 +1,6 @@
 let $friends, $friends_banner;
-let $tchat, $tchat_banner;
-let friends_out = true, tchat_out = true;
+let $chat, $chat_banner;
+let friends_out = true, chat_out = true;
 let animating = false, timer = null;
 
 export function foldFriends() {
@@ -14,12 +14,12 @@ function unfoldFriends() {
 }
 
 export function foldTchat() {
-	$tchat.addClass('folded');
-	tchat_out = false;
+	$chat.addClass('folded');
+	chat_out = false;
 }
 function unfoldTchat() {
-	$tchat.removeClass('folded');
-	tchat_out = true;
+	$chat.removeClass('folded');
+	chat_out = true;
 }
 
 $(function() {
@@ -52,11 +52,10 @@ $(function() {
 			unfoldFriends();
 	});
 
-	$tchat_banner = $('#tchat_banner');
-	$tchat = $('#tchat');
-	$tchat_banner.on('click', function() {
-		if (animating) return ;
-		if (tchat_out)
+	$chat_banner = $('#chat_banner');
+	$chat = $('#chat');
+	$chat_banner.on('click', function() {
+		if (chat_out)
 			foldTchat();
 		else
 			unfoldTchat();
