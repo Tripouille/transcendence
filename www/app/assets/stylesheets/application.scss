@@ -17,8 +17,12 @@
 $verydarkgreen: rgb(0, 70, 0);
 $veryverydarkgreen: rgb(0, 50, 0);
 $text-color: white;
+$responsive-ratio: Min(1vh, 0.75vw);
 $chat-width: 25vw;
-$main-width: calc(100vw - $chat-width);
+$nav-height: calc(10 * #{$responsive-ratio});
+$nav-width: 80vw;
+$main-width: $nav-width;
+$main-height: calc(100vh - #{$nav-height});
 
 @font-face {
 	font-family: 'screen';
@@ -40,6 +44,18 @@ body {
 	&.stop-transitions * {
 		transition: none !important;
 	}
+	&:before {
+		content: "";
+		position: absolute;
+		top: 0; 
+		left: 0;
+		width: 100%; 
+		height: 100%;  
+		opacity: 1; 
+		z-index: -1;
+		background: url('wallpaper_general');
+		background-size: 100% 100%;
+	}
 }
 
 * {
@@ -50,7 +66,7 @@ main {
 	position: absolute;
 	top: 11%;
 	padding: 10px;
-	height: 89%;
+	height: $main-height;
 	width: $main-width;
 }
 

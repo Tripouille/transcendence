@@ -2,7 +2,6 @@
 
 $border-color: green;
 $bg-color: $verydarkgreen;
-$responsive-ratio: Min(1vh, 0.75vw);
 $border-width: $responsive-ratio;
 $banners-height: calc(4.5 * #{$responsive-ratio});
 $banners-font-size: calc(2 * #{$responsive-ratio});
@@ -15,7 +14,6 @@ $aside-font-size: calc(2 * #{$responsive-ratio});
 	border-style: ridge groove groove ridge;
 }
 
-$nav-height: calc(10 * #{$responsive-ratio});
 $nav-font-size: calc(0.5 * #{$nav-height});
 $nav-link-padding: calc(0.5 * #{$responsive-ratio});
 $link-border-width: calc(0.5 * #{$border-width});
@@ -25,13 +23,14 @@ nav {
 	top: 0;
 	left: 0;
 	right: 0;
-	width: 80%;
+	width: $nav-width;
 	height: $nav-height;
 	display: flex;
 	flex-direction: row;
 	justify-content: left;
 	align-items: center;
-	background-color: $bg-color;
+	background: url('wallpaper_long');
+	background-size: 100% 100%;
 	z-index: 2;
 
 	a {
@@ -86,7 +85,7 @@ nav {
 				border-width: $border-width;
 				border-color: $border-color;
 				border-style: none groove groove ridge;
-				background-color: $bg-color;
+				background-color: black;
 				display: none;
 
 				div.option {
@@ -131,7 +130,8 @@ nav {
 	padding-top: $banners-padding-top;
 	text-transform: uppercase;
 	z-index: 3;
-	background-color: $bg-color;
+	background: url('wallpaper_long');
+	background-size: 100% 100%;
 	&:hover {
 		cursor: pointer;
 	}
@@ -141,7 +141,6 @@ nav {
 	position: fixed;
 	right: 0;
 	width: 15vw;
-	background-color: $bg-color;
 }
 #friends_banner {
 	@extend %friends;
@@ -159,7 +158,6 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 	padding-top: 1vh;
 	height: $friends-height;
 	z-index: 2;
-	background-color: $bg-color;
 	font-size: $aside-font-size;
 	text-align: center;
 	overflow: auto;
@@ -181,7 +179,9 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 		margin-bottom: 1%;
 
 		&:hover {
-			background-color: $veryverydarkgreen;
+			//background-color: $veryverydarkgreen;
+			font-weight: bold;
+			cursor: pointer;
 		}
 
 		span {
@@ -206,9 +206,9 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
-				&:hover {
-					cursor: pointer;
-				}
+				// &:hover {
+				// 	cursor: pointer;
+				// }
 			}
 		}
 	}
@@ -233,7 +233,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 	height: $chat-height;
 	padding-top: $chat-padding-top;
 	z-index: 2;
-	background-color: $bg-color;
+	background-color: transparent;
 	font-size: $aside-font-size;
 	display: flex;
 	transition: height 0.4s, padding-top 0.4s;
@@ -272,7 +272,8 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			margin: 2px 0.5%;;
 			&:hover {
 				cursor: pointer;
-				background-color: $veryverydarkgreen;
+				//background-color: $veryverydarkgreen;
+				font-weight: bold;
 			}
 		}
 	}
@@ -307,7 +308,8 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			position: absolute;
 			left: $chat-input-left;
 			bottom: 0;
-			background-color: green;
+			//background-color: green;
+			background-color: transparent;
 			width: $chat-input-width;
 			height: 5%;
 			border: 1px gray solid;
