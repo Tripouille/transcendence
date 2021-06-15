@@ -40,21 +40,11 @@ body {
 	color: $text-color;
 	font-family: 'screen';
 	margin: 0;
+	background: url('wallpaper_general');
+	background-size: 100% 100%;
 
 	&.stop-transitions * {
 		transition: none !important;
-	}
-	&:before {
-		content: "";
-		position: absolute;
-		top: 0; 
-		left: 0;
-		width: 100%; 
-		height: 100%;  
-		opacity: 1; 
-		z-index: -1;
-		background: url('wallpaper_general');
-		background-size: 100% 100%;
 	}
 }
 
@@ -63,7 +53,7 @@ body {
 }
 
 main {
-	position: absolute;
+	position: fixed;
 	top: 11%;
 	padding: 10px;
 	height: $main-height;
