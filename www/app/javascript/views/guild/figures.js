@@ -7,7 +7,7 @@ export const FiguresView = Backbone.View.extend({
 
     template: _.template($('#guildFiguresTemplate').html()),
 
-    render: function (guildId) {
+    render: function (guildId, guildView) {
         this.$el.empty();
         let el = this.$el;
         let self = this;
@@ -27,6 +27,7 @@ export const FiguresView = Backbone.View.extend({
                 model.set({ "owner_name": userModel.get('username') });
                 let guildTemplate = self.template(model.toJSON());
                 el.html(guildTemplate);
+                guildView.addMainButton(guildId);
             });
         },
             // function onFailure() {

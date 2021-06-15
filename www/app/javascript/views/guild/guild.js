@@ -83,7 +83,7 @@ export const GuildView = Backbone.View.extend({
         this.guild.set("id", parseInt(guildId));
         let self = this;
 
-        $.when(this.guild.fetch()).done(function () {
+        $.when(this.guild.fetch(), window.currentUser.fetch()/* Added in case of page reloading */).done(function () {
 
             if (window.currentUser.has("guild_id")) {
                 if (window.currentUser.get("guild_id") != parseInt(guildId))
@@ -111,12 +111,12 @@ export const GuildView = Backbone.View.extend({
     },
 
     render: function (guildId) {
-
+        /* ATTENTION PROBLEM this function is rendring 2 times when page refresh (router.js problem probably) */
         console.log("RENDER")
         this.$el.empty();
         this.$el.html(this.invitesView.render(guildId, this).el);
-        this.$el.append(this.figuresView.render(guildId).el);
-        this.addMainButton(guildId);
+        this.$el.append(this.figuresView.render(guildId, this).el);
+        // this.addMainButton(guildId); (moved to figuresView because was executing before firguresView.render)
 
         this.$el.append(this.membersView.render(guildId).el);
         this.$el.append(this.warHistoryView.render(guildId).el);
