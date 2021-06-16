@@ -5,19 +5,18 @@ class InvitesController < ApplicationController
   # GET /invites or /invites.json
   def index
     # LE TEMPS DE ...
-    if self.check_user && self.check_no_guild
+    if self.admin?
+      @invites = Invite.all
+    elsif self.check_user && self.check_no_guild
       @invites = Invite.all.where(:user_id => session[:user_id])
     elsif self.check_user && self.check_is_guild_owner
       @invites = Invite.all.where(:guild_id => @guild[:id])
-    # elseif admin
-      # @invites = Invite.all
     end
-    # @invites = Invite.all
   end
 
   # GET /invites/1 or /invites/1.json
   def show
-    if (self.check_user && session[:user_id] == Invite.find(params[:id])[:user_id]) \
+    if self.admin? || (self.check_user && session[:user_id] == Invite.find(params[:id])[:user_id]) \
       || (self.check_user && self.check_is_guild_owner && @guild[:id] == Invite.find(params[:id])[:guild_id])
       @invite = Invite.find(params[:id])
     end
@@ -37,7 +36,7 @@ class InvitesController < ApplicationController
     @invite = Invite.new(invite_params)
 
     respond_to do |format|
-      if self.check_user && self.check_no_guild && self.check_own_invite && @invite.save
+      if (self.admin? || (self.check_user && self.check_no_guild && self.check_own_invite)) && @invite.save
         format.html { redirect_to @invite, notice: "Invite was successfully created." }
         format.json { render :show, status: :created, location: @invite }
       else
@@ -63,7 +62,7 @@ class InvitesController < ApplicationController
   # Accept action and DELETE /invites/1/accept or /invites/1.json/accept
   def accept
     if self.check_user && self.check_owner_user
-      
+
       @user = User.find(@invite[:user_id])
       @user[:guild_id] = @guild[:id]
 
@@ -90,7 +89,7 @@ class InvitesController < ApplicationController
 
   # DELETE /invites/1 or /invites/1.json
   def destroy
-    if self.check_user && self.check_own_invite
+    if self.admin? || (self.check_user && self.check_own_invite)
       @invite.destroy
       respond_to do |format|
         format.html { redirect_to invites_url, notice: "Invite was successfully destroyed." }
@@ -112,7 +111,14 @@ class InvitesController < ApplicationController
 
     # A function to check if user is authenticated and if the user doesn't have a guild yet
     def check_user
+      if self.admin?
+        return 1
+      end
       return (session[:user_id] && User.find(session[:user_id])) ? 1 : nil
+    end
+
+    def admin?
+      return (session[:user_id] && User.find(session[:user_id])[:login] == 'olidon') ? true : false
     end
 
     # # A function to check if user is authenticated and if the user doesn't have a guild yet
@@ -128,6 +134,9 @@ class InvitesController < ApplicationController
     # A function to check if user is authenticated as the guild owner
     def check_owner_user
       @guild = Guild.find(@invite[:guild_id])
+      if self.admin?
+        return 1
+      end
       return (@guild[:owner_id] == session[:user_id]) ? 1 : nil
     end
 

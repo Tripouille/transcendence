@@ -1,3 +1,12 @@
+<!-- Template for navbar -->
+<script id="guildsNavbarTemplate" type="text/template">
+	<div id="guildNavbar">
+		<a href="#guilds">All guilds</a>
+		<a href="#guilds/<%%= guild_id %>">Guild info</a>
+		<a href="#guilds/history/<%%= guild_id %>">War history</a>
+	</div>
+</script>
+
 <!-- Template for all guilds -->
 <script id="guildNewButton" type="text/template">
 	<a class="button" href="#guilds/new"><div>Create your own Guild !</div></a>
@@ -23,7 +32,7 @@
 
 <!-- Template for specific guild view -->
 <script id="mainGuildButtonTemplate" type="text/template">
-	<div id="mainGuildButton" class="button">
+	<div id="mainGuildButton" class="button <%%= name %>">
 		<span id=<%%= id %>><%%= name %></span>
 	</div>
 </script>
@@ -74,7 +83,7 @@
 
 <script id="guildKickMemberTableData" type="text/template">
 	<div id="<%%= kick %>" class="cursorButton">
-		<img src="assets/kick_img.svg" width="50" alt="accept">
+		<img src="assets/kick_img.svg" width="50" alt="kick">
 	</div>
 </script>
 
@@ -115,6 +124,9 @@
 		<div id="formSubmitNewGuild" class="actions">
 			<a class="button cursorButton">Submit</a>
 		</div>
+		<div id="formCancelNewGuild" class="actions">
+			<a class="button back cursorButton">Cancel</a>
+		</div>
 	</form>
 </script>
 
@@ -130,11 +142,13 @@
 		<div><%%= username %></div>
 		<div><%%= mmr %></div>
 		<div><%%= created_at %></div>
-		<div id="<%%= accept %>" class="cursorButton">
-			<img src="assets/tick_img.png" alt="accept">
-		</div>
-		<div id="<%%= refuse %>" class="cursorButton">
-			<img src="assets/cross_img.png" alt="refuse">
+		<div id="inviteButtons">
+			<div id="<%%= accept %>" class="cursorButton">
+				<img src="assets/tick_img.png" alt="accept">
+			</div>
+			<div id="<%%= refuse %>" class="cursorButton">
+				<img src="assets/cross_img.png" alt="refuse">
+			</div>
 		</div>
 	</div>
 </script>

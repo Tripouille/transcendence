@@ -3,48 +3,6 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 $verydarkgreen: rgb(0, 70, 0);
 
-
-// header {
-//   background-color: rgb(2, 47, 114);
-//   position: fixed;
-//   width: 100%;
-//   top: 0;
-//   z-index: 300;
-//   height: 40px;
-//   display: grid;
-//   grid-template-columns: 40px, 1fr, 40px;
-// }
-// /* li {
-// 	  color: royalblue;
-// 	  font-size: 30px;
-// 	  text-shadow: 2px 2px 1px slategray;
-// 	  list-style-type: none;
-//   } */
-// #mainNav {
-//   position: absolute;
-//   top: 0px;
-//   padding-bottom: 10px;
-// }
-// #mainNav a {
-//   color: rgb(214, 214, 214);
-//   text-decoration: none;
-//   font-variant: small-caps;
-//   font-size: 1.3em;
-// }
-// #mainNav ul {
-//   list-style: none;
-//   padding: 0;
-//   margin: 0;
-//   display: flex;
-//   grid-gap: 10px;
-// }
-// #mainNav a:hover {
-//   text-decoration: underline;
-// }
-
-// main {
-//   margin-top: 50px;
-// }
 main form label {
   display: flex;
   justify-content: space-between;
@@ -89,6 +47,13 @@ input {
   font-size: 16px;
   cursor: pointer;
 }
+.Destroy, .Leave {
+  background-color: red;
+}
+.back, .Cancel {
+  background-color: darkgrey;
+  border: 1px solid darkgrey;
+}
 @keyframes pixelate {
   0% {
     background-position-y: 0;
@@ -97,17 +62,29 @@ input {
     background-position-y: 100%;
   }
 }
-.button:hover {
-  // background-color: green;
-  background: green url(pixel_green.svg);
+.button:hover, .myGuildRow:hover, .guildRow:hover {
   transition-delay: 0.6s;
   background-size: 180px;
   animation: pixelate 0.5s steps(8) forwards;
 }
+.button:hover {
+  background: green url(pixel_green.svg);
+}
+.Destroy, .Leave {
+  &:hover {
+    background: lightcoral url(pixel_lightcoral.svg);
+  }
+}
+.back, .Cancel {
+  &:hover {
+    background: black url(pixel_black.svg);
+    border: 1px solid darkgrey;
+  }
+}
 .cursorButton {
   cursor: pointer;
 }
-.guildRow, .myGuildRow, .guildFigures, .guildInviteRow, .guildMemberRow {
+.guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,7 +94,10 @@ input {
   text-align: center;
   border-width: 1px;
 }
-.guildRow:nth-child(odd)/*, .guildInviteRow:nth-child(odd), .guildMemberRow:nth-child(odd)*/ {
+.kickButton {
+  padding: 0 25px;
+}
+.guildRow:nth-child(odd)/*, .guildInvitesRow:nth-child(odd), .guildMemberRow:nth-child(odd)*/ {
   background-color: darkgrey;
 }
 .guildRow:nth-child(odd) {
@@ -127,27 +107,32 @@ input {
 .myGuildRow {
   border-style: solid;
 }
-.guildRow, .guildInviteRow, .guildMemberRow {
+.guildRow, .guildInvitesRow, .guildMemberRow {
   border-left: solid;
   border-right: solid;
+  &:first-child {
+    border-top: solid;
+  }
+  &:last-child {
+    border-bottom: solid;
+  }
 }
-.guildRow:first-child, .guildInviteRow:first-child, .guildMemberRow:first-child {
-  border-top: solid;
+#inviteButtons {
+  display: flex;
+  justify-content:space-around;
+  align-items: center;
 }
-.guildRow:last-child, .guildInviteRow:last-child, .guildMemberRow:last-child {
-  border-bottom: solid;
-}
-.myGuildRow:hover, .guildRow:nth-child(even) {
+// .guildRow:first-child, .guildInvitesRow:first-child, .guildMemberRow:first-child {
+//   border-top: solid;
+// }
+// .guildRow:last-child, .guildInvitesRow:last-child, .guildMemberRow:last-child {
+  // border-bottom: solid;
+// }
+.myGuildRow:hover, .guildRow:nth-child(even):hover {
   background: darkgrey url(pixel_darkgrey.svg);
-  transition-delay: 0.6s;
-  background-size: 180px;
-  animation: pixelate 0.5s steps(8) forwards;
 }
-.guildRow:nth-child(odd) {
+.guildRow:nth-child(odd):hover {
   background: black url(pixel_black.svg);
-  transition-delay: 0.6s;
-  background-size: 180px;
-  animation: pixelate 0.5s steps(8) forwards;
 }
 .uppercase {
   text-transform: uppercase;
@@ -159,9 +144,24 @@ input {
     flex-direction: column;
     justify-content: center;
   }
+  .guildFigures {
+    flex-wrap: wrap;
+    & div:first-child {
+      width: 100%
+    }
+  }
 }
 
 /* For Tablets */
 @media screen and (min-width: 540px) and (max-width: 780px) {
+  .guildFigures div:not(:first-child) {
+    flex: 1 0 50%;
+  }
+}
 
+/* For Very thin screens */
+@media screen and (min-width: 0px) and (max-width: 540px) {
+  .guildFigures div:not(:first-child) {
+    flex:1 0 25%;
+  }
 }

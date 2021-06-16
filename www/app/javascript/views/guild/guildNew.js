@@ -3,9 +3,10 @@ import { GuildModel } from '../../models/guild';
 export const GuildNewView = Backbone.View.extend({
 	events: {
 		'click #formSubmitNewGuild a': 'onFormSubmit',
+		'click #formCancelNewGuild a': 'onFormCancel',
 		'blur input[required]': 'onInputChange',
 		'focus input[required]': function (e) {
-			this.resetInputErrors(e.target);
+			this.resetInputErrors(e.target.name);
 		}
 	},
 	templates: {
@@ -14,6 +15,8 @@ export const GuildNewView = Backbone.View.extend({
 	onFormSubmit: function () {
 		/* get data from form on submit button */
 		/* save the new guild and the guild_id to the current user databses */
+		this.resetInputErrors("name");
+		this.resetInputErrors("anagram");
 		let model = new GuildModel();
 		var self = this;
 		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
@@ -22,21 +25,13 @@ export const GuildNewView = Backbone.View.extend({
 			},
 			error: function (model, response, options) {
 				console.log("Something went wrong while saving the new guild");
-				// /* Regex to match
-				//    DETAIL:  Key (name)=(Olivier Lidon) already exists.
-				//    |____________||__||_______________________________|
-				// 		  1^      2^      1       3^  2                 3
-				// 				 |--------^--------||-^||---------------^------------| */
-				// let regexKey = /(?<=DETAIL:  Key \()(.*)(?=\)=\((.*)\) already exists)/g;
-				// let label = response.responseText.match(regexKey)[0];
-				// /* AJOUTER reset error */
-				// $('#newGuildForm').find('.error').remove();
-				// if (label == "name" || label == "anagram")
-				// 	self.showInputErrors(label.charAt(0).toUpperCase() + label.slice(1) + " already exist.", label);
-				// else
+				/* TROUVER UN MOYEN DE PARSER LE RETOUR D'ERREUR DU SERVEUR */
 				self.showInputErrors("Unknown server error.", "name");
 			}
 		});
+	},
+	onFormCancel: function () {
+		Backbone.history.history.back();
 	},
 	/* render the form page */
 	render: function () {
@@ -73,8 +68,8 @@ export const GuildNewView = Backbone.View.extend({
 		if (result !== true)
 			this.showInputErrors(result, e.target.name);
 	},
-	resetInputErrors: function (e) {
-		$('#newGuildForm').find('label[for=' + e.name + '] span').remove();
+	resetInputErrors: function (name) {
+		$('#newGuildForm').find('label[for=' + name + '] span').remove();
 	},
 	showInputErrors: function (errors, labelName) {
 		var $target = $('label[for=' + labelName + ']');

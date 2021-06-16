@@ -6,7 +6,7 @@ export const InvitesView = Backbone.View.extend({
 
     staticTemplate: _.template($('#guildInvitesTemplate').html()),
 
-    render: function(guildId, guildView) {
+    render: function (guildId, guildView) {
         this.$el.empty();
 
         if (window.currentUser.get('guild_id') != guildId)
@@ -20,13 +20,12 @@ export const InvitesView = Backbone.View.extend({
         $.when(invites.fetch(), users.fetch()).done(function () {
 
             let filteredInvites = invites.where({ guild_id: parseInt(guildId) });
-            if (filteredInvites)
-            {
+            if (filteredInvites.length != 0) { /* fixed previous condition wasn't working */
                 self.$el.html(self.staticTemplate);
                 $(filteredInvites).each(function (i, invite) {
-    
+
                     let dynamicTemplate = _.template($('#guildInviteRow').html());
-        
+
                     invite.set({
                         username: users.findWhere({ id: invite.get("user_id") }).get('username'),
                         mmr: 1200,
@@ -36,8 +35,8 @@ export const InvitesView = Backbone.View.extend({
                     });
 
                     $('#guildInvitesBody').append(dynamicTemplate(invite.toJSON()));
-                
-                    let data = { 
+
+                    let data = {
                         model: invite,
                         guildId: guildId,
                         guildView: guildView,

@@ -114,12 +114,14 @@ export const GuildView = Backbone.View.extend({
         /* ATTENTION PROBLEM this function is rendring 2 times when page refresh (router.js problem probably) */
         console.log("RENDER")
         this.$el.empty();
-        this.$el.html(this.invitesView.render(guildId, this).el);
+        let navbarTemplate = _.template($('#guildsNavbarTemplate').html());
+        this.$el.prepend(navbarTemplate({ guild_id: guildId }));
+        this.$el.append(this.invitesView.render(guildId, this).el);
         this.$el.append(this.figuresView.render(guildId, this).el);
         // this.addMainButton(guildId); (moved to figuresView because was executing before firguresView.render)
 
         this.$el.append(this.membersView.render(guildId).el);
-        this.$el.append(this.warHistoryView.render(guildId).el);
+        // this.$el.append(this.warHistoryView.render(guildId).el);
 
 
         // if (guild = atWar)

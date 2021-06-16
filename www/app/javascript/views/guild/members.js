@@ -31,7 +31,7 @@ export const MembersView = Backbone.View.extend({
                 if (window.currentUser.id == guild.get("owner_id") && user.id != window.currentUser.id) {
                     user.set({ "kick": "kick" + user.id });
                     let kickTemplate = _.template($('#guildKickMemberTableData').html());
-                    $("#guildMembersBody div:last-child").append(kickTemplate(user.toJSON()));
+                    $('#guildMembersBody div[class="guildMemberRow"]:last-child').append(kickTemplate(user.toJSON()));
 
                     let data = {
                         model: user,
@@ -41,6 +41,8 @@ export const MembersView = Backbone.View.extend({
 
                     $('#kick' + user.id).one("click", data, user.kick);
                 }
+                else
+                    $("#guildMembersBody div:last-child").append('<div class="kickButton"></div>');
 
             });
             // function onFailure() {
