@@ -12,11 +12,11 @@ import { InvitesCollection } from '../../collections/invites';
 
 export const GuildView = Backbone.View.extend({
 
+    invitesView: new InvitesView(),
     figuresView: new FiguresView(),
     membersView: new MembersView(),
-    warHistoryView: new WarHistoryView(),
+    // warHistoryView: new WarHistoryView(),
     // warSummaryView: new WarSummaryView(),
-    invitesView: new InvitesView(),
     guild: new GuildModel(),
 
     mainButtonClick: function (evt) {

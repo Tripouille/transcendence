@@ -2,6 +2,7 @@ import { HomepageView } from 'views/homepage';
 import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
+import { WarHistoryView } from 'views/guild/warhistory';
 import * as GC from 'views/garbage_collector';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
@@ -24,11 +25,12 @@ $(function () {
 		guildsView: new GuildsView({ el: $main }),
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
+		warHistoryView: new WarHistoryView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		usersView: new UsersView(),
-		gameView: new GameView({el: $main}),
-		lobbyView: new LobbyView({el: $main}),
-		selectModeView: new SelectModeView({el: $main}),
+		gameView: new GameView({ el: $main }),
+		lobbyView: new LobbyView({ el: $main }),
+		selectModeView: new SelectModeView({ el: $main }),
 
 		routes: {
 			"": "selectMode",
@@ -37,17 +39,18 @@ $(function () {
 			"game/:id": "game",
 			"guilds": "guilds",
 			"guilds/new": "newguild",
+			"guilds/war/:id": "warhistory",
 			"guilds/:id": "displayguild",
 			"game": "game",
 			"users": "users"
 		},
-		execute: function(callback, args, name) {
+		execute: function (callback, args, name) {
 			$main.empty();
 			Pong.removeSubscription();
 			this.clearAnimations();
 			callback.apply(this, args);
 		},
-		clearAnimations: function() {
+		clearAnimations: function () {
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
@@ -63,6 +66,11 @@ $(function () {
 			this.guildView.render(id);
 		},
 
+		warhistory: function (id) {
+			console.log("> guild war - No" + id);
+			this.warHistoryView.render(id);
+		},
+
 		newguild: function () {
 			console.log("> guilds - page #new");
 			this.guildNewView.render();
@@ -72,16 +80,16 @@ $(function () {
 			this.usersView.render();
 		},
 
-		selectMode: function() {
+		selectMode: function () {
 			this.selectModeView.render();
 		},
-		lobby: function() {
+		lobby: function () {
 			this.lobbyView.render();
 		},
-		game: function(id) {
+		game: function (id) {
 			if (id == null) {
-				this.navigate('game/lobby', {trigger: true});
-				return ;
+				this.navigate('game/lobby', { trigger: true });
+				return;
 			}
 			this.gameView.render(id);
 		},

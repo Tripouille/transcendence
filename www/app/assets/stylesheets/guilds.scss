@@ -63,57 +63,62 @@ input {
   }
 }
 .button:hover, .myGuildRow:hover, .guildRow:hover {
-  transition-delay: 0.6s;
-  background-size: 180px;
-  animation: pixelate 0.5s steps(8) forwards;
+  transition-delay: 0.3s;
+  animation: pixelate 0.2s steps(8) forwards;
 }
 .button:hover {
   background: green url(pixel_green.svg);
+  background-size: auto 460px;
 }
 .Destroy, .Leave {
   &:hover {
     background: lightcoral url(pixel_lightcoral.svg);
-  }
+    background-size: auto 460px;
+}
 }
 .back, .Cancel {
   &:hover {
     background: black url(pixel_black.svg);
+    background-size: auto 460px;
     border: 1px solid darkgrey;
   }
 }
 .cursorButton {
   cursor: pointer;
 }
+.kickButton {
+  padding: 0 25px;
+}
 .guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 5px 10px;
+  margin: 0 10px;
   padding: 5px 32px;
   font-size: 25px;
   text-align: center;
   border-width: 1px;
 }
-.kickButton {
-  padding: 0 25px;
-}
-.guildRow:nth-child(odd)/*, .guildInvitesRow:nth-child(odd), .guildMemberRow:nth-child(odd)*/ {
-  background-color: darkgrey;
-}
-.guildRow:nth-child(odd) {
-  /* Animation on hover guild row */
-  background-color: darkgrey;
-}
 .myGuildRow {
   border-style: solid;
+  margin: 20px 10px;
+  order: -1;
+}
+.guildRow/* , .guildInvitesRow, .guildMemberRow */ {
+  &:nth-of-type(odd) {
+    background-color: darkgrey;
+  }
+  &:nth-of-type(even) {
+    background-color: black;
+  }
 }
 .guildRow, .guildInvitesRow, .guildMemberRow {
   border-left: solid;
   border-right: solid;
-  &:first-child {
+  &:first-of-type {
     border-top: solid;
   }
-  &:last-child {
+  &:last-of-type {
     border-bottom: solid;
   }
 }
@@ -128,11 +133,13 @@ input {
 // .guildRow:last-child, .guildInvitesRow:last-child, .guildMemberRow:last-child {
   // border-bottom: solid;
 // }
-.myGuildRow:hover, .guildRow:nth-child(even):hover {
+.myGuildRow:hover, .guildRow:nth-of-type(even):hover {
   background: darkgrey url(pixel_darkgrey.svg);
+  background-size: auto 640px;
 }
-.guildRow:nth-child(odd):hover {
+.guildRow:nth-of-type(odd):hover {
   background: black url(pixel_black.svg);
+  background-size: auto 640px;
 }
 .uppercase {
   text-transform: uppercase;

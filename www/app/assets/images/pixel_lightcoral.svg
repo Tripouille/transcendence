@@ -32,7 +32,7 @@
       .cls-1 {
         fill: lightcoral;
         fill-rule: evenodd;
-        opacity: 0.95;
+        opacity: 1;
       }
     </style>
   </defs>
