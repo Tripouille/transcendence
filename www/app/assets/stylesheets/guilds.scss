@@ -3,6 +3,10 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 $verydarkgreen: rgb(0, 70, 0);
 
+#guildNavbar {
+  display: flex;
+  align-items: center;
+}
 main form label {
   display: flex;
   justify-content: space-between;
