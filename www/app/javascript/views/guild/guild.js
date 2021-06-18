@@ -1,13 +1,10 @@
 import { FiguresView } from 'views/guild/figures';
 import { MembersView } from 'views/guild/members';
-import { WarHistoryView } from 'views/guild/warhistory';
-// import { WarSummaryView } from 'views/guild/warsummary';
 import { InvitesView } from 'views/guild/invites';
 
 import { GuildModel } from 'models/guild';
 import { InviteModel } from 'models/invite';
 
-import { GuildsCollection } from 'collections/guilds';
 import { InvitesCollection } from '../../collections/invites';
 
 export const GuildView = Backbone.View.extend({
@@ -15,8 +12,6 @@ export const GuildView = Backbone.View.extend({
     invitesView: new InvitesView(),
     figuresView: new FiguresView(),
     membersView: new MembersView(),
-    // warHistoryView: new WarHistoryView(),
-    // warSummaryView: new WarSummaryView(),
     guild: new GuildModel(),
 
     mainButtonClick: function (evt) {
@@ -24,14 +19,16 @@ export const GuildView = Backbone.View.extend({
         let self = evt.data.self;
 
         if (clicked.text() == 'Destroy') {
-            confirm("You are about to destroy this guild. Are you sure ?");
-            self.guild.destroy({
-                success: function (model, response) {
-                    console.log("seems like the guild is destroyed");
-                    $('#DestroyButton').off("click", self.mainButtonClick);
-                    Backbone.history.navigate("guilds", { trigger: true });
-                },
-            });
+            if (confirm("You are about to destroy this guild. Are you sure ?")) {
+                self.guild.destroy({
+                    success: function (model, response) {
+                        console.log("seems like the guild is destroyed");
+                        Backbone.history.navigate("guilds", { trigger: true });
+                    },
+                });
+            }
+            else
+                $('#DestroyButton').one("click", { self: self }, self.mainButtonClick);
         }
         else if (clicked.text() == 'Cancel Invitation') {
             let invites = new InvitesCollection();
@@ -42,7 +39,6 @@ export const GuildView = Backbone.View.extend({
                     model.destroy({
                         success: function (model, response) {
                             console.log("Successfully destroyed invite");
-                            $('#CancelInvitationButton').off("click", self.mainButtonClick);
                             self.render(self.guild.get('id'));
                         },
                     });
@@ -57,7 +53,6 @@ export const GuildView = Backbone.View.extend({
 
                 invite.save({ user_id: window.currentUser.get('id'), guild_id: self.guild.get('id') }, {
                     success: function (model, resp, options) {
-                        $('#JoinButton').off("click", self.mainButtonClick);
                         self.render(self.guild.get('id'));
                     },
                 });
@@ -67,7 +62,6 @@ export const GuildView = Backbone.View.extend({
             window.currentUser.fetch().done(function () {
                 window.currentUser.save({ 'guild_id': null }, {
                     success: function (model, resp, options) {
-                        $('#LeaveButton').off("click", self.mainButtonClick);
                         self.render(self.guild.get('id'));
                     },
                 });
@@ -93,7 +87,7 @@ export const GuildView = Backbone.View.extend({
 
                     let model = new Backbone.Model({ name: buttonText, id: buttonText + 'Button' });
                     $('#guildName').append(joinButtonTemplate(model.toJSON()));
-                    $('#' + buttonText + 'Button').on("click", { self: self }, self.mainButtonClick);
+                    $('#' + buttonText + 'Button').one("click", { self: self }, self.mainButtonClick);
                 }
             }
             else {
@@ -104,7 +98,8 @@ export const GuildView = Backbone.View.extend({
                     buttonText = (invites.findWhere({ user_id: window.currentUser.get('id'), guild_id: self.guild.get('id') })) ? "Cancel Invitation" : "Join";
                     let model = new Backbone.Model({ name: buttonText, id: buttonText.replace(' ', '') + 'Button' });
                     $('#guildName').append(joinButtonTemplate(model.toJSON()));
-                    $('#' + buttonText.replace(' ', '') + 'Button').on("click", { self: self }, self.mainButtonClick);
+                    console.log("Button appending")
+                    $('#' + buttonText.replace(' ', '') + 'Button').one("click", { self: self }, self.mainButtonClick);
                 });
             }
         });
@@ -118,19 +113,7 @@ export const GuildView = Backbone.View.extend({
         this.$el.prepend(navbarTemplate({ guild_id: guildId }));
         this.$el.append(this.invitesView.render(guildId, this).el);
         this.$el.append(this.figuresView.render(guildId, this).el);
-        // this.addMainButton(guildId); (moved to figuresView because was executing before firguresView.render)
-
         this.$el.append(this.membersView.render(guildId).el);
-        // this.$el.append(this.warHistoryView.render(guildId).el);
-
-
-        // if (guild = atWar)
-        //     this.$el.append(this.warSummaryView.render(guildId).el);
-
-        /* to implement */
-        // if (user = notinguild)
-        //     this.$el.append(this.joinGuildView.render(guildId).el);
-
         return this;
     }
 });

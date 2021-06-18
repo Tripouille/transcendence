@@ -12,6 +12,18 @@ export const WarHistoryView = Backbone.View.extend({
         this.$el.prepend(navbarTemplate({ guild_id: guildId }));
         this.$el.append(this.template);
 
+        // this.$el.append(this.warHistoryView.render(guildId).el);
+
+
+        // if (guild = atWar)
+        //     this.$el.append(this.warSummaryView.render(guildId).el);
+
+        /* to implement */
+        // if (user = notinguild)
+        //     this.$el.append(this.joinGuildView.render(guildId).el);
+
+
+
         // let guilds = new GuildsCollection();
         // let guildsFetch = guilds.fetch();
         // let users = new Users();
