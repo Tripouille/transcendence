@@ -1,4 +1,4 @@
-@import "application";
+@import "variables";
 $link-width: calc(0.5 * #{$main-width});
 $link-height: calc(0.4 * #{$main-height});
 $link-font-size: calc(16 * #{$responsive-ratio});

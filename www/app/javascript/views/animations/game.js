@@ -5,8 +5,13 @@ const UP_KEY = "ArrowUp";
 const DOWN_KEY = "ArrowDown";
 const timerColors = {
 	3: 'green',
-	2: 'orange',
-	1: 'red'
+	2: 'lightgreen',
+	1: 'white'
+};
+const timerSizes = {
+	3: '50vmin',
+	2: '30vmin',
+	1: '15vmin'
 };
 
 let BH = {ball: null, angles: null};
@@ -124,10 +129,13 @@ function timerStart() {
 	status = "timer";
 	$timer.show();
 	$timer.text('3');
-	$timer.css({color: 'green'});
+	$timer.css({'color': timerColors[3], 'font-size': timerSizes[3]});
 	const interval = GC.addInterval(function() {
 		$timer.text(Math.max(Number($timer.text()) - 1, 1));
-		$timer.css({color: timerColors[$timer.text()]});
+		$timer.css({
+			'color': timerColors[$timer.text()],
+			'font-size': timerSizes[$timer.text()]
+		});
 	}, 1000);
 	GC.addTimeout(function() {
 		GC.cleanInterval(interval);
@@ -354,9 +362,9 @@ function endMatch(data) {
 		console.log('Left won !');
 	else
 		console.log('Right won !');
-	GC.addTimeout(function() {
-		window.router.navigate('game', true);
-	}, 1000);
+	// GC.addTimeout(function() {
+	// 	window.router.navigate('game', true);
+	// }, 1000);
 	consumer.subscriptions.remove(window.pongSubscription);
 	window.pongSubscription = null;
 }
