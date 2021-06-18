@@ -2,35 +2,61 @@ import { GuildsCollection } from 'collections/guilds';
 import { Users } from 'collections/users';
 
 export const GuildsView = Backbone.View.extend({
+    guildsCollection: new GuildsCollection(),
+    usersCollection: new Users(),
+    dynamicTemplate: _.template($('#guildRow').html()),
+    allRendered: false,
+    page: 1,
 
     render: function () {
+        this.allRendered = false;
+        this.page = 1;
         let self = this;
-        let guildsCollection = new GuildsCollection();
-        let usersCollection = new Users();
         self.$el.append('<div class="guildsTable"></div>')
-        let $guildsTable = $('.guildsTable');
-        $.when(window.currentUser.fetch(), guildsCollection.fetch(), usersCollection.fetch()).done(function () {
-            let dynamicTemplate = _.template($('#guildRow').html());
+        $.when(window.currentUser.fetch(), self.guildsCollection.fetch(), self.usersCollection.fetch()).done(function () {
 
-            if (!window.currentUser.has('guild_id'))
-                self.$el.prepend(_.template($('#guildNewButton').html()));
-            guildsCollection.each(function (guild, i) {
+            self.guildsCollection.each(function (guild, i) {
                 guild.set({ "rank": i + 1 });
                 guild.set({ "route": '#guilds/' + guild.id });
-                guild.set({ "owner_name": usersCollection.findWhere({ id: guild.get('owner_id') }).get('username') });
-                if (guild.id == window.currentUser.get('guild_id')) {
-                    guild.set({ "my_guild": true });
-                    self.$el.prepend(dynamicTemplate(guild.toJSON()));
+                guild.set({ "owner_name": self.usersCollection.findWhere({ id: guild.get('owner_id') }).get('username') });
+                guild.set({ "my_guild": (guild.id == window.currentUser.get('guild_id')) ? true : false });
+            });
+            if (!window.currentUser.has('guild_id'))
+                self.$el.prepend(_.template($('#guildNewButton').html()));
+            else {
+                let myGuildModel = self.guildsCollection.findWhere({ id: window.currentUser.get('guild_id') });
+                self.$el.prepend(self.dynamicTemplate(myGuildModel.toJSON()));
+                $('div[data-href="#guilds/' + myGuildModel.id + '"]').on("click", function () {
+                    Backbone.history.navigate('#guilds/' + myGuildModel.id, { trigger: true })
+                });
+            }
+            while (($(window).height() >= $(document).height()) && !self.allRendered)
+                self.renderPage();
+            $(window).scroll(function () {
+                if (($(window).scrollTop() + $(window).height() == $(document).height()) && !self.allRendered) {
+                    self.renderPage();
                 }
-                else {
-                    guild.set({ "my_guild": false });
-                    $guildsTable.append(dynamicTemplate(guild.toJSON()));
-                }
+            });
+        });
+        return this;
+    },
+    renderPage: function () {
+        let guildsPage = this.guildsCollection.slice((this.page - 1) * 10, this.page * 10);
+        let self = this;
+
+        if (!guildsPage.length)
+            self.allRendered = true;
+        else {
+            let $guildsTable = $('.guildsTable');
+            const myGuildId = window.currentUser.get('guild_id');
+            guildsPage.forEach(function (guild, i) {
+                if (guild.id != myGuildId)
+                    $guildsTable.append(self.dynamicTemplate(guild.toJSON()));
                 $('div[data-href="#guilds/' + guild.id + '"]').on("click", function () {
                     Backbone.history.navigate('#guilds/' + guild.id, { trigger: true })
                 });
             });
-        });
-        return this;
+            self.page++;
+        }
     }
 });
