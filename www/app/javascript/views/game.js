@@ -7,10 +7,10 @@ const GameView = Backbone.View.extend({
     render: function(matchId) {
         this.$el.html(this.template({}));
 		this.$el.attr({id: 'game'});
-		Layout.foldContacts();
+		Layout.foldFriends();
+		Layout.foldTchat();
         $.ajax('matchside/' + matchId, {
             success: function(data) {
-				console.log('from game view : ', data);
                 if (["lobby", "ready"].includes(data.status)) {
 					console.log('Joining as ' + data.side + ' player.');
                     Pong.connect(matchId, data.side);

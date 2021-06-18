@@ -176,10 +176,12 @@ function sendNextMessage() {
 	}
 }
 
-function cleanGameIntervals() {
+function cleanGame() {
 	GC.cleanInterval(ballInterval);
 	GC.cleanInterval(leftPaddle.interval);
 	GC.cleanInterval(rightPaddle.interval);
+	paddleMessages = []
+	sendingMessage = false;
 }
 
 function startPaddleAnimation(paddle, direction) {
@@ -203,7 +205,6 @@ function stopPaddleAnimation(paddle) {
 }
 
 function keyDownHandler(e) {
-	//console.log('key down');
 	if (e.key == UP_KEY)
 		pressKey(e, 'up');
 	else if (e.key == DOWN_KEY)
@@ -340,7 +341,7 @@ function setMatchFromServer(match) {
 
 function score(match) {
 	status = "scoring";
-	cleanGameIntervals();
+	cleanGame();
 	$leftPoints.text(match.left_score);
 	$rightPoints.text(match.right_score);
 }

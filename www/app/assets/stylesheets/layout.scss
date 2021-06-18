@@ -1,182 +1,330 @@
-$verydarkgreen: rgb(0, 70, 0);
-$border-color: rgb(0, 124, 50);
-$border-width: 8px;
-$bg-color: $verydarkgreen;
-$nav-height: 10%;
-$nav-font-size: 3vh;
-$nav-top-position: 1%;
+@import "application";
 
+$border-color: green;
+$bg-color: $verydarkgreen;
+$border-width: $responsive-ratio;
+$banners-height: calc(4.5 * #{$responsive-ratio});
+$banners-font-size: calc(2 * #{$responsive-ratio});
+$banners-padding-top: calc(0.2 * #{$responsive-ratio});
+$aside-font-size: calc(2 * #{$responsive-ratio});
+
+%bordered {
+	border-width: $border-width;
+	border-color: $border-color;
+	border-style: ridge groove groove ridge;
+}
+
+$nav-font-size: calc(0.5 * #{$nav-height});
+$nav-link-padding: calc(0.5 * #{$responsive-ratio});
+$link-border-width: calc(0.5 * #{$border-width});
 nav {
+	@extend %bordered;
 	position: fixed;
-	top: $nav-top-position;
+	top: 0;
 	left: 0;
 	right: 0;
-	margin: 0 auto;
-	width: 50%;
-	min-width: 500px;
+	width: $nav-width;
 	height: $nav-height;
-	min-height: 40px;
-	margin: auto;
 	display: flex;
 	flex-direction: row;
 	justify-content: left;
 	align-items: center;
-	background-color: $bg-color;
-	border-width: $border-width;
-	border-color: $border-color;
-	border-style: ridge groove groove ridge;
+	background: url('wallpaper_long');
+	background-size: 100% 100%;
 	z-index: 2;
-	box-sizing: border-box;
-	font-size: $nav-font-size;
 
 	a {
 		text-decoration: none;
 	}
 
-	& > a, & > button {
+	& > a,
+	#account_div {
 		display: block;
-		margin: 0 20px;
-		height: 8vh;
-		min-height: 32px;
-		width: 8vh;
-		min-width: 32px;
-		text-align: center;
-		box-sizing: border-box;
+		margin: 0 1%;
+		padding: $nav-link-padding 1% 0 1%;
 		text-transform: uppercase;
+		font-size: $nav-font-size;
 	}
 
-	#game_link {
-		border: 5px green solid;
-		width: 12vh;
-		line-height: calc(8vh - 5px);
-		&:hover {
-			background-color: green;
-			border-color: darkgreen;
+	& > a {
+		border: $link-border-width transparent solid;
+		&.selected {
+			border-color: green;
+			background-color: black;
 		}
-	}
-
-	#rank_link {
-		border-radius: 100%;
-		background-color: darkgreen;
-		padding-top: 1px;
-		line-height: 8vh;
-		&:hover {
-			background-color: green;
+		&:not(.selected):hover {
+			border-color: rgba(0, 128, 0, 0.75);
+			background-color: rgba(0, 0, 0, 0.75);
 		}
 	}
 
-	#guild_link {
-		position: relative;
-		// width: fit-content;
-		padding: 0 8px;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		&:hover {
-			background-color: green;
-		}
-		&:after {
-			content: ' ';
-			border-left: 3px solid green;
-			border-right: 3px solid green;
-			position: absolute;
-			left: 0;
-			width: 100%;
-			height: 30%;
-			box-sizing: border-box;
-		}
-		&:hover:after {
-			border-color: darkgreen;
-		}
-	}
-	
-	#account_button {
+	#account_div {
 		margin-left: auto;
-		border-radius: 100%;
-		position: relative;
-		display: flex;
-		justify-content: center;
-		background: none;
-	
-		img {
-			width: 100%;
-			height: 100%;
-			opacity: 0.8;
-			border-radius: 100%;
+
+		#account_button {
+			position: relative;
+			max-width: 10ch;
+			font-size: $nav-font-size;
+			display: flex;
+			justify-content: center;
+
 			&:hover {
 				cursor: pointer;
 			}
-		}
-	
-		#account_menu {
-			position: absolute;
-			top: 100%;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: 0.9vw;
-			border: 1px black solid;
-			background-color: darkgreen;
-			width: 9vw;
-			display: none;
-	
-			a {
-				box-sizing: border-box;
-				position: relative;
-				display: block;
+
+			#account_menu {
+				$account-menu-font-size: calc(2 * #{$responsive-ratio});
+				position: absolute;
+				top: 100%;
 				width: 100%;
-				padding: 5px;
-				text-transform: none;
-				&:hover {
-					background-color: $bg-color;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+				align-items: flex-end;
+				font-size: $account-menu-font-size;
+				border-width: $border-width;
+				border-color: $border-color;
+				border-style: none groove groove ridge;
+				background-color: black;
+				display: none;
+
+				div.option {
+					display: flex;
+
+					&:hover div.ball_selector:after {
+						display: block;
+					}
+
+					div.ball_selector {
+						flex: 1;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						&:after {
+							content: '';
+							display: none;
+							width: 0.5vw;
+							height: 0.5vw;
+							background-color: white;
+						}
+					}
+
+					a {
+						flex: 9;
+						position: relative;
+						display: block;
+						padding: 2% 0;
+						text-transform: none;
+						text-align: right;
+					}
 				}
 			}
 		}
 	}
 }
 
-%contacts {
-	position: fixed;
-	right: 1%;
-	width: 10%;
-	min-width: 30px;
-	background-color: $bg-color;
-	border-width: $border-width;
-	border-color: $border-color;
-	box-sizing: border-box;
-}
-#contacts {
-	@extend %contacts;
-	top: 10%;
-	height: 65%;
-	z-index: 2;
-	border-style: none groove groove ridge;
-	background-color: $bg-color;
-	padding-top: 1%;
-	overflow: auto;
-}
-#contacts_button {
-	@extend %contacts;
-	font-size: $nav-font-size;
-	top: $nav-top-position;
-	height: $nav-height;
-	border-style: ridge groove none ridge;
+%banner {
+	@extend %bordered;
+	font-size: $banners-font-size;
+	height: $banners-height;
+	padding-top: $banners-padding-top;
 	text-transform: uppercase;
 	z-index: 3;
+	background: url('wallpaper_long');
+	background-size: 100% 100%;
 	&:hover {
 		cursor: pointer;
 	}
 }
 
-#tchat {
+%friends {
+	position: fixed;
+	right: 0;
+	width: 15vw;
+}
+#friends_banner {
+	@extend %friends;
+	@extend %banner;
+	top: 0;
+}
+$friends-height: 55vh;
+$friends-top-position: $banners-height;
+$pellet-size: calc(0.4 * #{$aside-font-size});
+#friends {
+	@extend %friends;
+	@extend %bordered;
+	border-top: none;
+	top: $friends-top-position;
+	padding-top: 1vh;
+	height: $friends-height;
+	z-index: 2;
+	font-size: $aside-font-size;
+	text-align: center;
+	overflow: auto;
+	transition: height 0.4s, top 0.4s;
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+
+	&.folded {
+		height: 0;
+		top: 0;
+	}
+
+	p {
+		text-align: left;
+		display: flex;
+		align-items: center;
+		margin-bottom: 1%;
+
+		&:hover {
+			//background-color: $veryverydarkgreen;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		span {
+			display: inline-block;
+
+			&:first-child {
+				width: $pellet-size;
+				height: $pellet-size;
+				border-radius: 100%;
+				margin-right: $pellet-size;
+				background-color: red;
+			}
+			&.online {
+				background-color: lightgreen;
+			}
+			&.ingame {
+				background-color: white;
+			}
+
+			&:last-child {
+				flex: 1;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				// &:hover {
+				// 	cursor: pointer;
+				// }
+			}
+		}
+	}
+}
+
+$chat-height: calc(100vh - #{$banners-height} - #{$friends-height});
+$chat-banner-offset: calc(-1 * #{$border-width});
+$chat-banner-width: calc(100% + 2 * #{$border-width});
+$chat-padding-top: calc(0.8 * #{$banners-height});
+$messages-font-size: calc(1.6 * #{$responsive-ratio});
+$chat-body-padding: 5px;
+$chat-input-width: calc((#{$chat-width} - 2 * #{$border-width}) * 2 / 3 - #{$chat-body-padding});
+$chat-input-left: calc((#{$chat-width} - 2 * #{$border-width}) / 3 + #{$chat-body-padding} / 2);
+$chat-body-bottom-space: calc(0.08 * #{$chat-height});
+$chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
+#chat {
+	@extend %bordered;
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	width: 20%;
-	min-width: 30px;
-	height: 20%;
-	min-height: 30px;
-	z-index: 3;
+	width: $chat-width;
+	height: $chat-height;
+	padding-top: $chat-padding-top;
+	z-index: 2;
+	background-color: transparent;
+	font-size: $aside-font-size;
+	display: flex;
+	transition: height 0.4s, padding-top 0.4s;
 
-	background-color: yellow;
+	&.folded {
+		height: $banners-height;
+		padding-top: 0;
+		#chat_body_container {
+			input {
+				display: none;
+			}
+		}
+	}
+
+	#chat_banner {
+		@extend %banner;
+		position: absolute;
+		top: $chat-banner-offset;
+		left: $chat-banner-offset;
+		width: $chat-banner-width;
+		text-align: center;
+	}
+
+	#chans {
+		flex: 1;
+		border-right: 1px $veryverydarkgreen solid;
+		overflow-y: auto;
+		padding: 3px;
+		overflow-wrap: break-word;
+		scrollbar-width: none;
+		&::-webkit-scrollbar {
+			width: 0;
+		}
+
+		p {
+			margin: 2px 0.5%;;
+			&:hover {
+				cursor: pointer;
+				//background-color: $veryverydarkgreen;
+				font-weight: bold;
+			}
+		}
+	}
+	#chat_body_container {
+		flex: 2;
+		overflow-y: auto;
+		padding: $chat-body-padding;
+		margin-bottom: $chat-body-bottom-space;
+		font-size: $messages-font-size;
+		scrollbar-width: none;
+		&::-webkit-scrollbar {
+			display: none;
+		}
+		#chat_body {
+			p {
+				font-family: sans-serif;
+				margin-bottom: 10px;
+				&.mine {
+					text-align: right;
+				}
+	
+				span:first-child {
+					display: block;
+					font-family: 'screen';
+				}
+			}
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+		}
+		input {
+			position: absolute;
+			left: $chat-input-left;
+			bottom: 0;
+			//background-color: green;
+			background-color: transparent;
+			width: $chat-input-width;
+			height: 5%;
+			border: 1px gray solid;
+			border-radius: 3px;
+			padding: $chat-input-padding;
+			caret-color: white;
+			outline: none;
+			color: white;
+			font-size: $messages-font-size;
+			&::placeholder {
+				color: darkgreen;
+			}
+			&:focus {
+				border-color: lightgray;
+			}
+		}
+	}
 }

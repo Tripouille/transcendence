@@ -1,50 +1,68 @@
-let $contacts, $contacts_button;
-let contacts_out = true;
+let $friends, $friends_banner;
+let $chat, $chat_banner;
+let friends_out = true, chat_out = true;
+let animating = false, timer = null;
 
-export function foldContacts() {
-	contacts_out = false;
-	$contacts.css('overflow', 'hidden');
-	$contacts.animate({'height': 0}, 300, function() {
-		$contacts.css('padding-top', 0);
-		$contacts_button.css('border-bottom-style', 'groove');
-	});
+export function foldFriends() {
+	$friends.addClass('folded');
+	friends_out = false;
 }
 
-function unfoldContacts() {
-	contacts_out = true;
-	$contacts.css('padding-top', '1%');
-	$contacts_button.css('border-bottom-style', 'none');
-	$contacts.animate({'height': '65%'}, 300, function() {
-		$contacts.css('overflow', 'auto');
-	});
+function unfoldFriends() {
+	$friends.removeClass('folded');
+	friends_out = true;
+}
+
+export function foldTchat() {
+	$chat.addClass('folded');
+	chat_out = false;
+}
+function unfoldTchat() {
+	$chat.removeClass('folded');
+	chat_out = true;
 }
 
 $(function() {
+	$(window).on('resize', function() {
+		if (timer) {
+			clearTimeout(timer);
+			timer = null;
+		}
+		else
+			$(document.body).addClass('stop-transitions');
+		timer = setTimeout(function() {
+			$(document.body).removeClass('stop-transitions');
+			timer = null;
+		}, 100);
+	});
+
 	const $account_menu = $('#account_menu');
 	const $account_button = $('#account_button');
-	const $account_button_img = $('#account_button img');
-	let account_menu_open = false;
-	$account_button
-		.on('click', function() {
-			$account_menu.toggle();
-			account_menu_open = !account_menu_open;
-			if (account_menu_open)
-				$account_button_img.css('opacity', 1);
-		})
-		.on('mouseenter', function() {
-			$account_button_img.css('opacity', 1);
-		})
-		.on('mouseleave', function() {
-			if (!account_menu_open)
-				$account_button_img.css('opacity', 0.8);
-		});
+	$account_button.on('click', function() {
+		$account_menu.toggle();
+	});
 
-	$contacts_button = $('#contacts_button');
-	$contacts = $('#contacts');
-	$contacts_button.on('click', function() {
-		if (contacts_out)
-			foldContacts();
+	$friends_banner = $('#friends_banner');
+	$friends = $('#friends');
+	$friends_banner.on('click', function() {
+		if (animating) return ;
+		if (friends_out)
+			foldFriends();
 		else
-			unfoldContacts();
+			unfoldFriends();
+	});
+
+	$chat_banner = $('#chat_banner');
+	$chat = $('#chat');
+	$chat_banner.on('click', function() {
+		if (chat_out)
+			foldTchat();
+		else
+			unfoldTchat();
+	});
+
+	$(document).on('click', function(e) {
+		if (e.target !== $account_button[0])
+			$account_menu.hide();
 	});
 });

@@ -14,12 +14,15 @@
  *= require_self
  */
 
-* {
-	--bg-color: black;
-	--second-bg-color: black;
-	--element-color: darkgreen;
-	--text-color: lightgreen;
-}
+$verydarkgreen: rgb(0, 70, 0);
+$veryverydarkgreen: rgb(0, 50, 0);
+$text-color: white;
+$responsive-ratio: Min(1vh, 0.75vw);
+$chat-width: 25vw;
+$nav-height: calc(10 * #{$responsive-ratio});
+$nav-width: 80vw;
+$main-width: $nav-width;
+$main-height: calc(100vh - #{$nav-height});
 
 @font-face {
   font-family: "screen";
@@ -33,21 +36,28 @@ html {
 
 body {
 	height: 100%;
-	background-color: var(--bg-color);
-	color: white;
+	background-color: black;
+	color: $text-color;
 	font-family: 'screen';
 	margin: 0;
+	background: url('wallpaper_general');
+	background-size: 100% 100%;
+
+	&.stop-transitions * {
+		transition: none !important;
+	}
+}
+
+* {
+	box-sizing: border-box;
 }
 
 main {
-	position: absolute;
+	position: fixed;
 	top: 11%;
 	padding: 10px;
-	height: 89%;
-	min-height: 270px;
-	width: 100%;
-	color: white;
-	box-sizing: border-box;
+	height: $main-height;
+	width: $main-width;
 }
 
 p {
@@ -55,7 +65,7 @@ p {
 }
 
 a {
-	color: white;
+	color: $text-color;
 }
 
 button {
@@ -64,4 +74,6 @@ button {
 	outline: none;
 	color: inherit;
 	font-family: inherit;
+	background: inherit;
+	font-size: inherit;
 }

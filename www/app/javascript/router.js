@@ -44,13 +44,15 @@ $(function () {
 			"game": "game",
 			"users": "users"
 		},
+
 		execute: function (callback, args, name) {
-			$main.empty();
-			Pong.removeSubscription();
 			this.clearAnimations();
+			$main.empty();
+			$('nav > a').removeClass('selected');
 			callback.apply(this, args);
 		},
 		clearAnimations: function () {
+			Pong.removeSubscription();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
@@ -75,18 +77,20 @@ $(function () {
 			console.log("> guilds - page #new");
 			this.guildNewView.render();
 		},
-
 		users: function () {
-			this.usersView.render();
+			$('#rank_link').addClass('selected');
+			this.usersView.render($main);
 		},
-
 		selectMode: function () {
+			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
 		lobby: function () {
+			$('#game_link').addClass('selected');
 			this.lobbyView.render();
 		},
 		game: function (id) {
+			$('#game_link').addClass('selected');
 			if (id == null) {
 				this.navigate('game/lobby', { trigger: true });
 				return;

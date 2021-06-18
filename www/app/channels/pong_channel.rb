@@ -30,6 +30,7 @@ class PongChannel < ApplicationCable::Channel
 		}
 		
 		@schedulers = {}
+		@SIDE = "spectator"
 	end
 
 	def subscribed
@@ -229,6 +230,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
+		if @SIDE == "spectator" then return end
 		updateMatchFromDB()
 		if @match[:status] == "playing" and isValidAction(data["dir"])
 			updateMatch()
