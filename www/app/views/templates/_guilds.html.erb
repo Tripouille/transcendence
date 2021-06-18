@@ -32,13 +32,15 @@
 
 <!-- Template for specific guild view -->
 <script id="mainGuildButtonTemplate" type="text/template">
-	<div id="mainGuildButton" class="button <%%= name %>">
-		<span id=<%%= id %>><%%= name %></span>
+	<div class="button <%%= name %>" id=<%%= id %>>
+		<%%= name %>
 	</div>
 </script>
 
 <script id="guildFiguresTemplate" type="text/template">
-	<div class="uppercase" id="guildName"><%%= name %> (<%%= anagram %>)</div>
+	<div class="uppercase" id="guildName">
+		<div><%%= name %> (<%%= anagram %>)</div>
+	</div>
 	<div>
 		<p class="uppercase">Rank</p>
 		<p><%%= rank %></p>
