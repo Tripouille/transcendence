@@ -106,12 +106,23 @@ $background-color: black;
 				}
 			}
 			
+			#timer, #message, #message_quit {
+				display: none;
+				z-index: 2;
+			}
 			#timer {
 				color: green;
 				text-align: center;
 				font-size: 50vmin;
 				line-height: 100%;
-				display: none;
+			}
+			#message {
+				font-size: 20vmin;
+			}
+			#message_quit {
+				position: absolute;
+				top: 0;
+				font-size: 5vmin;
 			}
 		}
 	}

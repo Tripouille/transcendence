@@ -4,9 +4,9 @@ import * as GC from '../garbage_collector';
 const UP_KEY = "ArrowUp";
 const DOWN_KEY = "ArrowDown";
 const timerColors = {
-	3: 'green',
-	2: 'lightgreen',
-	1: 'white'
+	3: 'darkgreen',
+	2: 'green',
+	1: 'lightgreen'
 };
 const timerSizes = {
 	3: '50vmin',
@@ -356,17 +356,24 @@ function score(match) {
 
 function endMatch(data) {
 	setMatchFromServer(data.match);
-	if (!data.normal)
-		console.log('A player has left.');
-	if (data.match.winner == data.match.left_player)
-		console.log('Left won !');
-	else
-		console.log('Right won !');
-	// GC.addTimeout(function() {
-	// 	window.router.navigate('game', true);
-	// }, 1000);
+	endMatchMessage(data);
 	consumer.subscriptions.remove(window.pongSubscription);
 	window.pongSubscription = null;
+	GC.addTimeout(function() {
+		window.router.navigate('game', true);
+	}, 3000);
+}
+
+function endMatchMessage(data) {
+	$timer.hide();
+	if (!data.normal)
+		$('#message_quit').show();
+	if (side == 'left' && data.match.winner == data.match.left_player
+	|| side == 'right' && data.match.winner == data.match.right_player)
+		$('#message').text('You won !');
+	else
+		$('#message').text('You lost !');
+	$('#message').show();
 }
 
 export function removeSubscription() {
