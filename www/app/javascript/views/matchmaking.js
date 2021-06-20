@@ -11,7 +11,7 @@ const MatchmakingView = Backbone.View.extend({
             success: function(data) {
 				matchmakingView.displayPlayers(data);
                 if (data.left_player != null && data.right_player != null)
-                    matchmakingView.timer(data);
+                    matchmakingView.timer(data.match_id);
                 else
                     matchmakingView.wait(data);
             }
@@ -30,7 +30,7 @@ const MatchmakingView = Backbone.View.extend({
 		}
 	},
 
-    timer: function(data) {
+    timer: function(match_id) {
         const $center = $('#center');
         $center.show();
         $center.text('3');
@@ -39,7 +39,7 @@ const MatchmakingView = Backbone.View.extend({
         }, 1000);
         GC.addTimeout(function() {
             GC.cleanInterval(interval);
-            window.router.navigate('game/' + data.match_id, {trigger: true});
+            window.router.navigate('game/' + match_id, {trigger: true});
         }, 3000);
     },
 
@@ -50,7 +50,7 @@ const MatchmakingView = Backbone.View.extend({
                 success: function(data) {
                     if (data.left_player != null && data.right_player != null) {
 						matchmakingView.displayPlayers(data);
-                        matchmakingView.timer(data);
+                        matchmakingView.timer(data.match_id);
                         GC.cleanInterval(waitInterval);
                     }
                 }
