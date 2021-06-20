@@ -87,17 +87,33 @@ class PongChannel < ApplicationCable::Channel
 		@SIDE_PADDLE_DIR = :right_paddle_dir
 		@match[:status] = "ready"
 		saveMatchToDB()
+		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '5s' do
+			updateMatchFromDB()
+			if @match[:status] == "ready"
+				@match[:status] = "finished"
+				@match[:winner] = @SIDE == "left" ? @match[:left_player] : @match[:right_player] 
+				saveMatchToDB()
+				broadcastMatchEnd(normal: false)
+			end
+		end
 	end
 
 	def waitForOpponent
 		setPlayers()
+		startWaiting = getNow()
 		@schedulers[:waitForOpponent] = Rufus::Scheduler.new.schedule_every('0.3s') do
+			updateMatchFromDB()
 			if @match[:status] == "ready"
 				broadcastInitialize()
 				start()
 				killScheduler(:waitForOpponent)
+			elsif getNow() - startWaiting > 5000
+				@match[:status] = "finished"
+				@match[:winner] = @SIDE == "left" ? @match[:left_player] : @match[:right_player] 
+				saveMatchToDB()
+				broadcastMatchEnd(normal: false)
+				killScheduler(:waitForOpponent)
 			end
-			updateMatchFromDB()
 		end
 	end
 

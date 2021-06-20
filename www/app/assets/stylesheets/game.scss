@@ -117,7 +117,7 @@ $background-color: black;
 				line-height: 100%;
 			}
 			#message {
-				font-size: 20vmin;
+				font-size: Min(10vw, 15vh);
 			}
 			#message_quit {
 				position: absolute;
@@ -128,7 +128,7 @@ $background-color: black;
 	}
 }
 
-@media (max-width: 800px) {
+@media (max-aspect-ratio: 5/4) {
 	#game .player_infos img {
 		display: none;
 	}

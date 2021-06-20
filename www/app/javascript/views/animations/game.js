@@ -37,16 +37,16 @@ export function connect(matchId, serverSide) {
 	BH.ball = null;
 	side = serverSide;
 	defineJqueryObjects();
-	console.log('Subscribing to pong room ' + matchId);
+	//console.log('Subscribing to pong room ' + matchId);
 	window.pongSubscription = consumer.subscriptions.create({
 		channel: "PongChannel",
 		match_id: matchId
 	},
 	{
-		connected() {console.log('connected')},
-		disconnected() {console.log('disconnected');},
+		connected() {/*console.log('connected');*/},
+		disconnected() {/*console.log('disconnected');*/},
 		received(data) {
-			console.log('Received data from pong channel : ', data.content);
+			//console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "initialize")
 				initializeFromServer(data.content);
 			else if (data.content.act == "launchTimer")
@@ -365,6 +365,7 @@ function endMatch(data) {
 }
 
 function endMatchMessage(data) {
+	$gameContainer.css('visibility', 'visible');
 	$timer.hide();
 	if (!data.normal)
 		$('#message_quit').show();
