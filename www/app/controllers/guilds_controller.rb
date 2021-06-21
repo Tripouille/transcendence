@@ -40,7 +40,7 @@ class GuildsController < ApplicationController
   # PATCH/PUT /guilds/1 or /guilds/1.json
   def update
     respond_to do |format|
-      if (self.admin? || self.check_owner_user) && @guild.update(params.require(:guild).permit(:name, :anagram))
+      if (self.admin? || (self.check_owner_user && self.in_current_guild?)) && @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
         format.html { redirect_to @guild, notice: "Guild was successfully updated." }
         format.json { render :show, status: :ok, location: @guild }
       else
@@ -102,6 +102,10 @@ class GuildsController < ApplicationController
       else
         @guild.destroy
       end
+    end
+
+    def in_current_guild?
+      return (User.find(params[:owner_id]) && User.find(params[:owner_id])[:guild_id] == @guild[:id]) ? true : false
     end
 
 end

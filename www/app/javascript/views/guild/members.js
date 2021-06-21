@@ -6,7 +6,7 @@ export const MembersView = Backbone.View.extend({
 
     template: _.template($('#guildMembersTemplate').html()),
 
-    render: function (guildId) {
+    render: function (guildId, guildView) {
         this.$el.empty();
         this.$el.html(this.template);
         let self = this;
@@ -36,17 +36,14 @@ export const MembersView = Backbone.View.extend({
                     let data = {
                         model: user,
                         guildId: guildId,
-                        membersView: self,
+                        guildView: guildView,
                     };
 
                     $('#kick' + user.id).one("click", data, user.kick);
                 }
                 else
                     $("#guildMembersBody div:last-child").append('<div class="kickButton"></div>');
-
             });
-            // function onFailure() {
-            //     console.log("fetched guild-collection with failure");
         });
         return this;
     }

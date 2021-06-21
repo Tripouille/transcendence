@@ -58,6 +58,7 @@ input {
   background-color: darkgrey;
   border: 1px solid darkgrey;
 }
+
 @keyframes pixelate {
   0% {
     background-position-y: 0;
@@ -66,13 +67,20 @@ input {
     background-position-y: 100%;
   }
 }
-.button:hover, .myGuildRow:hover, .guildRow:hover {
-  transition-delay: 0.3s;
-  animation: pixelate 0.2s steps(8) forwards;
+#PassOwnershipButton {
+  margin: auto auto;
+  padding: auto auto;
+  flex-direction: column;
+}
+.button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
+  &:hover {
+   transition-delay: 0.3s;
+   animation: pixelate 0.2s steps(8) forwards;
+  }
 }
 .button:hover {
   background: green url(pixel_green.svg);
-  background-size: auto 460px;
+    background-size: auto 460px;
 }
 .Destroy, .Leave {
   &:hover {
@@ -92,6 +100,10 @@ input {
 }
 .kickButton {
   padding: 0 25px;
+}
+.Ownership {
+  margin: auto auto;
+  padding: auto auto;
 }
 .guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
   display: flex;
