@@ -94,19 +94,19 @@ $(function() {
 	});
 
 	const $friends_menu = $friends.find('#friends_menu');
-	let active_friend = null;
+	window.active_friend = null;
 	$friends.on('click', 'div.friend', function(e) {
 		$friends.find('div.friend').removeClass('active');
 		const $this = $(this);
-		if (active_friend == this.id) {
+		if (window.active_friend == this.id) {
 			$friends_menu.hide();
-			active_friend = null;
+			window.active_friend = null;
 		}
 		else {
 			$this.addClass('active');
 			$friends_menu.css({top: 'calc(3.2 * ' + $friends_menu.css('font-size') + ' + ' + $this.position().top + 'px)'});
 			$friends_menu.show();
-			active_friend = this.id;
+			window.active_friend = this.id;
 		}
 	});
 
@@ -122,12 +122,12 @@ $(function() {
 	$(document).on('click', function(e) {
 		if (e.target !== $account_button[0])
 			$account_menu.hide();
-		if (active_friend) {
+		if (window.active_friend) {
 			const $friend_divs = $friends.find('div.friend');
 			if (!$friend_divs.is(e.target) && !$friend_divs.has(e.target).length) {
 				$friend_divs.removeClass('active');
 				$friends_menu.hide();
-				active_friend = null;
+				window.active_friend = null;
 			}
 		}
 	});

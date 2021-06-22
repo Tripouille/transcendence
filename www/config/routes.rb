@@ -13,5 +13,6 @@ Rails.application.routes.draw do
 
   post '/friendships', to: 'friendships#create'
   get '/friends', to: 'friendships#all'
+  delete '/friends/:id', to: 'friendships#remove'
 
 end

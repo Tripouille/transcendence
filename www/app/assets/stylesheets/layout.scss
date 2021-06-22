@@ -206,6 +206,7 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 #friends {
 	@extend %friends;
 	@extend %bordered;
+	display: none;
 	border-top: none;
 	top: $friends-top-position;
 	padding-top: 1vh;
