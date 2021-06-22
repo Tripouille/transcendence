@@ -12,6 +12,6 @@ Rails.application.routes.draw do
   end
 
   post '/friendships', to: 'friendships#create'
-  get '/friendships', to: 'friendships#all'
+  get '/friends', to: 'friendships#all'
 
 end

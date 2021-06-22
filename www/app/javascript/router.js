@@ -1,4 +1,5 @@
 import * as GC from 'views/garbage_collector';
+import FriendsListView from 'views/friendsList';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
@@ -9,6 +10,8 @@ window.intervals = new Array();
 window.timeouts = new Array();
 
 $(function() {
+	window.friendsListView = new FriendsListView();
+
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
 		usersView: new UsersView(),
