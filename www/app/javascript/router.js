@@ -1,8 +1,6 @@
-import { HomepageView } from 'views/homepage';
 import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
-import { WarHistoryView } from 'views/guild/warhistory';
 import * as GC from 'views/garbage_collector';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
@@ -10,6 +8,10 @@ import LobbyView from 'views/lobby';
 import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
+import { Users } from 'collections/users';
+
+import { GuildsCollection } from 'collections/guilds';
+import { InvitesCollection } from 'collections/invites';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -17,15 +19,18 @@ window.timeouts = new Array();
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUser.id });
 
+/* Creation des instances de collections ici, pour les fetch dans leur view respectives (gain perf.) */
+window.users = new Users();
+window.guilds = new GuildsCollection();
+window.invites = new InvitesCollection();
+
 $(function () {
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
-		homepageView: new HomepageView({ el: $main }),
 		guildsView: new GuildsView({ el: $main }),
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
-		warHistoryView: new WarHistoryView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		usersView: new UsersView(),
 		gameView: new GameView({ el: $main }),
@@ -39,7 +44,6 @@ $(function () {
 			"game/:id": "game",
 			"guilds": "guilds",
 			"guilds/new": "newguild",
-			"guilds/war/:id": "warhistory",
 			"guilds/:id": "displayguild",
 			"game": "game",
 			"users": "users"
@@ -65,12 +69,7 @@ $(function () {
 
 		displayguild: function (id) {
 			console.log("> guilds - No" + id);
-			this.guildView.render(id);
-		},
-
-		warhistory: function (id) {
-			console.log("> guild war - No" + id);
-			this.warHistoryView.render(id);
+			this.guildView.render(parseInt(id));
 		},
 
 		newguild: function () {

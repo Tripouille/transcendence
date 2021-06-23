@@ -6,6 +6,7 @@ $verydarkgreen: rgb(0, 70, 0);
 #guildNavbar {
   display: flex;
   align-items: center;
+  justify-content: start;
 }
 main form label {
   display: flex;
@@ -68,8 +69,9 @@ input {
   }
 }
 #PassOwnershipButton {
-  margin: auto auto;
-  padding: auto auto;
+  display: flex;
+  align-items: center;
+  justify-content: start;
   flex-direction: column;
 }
 .button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
@@ -101,16 +103,13 @@ input {
 .kickButton {
   padding: 0 25px;
 }
-.Ownership {
-  margin: auto auto;
-  padding: auto auto;
-}
 .guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 0 10px;
   padding: 5px 32px;
+  height: 120px;
   font-size: 25px;
   text-align: center;
   border-width: 1px;
@@ -118,11 +117,14 @@ input {
     width: 400px;
   }
   & div:first-child {
-    width: 150px;
+    width: 200px;
   }
   & div:last-child {
-    width: 150px;
+    width: 200px;
   }
+}
+.guildFigures {
+  background-color: rgba(0, 128, 0, 0.815);
 }
 .myGuildRow {
   border-style: solid;
@@ -145,6 +147,15 @@ input {
   }
   &:last-of-type {
     border-bottom: solid;
+  }
+}
+.rankTrophy {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  & img, div {
+    position: absolute;
   }
 }
 #inviteButtons {

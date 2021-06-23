@@ -32,26 +32,14 @@ export const InviteModel = Backbone.Model.extend({
 	// }
 
 	accept: function (evt) {
-		Backbone.sync("delete", evt.data.model, {
-			url: 'invites/' + evt.data.model.id + '/accept',
-			success: function () {
-				evt.data.guildView.render(evt.data.guildId);
-			},
-			error: function () {
-				evt.data.invitesView.render(evt.data.guildId);
-			}
+		Backbone.sync("delete", evt.data.model, { url: 'invites/' + evt.data.model.id + '/accept' }).done(function () {
+			evt.data.guildView.render(evt.data.guildView.guildId);
 		});
 	},
 
 	refuse: function (evt) {
-		Backbone.sync("delete", evt.data.model, {
-			url: 'invites/' + evt.data.model.id + '/refuse',
-			success: function () {
-				evt.data.invitesView.render(evt.data.guildId);
-			},
-			error: function () {
-				evt.data.invitesView.render(evt.data.guildId);
-			}
+		Backbone.sync("delete", evt.data.model, { url: 'invites/' + evt.data.model.id + '/refuse' }).done(function () {
+			evt.data.guildView.render(evt.data.guildView.guildId);
 		});
-	},
+	}
 });

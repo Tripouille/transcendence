@@ -24,8 +24,12 @@ class GuildsController < ApplicationController
     if self.admin?
       @guild = Guild.new(params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id]))
     else
-      @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation
+      @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation      
     end
+
+    @user = User.find(session[:user_id])
+    Invite.all.where(:user_id => @user[:id]).destroy_all
+
     respond_to do |format|
       if (self.admin? || self.check_user) && self.set_owner_id && @guild.save && self.set_guild_id
         format.html { redirect_to @guild, notice: "Guild was successfully created." }

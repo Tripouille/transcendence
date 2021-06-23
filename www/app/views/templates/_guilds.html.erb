@@ -1,9 +1,7 @@
 <!-- Template for navbar -->
 <script id="guildsNavbarTemplate" type="text/template">
 	<div id="guildNavbar">
-		<a class="button" href="#guilds">All guilds</a>
-		<a class="button" href="#guilds/<%%= guild_id %>">Guild info</a>
-		<a class="button" href="#guilds/war/<%%= guild_id %>">War history</a>
+		<a class="button Cancel" href="#guilds">Back</a>
 	</div>
 </script>
 
@@ -12,11 +10,14 @@
 	<a class="button" href="#guilds/new"><div>Create your own Guild !</div></a>
 </script>
 
+<!-- Template for rows in the guild table -->
 <script id="guildRow" type="text/template">
 	<div class="<%% if (my_guild == true) { %>myGuildRow<%% } else { %>guildRow<%% } %> cursorButton" data-href="<%%= route %>">
 		<div>
 			<p class="uppercase">Rank</p>
-			<p><%%= rank %></p>
+			<div class="rankTrophy" id="rank<%%= rank %>">
+				<div><%%= rank %></div>
+			</div>
 		</div>
 		<div class="uppercase"><%%= name %> (<%%= anagram %>)</div>
 		<div>
@@ -35,17 +36,19 @@
 	<div id="mainGuildMembersList"></div>
 </script>
 
+<!-- Template for the main button : Join|Leave|Cancel Invitation|Destroy -->
 <script id="mainGuildButtonTemplate" type="text/template">
 	<div class="button <%%= name %>" id="<%%= id %>"><%%= name %></div>
 </script>
 
+<!-- Template for big figures of the guild -->
 <script id="guildFiguresTemplate" type="text/template">
-	<div class="uppercase" id="guildName">
-		<div><%%= name %> (<%%= anagram %>)</div>
-	</div>
+	<div class="uppercase" id="guildName"><%%= name %> (<%%= anagram %>)</div>
 	<div>
-		<p class="uppercase">Rank</p>
-		<p><%%= rank %></p>
+		<div class="uppercase">Rank</div>
+		<div class="rankTrophy" id="rank<%%= rank %>">
+			<div><%%= rank %></div>
+		</div>
 	</div>
 	<div>
 		<p class="uppercase">Owner</p>
@@ -71,8 +74,8 @@
 <script id="guildMemberRowTemplate" type="text/template">
 	<div class="guildMemberRow">
 		<div>
-			<p class="uppercase"><%%= username %></p>
-			<p><%%= rank %></p>
+			<p class="uppercase"><%%= rank %></p>
+			<p><%%= username %></p>
 		</div>
 		<div>
 			<p class="uppercase">MMR</p>
@@ -85,36 +88,18 @@
 	</div>
 </script>
 
+<!-- Template for kick button in guild display view -->
 <script id="guildKickMemberTableData" type="text/template">
 	<div id="<%%= kick %>" class="cursorButton">
 		<img src="assets/kick_img.svg" width="50" alt="kick">
 	</div>
 </script>
 
-<!-- Template for war history -->
-<!-- <script id="guildMembers" type="text/template">
-	<div class="onGoingWar"></div>
-	<div class="pendingInvites"></div>
-</script> -->
-
-<script id="guildWarHistory" type="text/template">
-	<p class="bandeau">War History</p>
-	<div id="guildWarHistoryBody">
-	</div>
-</script>
-
-<script id="guildWarHistoryRow" type="text/template">
-	<div>
-		<div><%%= date %></div>
-		<div><%%= first_team %></div>
-		<p>VS</p>
-		<div><%%= second_team %></div>
-		<div><%%= result %></div>
-	</div>
-</script>
-
 <!-- Template for new guild form -->
 <script id="guildNewStatic" type="text/template">
+	<div id="guildNavbar">
+		<a class="button Cancel" href="#guilds">Back</a>
+	</div>
 	<p class="bandeau">Create a new guild</p>
 	<form id="newGuildForm" name="newguilform">
 		<div class="field">
@@ -128,19 +113,16 @@
 		<div id="formSubmitNewGuild" class="actions">
 			<a class="button cursorButton">Submit</a>
 		</div>
-		<div id="formCancelNewGuild" class="actions">
-			<a class="button back cursorButton">Cancel</a>
-		</div>
 	</form>
 </script>
 
-<!-- Template for guild Invites -->
+<!-- Template for guild Invites : static part -->
 <script id="guildInvitesTemplate" type="text/template">
 	<p class="bandeau">Pending Invites</p>
-	<div id="guildInvitesBody">
-	</div>
+	<div id="guildInvitesBody"></div>
 </script>
 
+<!-- Template for guild Invites : dynamic part -->
 <script id="guildInviteRow" type="text/template">
 	<div class="guildInvitesRow">
 		<div><%%= username %></div>

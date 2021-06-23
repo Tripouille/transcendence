@@ -1,39 +1,26 @@
-import { GuildsCollection } from 'collections/guilds';
-import { Users } from 'collections/users';
-import { User } from 'models/user';
-
 export const FiguresView = Backbone.View.extend({
     className: "guildFigures",
 
     template: _.template($('#guildFiguresTemplate').html()),
 
-    render: function (guildId, guildView) {
+    render: function (guildId) {
         this.$el.empty();
-        let el = this.$el;
-        let self = this;
-
-        let guilds = new GuildsCollection();
-        let guildsFetch = guilds.fetch();
-        let users = new Users();
-        let usersFetch = users.fetch();
-
-        $.when(guildsFetch, usersFetch).done(function () {
-            guilds.calculateRank();
-            let model = guilds.findWhere({ id: parseInt(guildId) });
-            model.set({ "active_members": users.where({ guild_id: model.id }).length });
+        window.guilds.calculateRank();
+        let model = window.guilds.findWhere({ id: guildId });
+        if (model)
+        {
+            model.set({ "active_members": window.users.where({ guild_id: model.id }).length });
             model.set({ "created_at": (new Date(model.get("created_at"))).toDateString() });
-            let userModel = new User({ id: model.get('owner_id') });
-            userModel.fetch().done(function () {
-                model.set({ "owner_name": userModel.get('username') });
-                let guildTemplate = self.template(model.toJSON());
-                el.html(guildTemplate);
-                guildView.addMainButton(guildId, model.get('active_members'));
+            model.set({ "owner_name": window.users.findWhere({ id: model.get('owner_id') }).get('username') });
+            this.$el.html(this.template(model.toJSON()));
+            this.$el.html(this.template(model.toJSON())).ready(function () {
+                $('#rank1').prepend('<img src="assets/gemstone-gold.svg" width="50" alt="gemstone gold">');
+                $('#rank2').prepend('<img src="assets/gemstone-silver.svg" width="50" alt="gemstone silver">');
+                $('#rank3').prepend('<img src="assets/gemstone-copper.svg" width="50" alt="gemstone copper">');
             });
-        },
-            // function onFailure() {
-            //     console.log("fetched guild-collection with failure");
-            // },
-        );
+        }
+        else
+            Backbone.history.navigate('#guilds', { trigger: true });
         return this;
     }
 });
