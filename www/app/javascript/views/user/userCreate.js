@@ -22,7 +22,7 @@ export const UserCreateView = Backbone.View.extend({
 					Backbone.history.navigate("user", { trigger: true });
 				} else {
 					_thisView.$el.empty();
-					_thisView.$el.append(_thisView.template(_thisView.model.toJSON()));
+					_thisView.$el.append(_thisView.template(_thisView.model.attributes));
 					return _thisView;
 				}
 			});
@@ -31,9 +31,34 @@ export const UserCreateView = Backbone.View.extend({
 		}
 	},
 
+	saveFile: function() {
+		var picture = $('input[name="image"]')[0].files[0];
+		console.log('picture');
+		var data = new FormData();
+		data.append('file', picture);
+		console.log('data');
+		$.ajax({
+		  url: 'rest/accounts/upload/'+this.model.get('picture'),
+		  data: data,
+		  cache: false,
+		  contentType: false,
+		  processData: false,
+		  type: 'POST',
+		  success: function(data){
+			$('#loadingModal').modal('hide');
+		  },
+		  error: function(data){
+			alert('no upload');
+			$('#loadingModal').modal('hide');
+		  }
+		});
+		return picture;
+	},
+
 	onFormSubmit: function(e) {
 		e.preventDefault();
 		this.model.set('username', $('#username').val());
+		//this.model.set('pictures', this.saveFile());
 		_.bindAll(this, "render");
 		this.model.save({
 			success: Backbone.history.navigate("user", { trigger: true })

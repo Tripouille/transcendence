@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
 
 	before_action :require_login
 
-	def index
+	def index # A voir pour supprimer
 		@session = session[:user_id]
 	end
 

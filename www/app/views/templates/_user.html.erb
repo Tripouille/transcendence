@@ -39,10 +39,12 @@
 	</br>
 	<form id="updateUserForm" name="updateuserform">
 		<div class="field">
-			<label for="picture">Profile Picture:</label> </br>
+			<label for="avatard">Profile Picture:</label> </br>
 			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
 				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
-			<input type="text" id="picture" name="picture" placeholder="<%%= pictures %>" required>
+			<span class="file-input btn btn-block btn-primary btn-file">
+				<input id="fileInput" type="file" name="avatard" accept="image/*" >
+			</span>
 		</div>
 		<div class="field" style="padding: 1em;">
 			<label for="username">Username:</label></br>
@@ -64,10 +66,12 @@
 	</br>
 	<form id="newUserForm" name="newuserform">
 		<div class="field">
-			<label for="picture">Profile Picture:</label></br>
+			<label for="image">Profile Picture:</label></br>
 			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
 				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
-			<input type="text" id="picture" name="picture" placeholder="Url img" required>
+			<span class="file-input btn btn-block btn-primary btn-file">
+				<input id="fileInput" type="file" name="image" accept="image/*" >
+			</span>
 		</div>
 		<div class="field" style="padding: 1em;">
 			<label for="username">Username:</label></br>

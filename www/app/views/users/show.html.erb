@@ -20,5 +20,10 @@
   <%= @user.login %>
 </p>
 
+<p>
+  <strong>Login:</strong>
+  <%= image_tag @user.avatard %>
+</p>
+
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>

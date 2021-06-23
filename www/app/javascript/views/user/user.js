@@ -18,7 +18,7 @@ export const UserView = Backbone.View.extend({
 		let _thisView = this;
 		this.model.fetch().done(function() {
 			_thisView.$el.empty();
-			_thisView.$el.html(_thisView.template(_thisView.model.toJSON()));
+			_thisView.$el.html(_thisView.template(_thisView.model.attributes));
 			return _thisView;
 		});
 	},
