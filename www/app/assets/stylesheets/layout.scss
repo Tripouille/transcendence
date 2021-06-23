@@ -150,10 +150,11 @@ $friends-width: 15vw;
 	top: 0;
 
 	.plus {
+		display: inline-block;
 		position: absolute;
 		right: calc(0.3 * #{$responsive-ratio});
 		top: calc(0.3 * #{$responsive-ratio});
-		line-height: $banners-font-size;
+		vertical-align: middle;
 		border: 1px lightgray solid;
 		border-radius: 50%;
 		height: $banners-font-size;
