@@ -1,5 +1,6 @@
 import * as GC from 'views/garbage_collector';
 import FriendsListView from 'views/friendsList';
+import ChatRoomsView from 'views/chatRooms';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
@@ -11,6 +12,8 @@ window.timeouts = new Array();
 
 $(function() {
 	window.friendsListView = new FriendsListView();
+	window.chatRoomsView = new ChatRoomsView();
+	//window.chatMessagesView = new ChatMessagesView();
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({

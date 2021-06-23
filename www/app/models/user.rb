@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_many :friendships
   has_many :friends, :through => :friendships
+  has_many :chat_memberships
+  has_many :chat_rooms, :through => :chat_memberships, :source => :room
 
 
   # Include default devise modules. Others available are:

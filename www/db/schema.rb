@@ -10,10 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_23_000516) do
+ActiveRecord::Schema.define(version: 2021_06_23_191408) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "chat_memberships", force: :cascade do |t|
+    t.bigint "room_id"
+    t.bigint "user_id"
+    t.boolean "admin"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["room_id"], name: "index_chat_memberships_on_room_id"
+    t.index ["user_id"], name: "index_chat_memberships_on_user_id"
+  end
+
+  create_table "chat_rooms", force: :cascade do |t|
+    t.bigint "owner_id"
+    t.string "name"
+    t.string "room_type"
+    t.string "password_digest"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["owner_id"], name: "index_chat_rooms_on_owner_id"
+  end
 
   create_table "friendships", force: :cascade do |t|
     t.integer "user_id"
@@ -43,6 +63,16 @@ ActiveRecord::Schema.define(version: 2021_06_23_000516) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.bigint "author_id"
+    t.bigint "chat_room_id"
+    t.text "content"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["author_id"], name: "index_messages_on_author_id"
+    t.index ["chat_room_id"], name: "index_messages_on_chat_room_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "username"
     t.string "pictures", default: ""
@@ -58,4 +88,9 @@ ActiveRecord::Schema.define(version: 2021_06_23_000516) do
     t.index ["uid"], name: "index_users_on_uid"
   end
 
+  add_foreign_key "chat_memberships", "chat_rooms", column: "room_id"
+  add_foreign_key "chat_memberships", "users"
+  add_foreign_key "chat_rooms", "users", column: "owner_id"
+  add_foreign_key "messages", "chat_rooms"
+  add_foreign_key "messages", "users", column: "author_id"
 end

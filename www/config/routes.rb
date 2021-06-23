@@ -15,4 +15,6 @@ Rails.application.routes.draw do
   get '/friends', to: 'friendships#all'
   delete '/friends/:id', to: 'friendships#remove'
 
+  get '/chat_rooms', to: 'chat_rooms#index'
+
 end
