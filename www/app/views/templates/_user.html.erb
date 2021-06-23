@@ -7,6 +7,11 @@
 	</br>
 	<ul>
 		<li>
+			<p>Profile Picture</p>
+			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
+				style="max-width:250px; max-height:155px; width: auto; height: auto;">
+		</li>
+		<li>
 			<p>Login:</p>
 			<p><%%= login %></p>
 		</li>
@@ -34,10 +39,16 @@
 	</br>
 	<form id="updateUserForm" name="updateuserform">
 		<div class="field">
-			<label for="username">Username:</label>
-			<input type="text" id="username" name="username" required>
+			<label for="picture">Profile Picture:</label> </br>
+			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
+				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
+			<input type="text" id="picture" name="picture" placeholder="<%%= pictures %>" required>
 		</div>
-		<div id="formSubmitUpdateUser" class="actions">
+		<div class="field" style="padding: 1em;">
+			<label for="username">Username:</label></br>
+			<input type="text" id="username" name="username" placeholder="<%%= username %>" required >
+		</div>
+		<div id="formSubmitUpdateUser" class="actions" style="padding: 1em;">
 			<input type="submit" value="Modify User" />
 		</div>
 	</form>
@@ -53,10 +64,16 @@
 	</br>
 	<form id="newUserForm" name="newuserform">
 		<div class="field">
-			<label for="username">Username:</label>
-			<input type="text" id="username" name="username" required>
+			<label for="picture">Profile Picture:</label></br>
+			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
+				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
+			<input type="text" id="picture" name="picture" placeholder="Url img" required>
 		</div>
-		<div id="formSubmitCreateUser" class="actions">
+		<div class="field" style="padding: 1em;">
+			<label for="username">Username:</label></br>
+			<input type="text" id="username" name="username" placeholder="Username" required>
+		</div>
+		<div id="formSubmitCreateUser" class="actions" style="padding: 1em;">
 			<input type="submit" value="Create User" />
 		</div>
 	</form>

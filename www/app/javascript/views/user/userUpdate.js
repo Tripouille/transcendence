@@ -19,7 +19,7 @@ export const UserUpdateView = Backbone.View.extend({
 			let _thisView = this;
 			this.model.fetch().done(function() {
 				_thisView.$el.empty();
-				_thisView.$el.append(_thisView.template());
+				_thisView.$el.append(_thisView.template(_thisView.model.toJSON()));
 				return _thisView;
 			});
 		} else {

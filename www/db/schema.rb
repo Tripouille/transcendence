@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2021_05_19_113856) do
 
   create_table "users", force: :cascade do |t|
     t.string "username", default: "", null: false
-    t.string "pictures", default: ""
+    t.string "pictures", default: "https://images.all-free-download.com/images/graphiclarge/default_profile_picture_117087.jpg"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "email", default: "", null: false

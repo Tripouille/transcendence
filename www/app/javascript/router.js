@@ -1,5 +1,6 @@
 
 //import { HomepageView } from 'views/homepageView';
+
 import { LoginView } from 'views/login';
 import { UserView } from './views/user/user';
 import { UserUpdateView } from './views/user/userUpdate';
@@ -25,7 +26,6 @@ $(function() {
 			"user/:id/create": "createUser",
 			"login": "login",
 		},
-
 		login: function() {
 			console.log("> Login - Page");
 			this.loginView.render();
