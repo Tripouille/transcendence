@@ -18,7 +18,6 @@ $background-color: black;
 
 	#game_container {
 		height: 100%;
-		visibility: hidden;
 	
 		#player_infos_container {
 			box-sizing: border-box;
@@ -41,7 +40,11 @@ $background-color: black;
 				background-color: $background-color;
 				color: $text-color;
 			
+				p {
+					visibility: hidden;
+				}
 				img {
+					visibility: hidden;
 					height: 100%;
 					width: auto;
 				}
@@ -113,7 +116,7 @@ $background-color: black;
 			#timer {
 				color: green;
 				text-align: center;
-				font-size: 50vmin;
+				font-size: 30vh;
 				line-height: 100%;
 			}
 			#message {

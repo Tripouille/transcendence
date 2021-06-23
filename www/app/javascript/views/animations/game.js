@@ -9,9 +9,9 @@ const timerColors = {
 	1: 'lightgreen'
 };
 const timerSizes = {
-	3: '50vmin',
-	2: '30vmin',
-	1: '15vmin'
+	3: '30vh',
+	2: '15vh',
+	1: '5vh'
 };
 
 let BH = {ball: null, angles: null};
@@ -104,7 +104,7 @@ function initializeFromServer(data) {
 	// Initialize players infos
 	$('#player_infos_left .name').text(data.players.left.login);
 	$('#player_infos_right .name').text(data.players.right.login);
-	$gameContainer.css('visibility', 'visible');
+	$('.player_infos p, .player_infos img').css('visibility', 'visible');
 
 	// Initialize paddle infos
 	paddleSpeed = data.paddles.speed;
@@ -365,7 +365,6 @@ function endMatch(data) {
 }
 
 function endMatchMessage(data) {
-	$gameContainer.css('visibility', 'visible');
 	$timer.hide();
 	if (!data.normal)
 		$('#message_quit').show();
