@@ -11,8 +11,11 @@ class FriendshipsController < ApplicationController
 	end
 
 	def all
-		friends = User.find_by_id(session[:user_id]).friendships.pluck(:friend_id)
-		render json: User.where(id: friends).select(:id, :login)
+		friends_ids = User.find_by_id(session[:user_id]).friendships.pluck(:friend_id)
+		friends = User.where(id: friends_ids)
+		friends.where("last_activity > ?", 6.seconds.ago).where.not(status: 'ingame').update(status: 'online')
+		friends.where("last_activity <= ?", 6.seconds.ago).update(status: 'offline')
+		render json: friends.select(:id, :login, :status)
 	end
 
 	def remove

@@ -153,7 +153,7 @@ $friends-width: 15vw;
 		position: absolute;
 		right: calc(0.3 * #{$responsive-ratio});
 		top: calc(0.3 * #{$responsive-ratio});
-		padding-top: calc(0.05 * #{$responsive-ratio});
+		line-height: $banners-font-size;
 		border: 1px lightgray solid;
 		border-radius: 50%;
 		height: $banners-font-size;

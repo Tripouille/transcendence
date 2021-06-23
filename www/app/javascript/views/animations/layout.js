@@ -22,8 +22,7 @@ function unfoldTchat() {
 }
 
 function addFriend(name) {
-	if (!name)
-		return ;
+	if (!name) return ;
 	$.ajax({
 		type: 'POST',
 		url: '/friendships',
@@ -36,6 +35,7 @@ function addFriend(name) {
 				window.friendsListView.friendsCollection.fetch();
 				$add_friend.find('input').val('');
 				$add_friend.hide();
+				unfoldFriends();
 			}
 			else {
 				console.log('error');
