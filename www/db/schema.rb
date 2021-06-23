@@ -16,12 +16,12 @@ ActiveRecord::Schema.define(version: 2021_06_23_191408) do
   enable_extension "plpgsql"
 
   create_table "chat_memberships", force: :cascade do |t|
-    t.bigint "room_id"
+    t.bigint "chat_room_id"
     t.bigint "user_id"
     t.boolean "admin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["room_id"], name: "index_chat_memberships_on_room_id"
+    t.index ["chat_room_id"], name: "index_chat_memberships_on_chat_room_id"
     t.index ["user_id"], name: "index_chat_memberships_on_user_id"
   end
 
@@ -64,13 +64,13 @@ ActiveRecord::Schema.define(version: 2021_06_23_191408) do
   end
 
   create_table "messages", force: :cascade do |t|
-    t.bigint "author_id"
+    t.bigint "user_id"
     t.bigint "chat_room_id"
     t.text "content"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["author_id"], name: "index_messages_on_author_id"
     t.index ["chat_room_id"], name: "index_messages_on_chat_room_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -88,9 +88,9 @@ ActiveRecord::Schema.define(version: 2021_06_23_191408) do
     t.index ["uid"], name: "index_users_on_uid"
   end
 
-  add_foreign_key "chat_memberships", "chat_rooms", column: "room_id"
+  add_foreign_key "chat_memberships", "chat_rooms"
   add_foreign_key "chat_memberships", "users"
   add_foreign_key "chat_rooms", "users", column: "owner_id"
   add_foreign_key "messages", "chat_rooms"
-  add_foreign_key "messages", "users", column: "author_id"
+  add_foreign_key "messages", "users"
 end

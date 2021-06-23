@@ -4,11 +4,8 @@ class ChatRoomsController < ApplicationController
 
 	def index
 		rooms = @user.chat_rooms
-		puts rooms.inspect
-		render json: rooms
-		# friends_ids = User.find_by_id(session[:user_id]).friendships.pluck(:friend_id)
-		# friends = User.where(id: friends_ids)
-		# render json: friends.select(:id, :login, :status)
+		rooms_with_users = rooms.map{|room| [room, room.users]}
+		render json: rooms_with_users
 	end
 
 	private
