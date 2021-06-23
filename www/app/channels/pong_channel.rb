@@ -36,7 +36,10 @@ class PongChannel < ApplicationCable::Channel
 	def subscribed
 		@matchId = params["match_id"]
 		updateMatchFromDB()
-		reject if @match[:status] == "finished"
+		if @match[:status] == "finished"
+			reject
+			return
+		end
 
 		stream_for @match
 		if ["lobby", "ready"].include? @match[:status]

@@ -4,7 +4,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def marvin
     @user = User.from_omniauth(request.env["omniauth.auth"])
-	@user.update(status: 'online')
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       set_flash_message(:notice, :success, kind: "42") if is_navigational_format?

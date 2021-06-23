@@ -53,7 +53,6 @@ ActiveRecord::Schema.define(version: 2021_06_23_000516) do
     t.string "provider"
     t.string "uid"
     t.string "status"
-    t.datetime "last_activity"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider"], name: "index_users_on_provider"
     t.index ["uid"], name: "index_users_on_uid"
