@@ -1,0 +1,61 @@
+$players-height: 60vh;
+$name-height: 0.3;
+$img-side: Min(17vw, #{$players-height} - #{$name-height} * #{$players-height});
+
+#matchmaking {
+	#players {
+		margin-top: calc(0.2 * #{$img-side});
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		height: $players-height;
+
+		article {
+			display: flex;
+			flex-direction: column;
+			width: $img-side;
+			height: calc((1 + #{$name-height}) * #{$img-side});
+			div {
+				position: relative;
+				height: $img-side;
+				font-size: calc(0.9 * #{$img-side});
+				text-align: center;
+				img {
+					height: 100%;
+					width: 100%;
+				}
+			}
+			p {
+				height: calc(#{$name-height} * #{$img-side});
+				font-size: calc(0.2 * #{$img-side});
+				text-align: center;
+				&.loading:after {
+					overflow: hidden;
+					display: inline-block;
+					vertical-align: bottom;
+					-webkit-animation: ellipsis steps(4,end) 1200ms infinite;
+					animation: ellipsis steps(4,end) 1200ms infinite;
+					content: "\2026"; /* ascii code for the ellipsis character */
+					width: 0px;
+				}
+				@keyframes ellipsis {
+					to {
+						width: calc(0.2 * #{$img-side});
+					}
+				}
+				@-webkit-keyframes ellipsis {
+					to {
+						width: calc(0.2 * #{$img-side});
+					}
+				}
+			}
+		}
+
+		#center {
+			width: $img-side;
+			height: Min(15vw, #{$players-height});
+			font-size: calc(0.8 * #{$img-side});
+			text-align: center;
+		}
+	}
+}

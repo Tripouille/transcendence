@@ -4,7 +4,7 @@ import { GuildNewView } from 'views/guild/guildNew';
 import * as GC from 'views/garbage_collector';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
-import LobbyView from 'views/lobby';
+import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
@@ -31,16 +31,15 @@ $(function () {
 		guildsView: new GuildsView({ el: $main }),
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
-		gameView: new GameView({ el: $main }),
 		usersView: new UsersView(),
-		gameView: new GameView({ el: $main }),
-		lobbyView: new LobbyView({ el: $main }),
-		selectModeView: new SelectModeView({ el: $main }),
+		gameView: new GameView({el: $main}),
+		matchmakingView: new MatchmakingView({el: $main}),
+		selectModeView: new SelectModeView({el: $main}),
 
 		routes: {
 			"": "selectMode",
 			"game": "selectMode",
-			"game/lobby": "lobby",
+			"game/matchmaking": "matchmaking",
 			"game/:id": "game",
 			"guilds": "guilds",
 			"guilds/new": "newguild",
@@ -84,15 +83,15 @@ $(function () {
 			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
-		lobby: function () {
+		matchmaking: function() {
 			$('#game_link').addClass('selected');
-			this.lobbyView.render();
+			this.matchmakingView.render();
 		},
 		game: function (id) {
 			$('#game_link').addClass('selected');
 			if (id == null) {
-				this.navigate('game/lobby', { trigger: true });
-				return;
+				this.navigate('game/matchmaking', {trigger: true});
+				return ;
 			}
 			this.gameView.render(id);
 		},

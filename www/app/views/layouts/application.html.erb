@@ -12,7 +12,7 @@
     <%= render 'templates/users' %>
   	<%= render 'templates/initializers' %>
     <%= render 'templates/selectMode' %>
-    <%= render 'templates/lobby' %>
+	<%= render 'templates/matchmaking' %>
     <%= render 'templates/game' %>
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
@@ -48,9 +48,6 @@
 				</button>
 			</div>
 		</nav>
-		<!--<div>
-			Session = <%= @session.inspect %> <br>
-		</div>-->
 		<button id="friends_banner">Friends</button>
 		<aside id="friends">
 			<p><span class="online"></span><span>Joueur 1</span></p>
