@@ -42,6 +42,7 @@ class PongChannel < ApplicationCable::Channel
 		end
 
 		stream_for @match
+		User.find_by_id(connection.session[:user_id]).update(status: 'ingame')
 		if ["lobby", "ready"].include? @match[:status]
 			if playerIsLeft()
 				registerLeftPlayer()
@@ -55,7 +56,9 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		puts @SIDE.to_s + ' unsubscribing'
+		#puts @SIDE.to_s + ' unsubscribing from pong channel'
+		user = User.find_by_id(connection.session[:user_id])
+		if user.status == "ingame" then user.update(status: 'online') end
 		updateMatchFromDB()
 		if @match[:status] != "finished"
 			@match[:status] = "finished"

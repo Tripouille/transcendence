@@ -9,6 +9,7 @@ class OnlineChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
+		#puts @user.login + ' unsubscribing from online channel'
 		@user.update(status: 'offline') if @user
 	end
 end

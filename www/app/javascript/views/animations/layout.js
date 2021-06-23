@@ -38,7 +38,6 @@ function addFriend(name) {
 				unfoldFriends();
 			}
 			else {
-				console.log('error');
 				$add_friend.append($('<div class="error">Invalid username</div>'));
 				setTimeout(function() {
 					$add_friend.find('.error').remove();

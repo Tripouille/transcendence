@@ -35,10 +35,7 @@ const FriendsListView = Backbone.View.extend({
 	},
 
 	connectChannel: function() {
-		window.onlineSubscription = consumer.subscriptions.create({channel: "OnlineChannel"}, {
-			connected() { /*console.log('connected to OnlineChannel');*/ },
-			disconnected() { /*console.log('disconnected from OnlineChannel');*/ }
-		});
+		consumer.subscriptions.create({channel: "OnlineChannel"});
 	}
 });
 
