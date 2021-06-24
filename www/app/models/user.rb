@@ -20,9 +20,6 @@ class User < ApplicationRecord
 
   def add_default_avatar()
     unless avatar.attached?
-      print '----------'
-      print self.pictures
-      print '----------'
       downloaded_image = open(self.pictures)
       avatar.attach(io: downloaded_image, filename: 'avatar.jpg')
     end
