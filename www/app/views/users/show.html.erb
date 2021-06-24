@@ -22,7 +22,7 @@
 
 <p>
   <strong>Login:</strong>
-  <%= image_tag @user.avatard %>
+  <%= image_tag @user.avatar if @user.avatar.persisted? %>
 </p>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |

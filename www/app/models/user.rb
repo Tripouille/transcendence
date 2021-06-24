@@ -1,8 +1,11 @@
+require 'open-uri'
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :omniauthable, omniauth_providers: [:marvin]
-  has_one_attached :avatard
+  has_one_attached :avatar
+  after_commit :add_default_avatar, on: %i[create update]
 
 
   def self.from_omniauth(auth)
@@ -10,6 +13,18 @@ class User < ApplicationRecord
       user.email = auth.info.email
       user.login = auth.info.login
       user.pictures = auth.info.image
+    end
+  end
+
+  private
+
+  def add_default_avatar()
+    unless avatar.attached?
+      print '----------'
+      print self.pictures
+      print '----------'
+      downloaded_image = open(self.pictures)
+      avatar.attach(io: downloaded_image, filename: 'avatar.jpg')
     end
   end
 
