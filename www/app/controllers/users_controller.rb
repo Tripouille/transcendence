@@ -56,6 +56,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def avatar
+    user = User.find_by(id: params[:id])
+
+    if user&.avatar&.attached?
+      redirect_to rails_blob_url(user.avatar)
+    else
+      head :not_found
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
