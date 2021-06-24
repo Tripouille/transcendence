@@ -1,25 +1,28 @@
+import { Users } from 'collections/users';
+
 export const MembersView = Backbone.View.extend({
     className: "guildMembers",
     template: _.template($('#guildMembersTemplate').html()),
     rowTemplate: _.template($('#guildMemberRowTemplate').html()),
     kickTemplate: _.template($('#guildKickMemberTableData').html()),
 
-    render: function (guildId, guildView) {
+    render: function (guildView) {
         this.$el.empty();
         let self = this;
-        let guild_owner_id = window.guilds.findWhere({ id: guildId }).get("owner_id");
-        let filteredCollection = window.users.where({ guild_id: guildId });
+
+        let filteredCollection = new Users(guildView.guild.get('users'));
+        
         if (filteredCollection)
         {
             this.$el.html(this.template).ready(function () {
                 filteredCollection.forEach(function (user) {
-                    user.set({ "rank": ((user.id == guild_owner_id) ? "Owner" : "Officer") });
-                    user.set({ "mmr": 1200 }); /* to code */
-                    user.set({ "contribution": 0 }); /* to code */
+                    user.set({ mmr: 1200 }); /* to remove */
+
                     $("#guildMembersBody").append(self.rowTemplate(user.toJSON()));
-                    if (window.currentUser.id == guild_owner_id && user.id != window.currentUser.id)
+
+                    if (window.currentUser.id == guildView.guild.get('owner_id') && user.id != window.currentUser.id)
                     {
-                        user.set({ "kick": "kick" + user.id });
+                        user.set({ kick: "kick" + user.id });
     
                         $('#guildMembersBody div[class="guildMemberRow"]:last-child').append(self.kickTemplate(user.toJSON()));
                         let data = {

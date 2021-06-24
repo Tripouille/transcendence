@@ -1,6 +1,6 @@
-import { InviteModel } from '../models/invite';
+import { Invite } from '../models/invite';
 
-export const InvitesCollection = Backbone.Collection.extend({
-	model: InviteModel,
+export const Invites = Backbone.Collection.extend({
+	model: Invite,
 	url: "/invites",
 });

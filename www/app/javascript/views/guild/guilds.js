@@ -1,4 +1,4 @@
-import { GuildsCollection } from 'collections/guilds';
+import { Guilds } from 'collections/guilds';
 import { Users } from 'collections/users';
 
 export const GuildsView = Backbone.View.extend({
@@ -15,8 +15,10 @@ export const GuildsView = Backbone.View.extend({
         /* A AMELIORER fetch user model de la guilde au lieu de toute la usersCollection */
         $.when(window.currentUser.fetch(), window.guilds.fetch(), window.users.fetch()).done(function () {
 
+            window.guilds.calculateRank();
+
             window.guilds.each(function (guild, i) {
-                guild.set({ "rank": i + 1 });
+                // guild.set({ "rank": i + 1 });
                 guild.set({ "route": '#guilds/' + guild.id });
                 guild.set({ "owner_name": window.users.findWhere({ id: guild.get('owner_id') }).get('username') });
                 guild.set({ "my_guild": (guild.id == window.currentUser.get('guild_id')) ? true : false });

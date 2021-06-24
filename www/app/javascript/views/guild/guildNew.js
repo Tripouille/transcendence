@@ -1,4 +1,4 @@
-import { GuildModel } from '../../models/guild';
+import { Guild } from '../../models/guild';
 
 export const GuildNewView = Backbone.View.extend({
 	events: {
@@ -17,7 +17,7 @@ export const GuildNewView = Backbone.View.extend({
 		/* save the new guild and the guild_id to the current user databses */
 		this.resetInputErrors("name");
 		this.resetInputErrors("anagram");
-		let model = new GuildModel();
+		let model = new Guild();
 		var self = this;
 		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
 			success: function (model, response, options) {

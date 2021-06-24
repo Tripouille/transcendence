@@ -1,4 +1,4 @@
-export const InviteModel = Backbone.Model.extend({
+export const Invite = Backbone.Model.extend({
 	urlRoot: '/invites',
 	defaults: {
 		// id: null,
@@ -8,7 +8,7 @@ export const InviteModel = Backbone.Model.extend({
 	idAttribute: "id",
 	initialize: function () {
 		self = this;
-		console.log('InviteModel has been initialized');
+		console.log('Invite has been initialized');
 	},
 	validate: function (attr) {
 		// if (attr.name == "" || attr.name.length < 5 || attr.name.length > 30) {

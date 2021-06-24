@@ -1,7 +1,7 @@
-import { GuildModel } from '../models/guild';
+import { Guild } from '../models/guild';
 
-export const GuildsCollection = Backbone.Collection.extend({
-	model: GuildModel,
+export const Guilds = Backbone.Collection.extend({
+	model: Guild,
 	url: "/guilds",
 
 	initialize: function() {

@@ -10,8 +10,8 @@ import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 import { Users } from 'collections/users';
 
-import { GuildsCollection } from 'collections/guilds';
-import { InvitesCollection } from 'collections/invites';
+import { Guilds } from 'collections/guilds';
+import { Invites } from 'collections/invites';
 
 window.intervals = new Array();
 window.timeouts = new Array();
@@ -21,8 +21,8 @@ window.currentUser = new User({ id: initCurrentUser.id });
 
 /* Creation des instances de collections ici, pour les fetch dans leur view respectives (gain perf.) */
 window.users = new Users();
-window.guilds = new GuildsCollection();
-window.invites = new InvitesCollection();
+window.guilds = new Guilds();
+window.invites = new Invites();
 
 $(function () {
 

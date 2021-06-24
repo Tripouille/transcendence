@@ -1,20 +1,20 @@
-import { InvitesCollection } from "../../collections/invites";
-import { Users } from "../../collections/users";
+import { Invites } from "../../collections/invites";
 
 export const InvitesView = Backbone.View.extend({
     className: "guildInvites",
     staticTemplate: _.template($('#guildInvitesTemplate').html()),
 
-    render: function (guildId, guildView) {
+    render: function (guildView) {
         this.$el.empty();
-        let filteredInvites = window.invites.where({ guild_id: guildId });
+
+        let filteredInvites = new Invites(guildView.guild.get('invites'));
+        
         if (filteredInvites.length != 0)
         {            
             let dynamicTemplate = _.template($('#guildInviteRow').html());
             this.$el.html(this.staticTemplate).ready(function () {
                 filteredInvites.forEach(function (invite) {
                     invite.set({
-                        username: window.users.findWhere({ id: invite.get("user_id") }).get('username'),
                         mmr: 1200, /* to code */
                         created_at: $.timeago(new Date(invite.get("created_at"))),
                         accept: "accept" + invite.id,

@@ -4,10 +4,37 @@ class GuildsController < ApplicationController
   # GET /guilds or /guilds.json
   def index
     @guilds = Guild.all
+    # render json: @guilds
   end
 
   # GET /guilds/1 or /guilds/1.json
   def show
+    puts "============= ici =========="
+
+    if (user_exists?)
+      @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
+      @users = User.all.where(:guild_id => @guild[:id])
+      @guilds = Guild.all.sort_by{ |guild| -guild.score }
+
+      # puts @users.inspect
+      puts "============= ici =========="
+
+      render json: @guild.as_json.merge({
+        "rank" => @guilds.find_index{ |guild| guild.id == @guild[:id]} + 1,
+        "active_members" => @users.length,
+        "owner_name" => @users.find{ |user| user.id == @guild[:owner_id]}[:username],
+        
+        "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
+        
+        "invites" => @invites.map { |i| i.attributes.merge({
+          username: User.find(i.user_id)[:username]
+          }) }.as_json,
+        "users" => @users.map { |i| i.attributes.merge({
+          rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),
+          contribution: 0
+          }) }.as_json
+      })
+    end
   end
 
   # GET /guilds/new
@@ -31,7 +58,7 @@ class GuildsController < ApplicationController
     Invite.all.where(:user_id => @user[:id]).destroy_all
 
     respond_to do |format|
-      if (self.admin? || self.check_user) && self.set_owner_id && @guild.save && self.set_guild_id
+      if (self.admin? || (self.user_exists? && self.user_has_no_guild?)) && self.set_owner_id && @guild.save && self.set_guild_id
         format.html { redirect_to @guild, notice: "Guild was successfully created." }
         format.json { render :show, status: :created, location: @guild }
       else
@@ -44,7 +71,13 @@ class GuildsController < ApplicationController
   # PATCH/PUT /guilds/1 or /guilds/1.json
   def update
     respond_to do |format|
-      if (self.admin? || (self.check_owner_user && self.in_current_guild?)) && @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
+      if (self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.in_current_guild?))
+
+        if self.admin?
+          @guild.update(params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id]))
+        else
+          @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
+        end
         format.html { redirect_to @guild, notice: "Guild was successfully updated." }
         format.json { render :show, status: :ok, location: @guild }
       else
@@ -56,7 +89,7 @@ class GuildsController < ApplicationController
 
   # DELETE /guilds/1 or /guilds/1.json
   def destroy
-    if (self.admin? || self.check_owner_user) && @guild.destroy
+    if (self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.user_is_alone?)) && @guild.destroy
       respond_to do |format|
         format.html { redirect_to guilds_url, notice: "Guild was successfully destroyed." }
         format.json { head :no_content }
@@ -75,14 +108,25 @@ class GuildsController < ApplicationController
       params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id])
     end
 
-    # A function to check if user is authenticated and if the user doesn't have a guild yet
-    def check_user
-      return (session[:user_id] && User.find(session[:user_id]) && !User.find(session[:user_id])[:guild_id]) ? 1 : nil
+
+    # A function to check if user is authenticated and exists in the database
+    def user_exists?
+      return (session[:user_id] && User.find(session[:user_id])) ? true : false
+    end
+
+    # A function to check if user is alone in the guild
+    def user_is_alone?
+      return (User.all.where(:guild_id => @guild[:id]).length == 1) ? true : false
+    end
+
+    # A function to check if user doesn't have a guild
+    def user_has_no_guild?
+      return (!User.find(session[:user_id])[:guild_id]) ? true : false
     end
 
     # A function to check if user is authenticated as the guild owner
-    def check_owner_user
-      return (session[:user_id] && User.find(session[:user_id]) && @guild[:owner_id] == session[:user_id]) ? 1 : nil
+    def user_is_guild_owner?
+      return (@guild[:owner_id] == session[:user_id]) ? true : false
     end
 
     def admin?
