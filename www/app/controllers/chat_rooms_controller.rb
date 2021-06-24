@@ -4,7 +4,10 @@ class ChatRoomsController < ApplicationController
 
 	def index
 		rooms = @user.chat_rooms
-		rooms_with_users = rooms.map{|room| [room, room.users]}
+		rooms_with_users = rooms.map{|room|
+			room.as_json(:only => [:id, :owner_id, :name, :room_type])
+				.merge(users: room.users.where(status: 'online').select(:id, :login))
+		}
 		render json: rooms_with_users
 	end
 
