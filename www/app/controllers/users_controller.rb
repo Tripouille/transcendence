@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[ show edit update destroy kick ]
+  before_action :set_user, only: %i[ show edit update destroy kick leave ]
 
   # GET /users or /users.json
   def index
@@ -59,7 +59,20 @@ class UsersController < ApplicationController
   # PATCH /users/1/kick or /users/1.json/kick : to kick players from guilds
   def kick
     respond_to do |format|
-      if self.check_user && self.check_is_guild_owner && self.check_kicked_user_from_guild && @user.update(guild_id: :nullify)
+      if self.user_exists? && self.user_is_guild_owner? && self.check_kicked_user_from_guild && @user.update(guild_id: :nullify)
+        format.html { redirect_to users_url, notice: "User was successfully updated." }
+        format.json { head :no_content }
+      else
+        format.html { head :no_content, status: :unprocessable_entity }
+        format.json { head :no_content }
+      end
+    end
+  end
+
+  # PATCH /users/1/leave or /users/1.json/leave : for players to leave their own guild
+  def leave
+    respond_to do |format|
+      if self.user_exists? && !self.user_is_guild_owner? && @user.update(guild_id: :nullify)
         format.html { redirect_to users_url, notice: "User was successfully updated." }
         format.json { head :no_content }
       else
@@ -81,14 +94,14 @@ class UsersController < ApplicationController
     end
 
     # A function to check if user is authenticated and if the user doesn't have a guild yet
-    def check_user
-      return (session[:user_id] && User.find(session[:user_id])) ? 1 : nil
+    def user_exists?
+      return (session[:user_id] && User.find(session[:user_id])) ? true : false
     end
 
     # A function to check if user is authenticated as the guild owner
-    def check_is_guild_owner
+    def user_is_guild_owner?
       @guild = Guild.find(User.find(session[:user_id])[:guild_id])
-      return (@guild[:owner_id] == session[:user_id]) ? 1 : nil
+      return (@guild[:owner_id] == session[:user_id]) ? true : false
     end
 
     # A function to check if user is authenticated as the guild owner

@@ -4,7 +4,6 @@ import { InvitesView } from 'views/guild/invites';
 
 import { Users } from 'collections/users';
 
-
 import { Invite } from 'models/invite';
 import { Guild } from 'models/guild';
 
@@ -14,7 +13,6 @@ export const GuildView = Backbone.View.extend({
     figuresView: new FiguresView(),
     membersView: new MembersView(),
     guild: new Guild(),
-    guildId: 0,
 
     mainButtonClick: function (evt) {
         let thisView = evt.data.thisView;
@@ -37,38 +35,28 @@ export const GuildView = Backbone.View.extend({
             let model = new Invite({ id: thisView.guild.get("invite_sent").id });
             model.destroy({
                 success: function () {
-                    thisView.render(thisView.guildId);
+                    thisView.render(thisView.guild.id);
                 },
                 error: function () {
-                    thisView.render(thisView.guildId);
+                    thisView.render(thisView.guild.id);
                 }
             });
         }
         else if (evt.target.id == 'JoinButton') {
             let invite = new Invite();
 
-            invite.save({ user_id: window.currentUser.id, guild_id: thisView.guildId }, {
+            invite.save({ user_id: window.currentUser.id, guild_id: thisView.guild.id }, {
                 success: function () {
-                    thisView.render(thisView.guildId);
+                    thisView.render(thisView.guild.id);
                 },
                 error: function () {
-                    thisView.render(thisView.guildId);
+                    thisView.render(thisView.guild.id);
                 }
             });
-            // ).done(function () {
-            //     thisView.render(thisView.guildId);
-            // });
         }
         else if (evt.target.id == 'LeaveButton') {
             if (confirm("You are about to leave this guild. Are you sure ?")) {
-                window.currentUser.save({ 'guild_id': null }, {
-                    success: function () {
-                        thisView.render(thisView.guildId);
-                    },
-                    error: function () {
-                        thisView.render(thisView.guildId);
-                    }
-                });
+                window.currentUser.leave(window.currentUser, thisView);
             }
             else
                 $('#LeaveButton').one("click", { thisView: thisView }, thisView.mainButtonClick);
@@ -89,18 +77,19 @@ export const GuildView = Backbone.View.extend({
                 $('#mainGuildMembersList').append(membersListRowTemplate(user.toJSON()));
                 $('#mainGuildMembersList div:last-child').on('click', function () {
                     if (confirm("You are about to pass ownership to " + user.get('username') + ". Are you sure ?")) {
-                        self.guild.save({ 'owner_id': user.id }, {
+                        this.guild.save({ 'owner_id': user.id }, {
+                            context: this,
                             success: function (model, resp, options) {
-                                self.render(self.guildId);
+                                this.render(this.guild.id);
                             },
                             error: function (model, resp, options) {
-                                self.render(self.guildId);
+                                this.render(this.guild.id);
                             },
                         });
                     }
                 });
             }
-        });
+        }, this);
         $('#mainGuildMembersList').css('display', 'none');
         $('#PassOwnershipButton').hover(
             function () {
@@ -119,9 +108,9 @@ export const GuildView = Backbone.View.extend({
 
         if (window.currentUser.has("guild_id"))
         {
-            if (window.currentUser.get("guild_id") != this.guildId)
+            if (window.currentUser.get("guild_id") != this.guild.id)
                 return ;
-            else if (window.currentUser.get("guild_id") == this.guildId)
+            else if (window.currentUser.get("guild_id") == this.guild.id)
             {
                 if (this.guild.get("owner_id") == window.currentUser.id)
                 {
@@ -143,8 +132,6 @@ export const GuildView = Backbone.View.extend({
             }
         }
         else {
-            // buttonText = (this.guild.get('invites').find( invite => invite.user_id == window.currentUser.id && invite.guild_id == this.guild.id)) ? "Cancel Invitation" : "Join";
-            console.log(this.guild.get('invite_sent'))
             buttonText = (this.guild.get('invite_sent')) ? "Cancel Invitation" : "Join";
             let model = new Backbone.Model({ name: buttonText, id: buttonText.replace(' ', '') + 'Button' });
             $('#guildNavbar').append(joinButtonTemplate(model.toJSON()));
@@ -153,24 +140,19 @@ export const GuildView = Backbone.View.extend({
     },
 
     render: function (guildId) {
-        this.guildId = guildId;
         this.$el.empty();
+        this.$el.attr({id: 'guilds'});
         let self = this;
-
         this.guild.set({ id: guildId });
-
-        // $.when(this.guild.fetch(), window.guilds.fetch(), window.currentUser.fetch(), window.users.fetch(), window.invites.fetch()).then(
+        
         $.when(this.guild.fetch(), window.currentUser.fetch()).then(
             function success() {
                 self.$el.prepend('<div id="guildNavbar"><a class="button Cancel" href="#guilds">Back</a></div>');
-                // self.addMainButton(window.users.where({ guild_id: guildId }).length);
                 self.addMainButton();
-                    
-                if (window.currentUser.get('guild_id') == guildId)
+                if (window.currentUser.get('guild_id') == self.guild.id)
                     self.$el.append(self.invitesView.render(self).el);
                 self.$el.append(self.figuresView.render(self).el);
                 self.$el.append(self.membersView.render(self).el);
-            
             },
             function error() {
                 console.log("Caught an error while fetching the database, rendering back to guilds");

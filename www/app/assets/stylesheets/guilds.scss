@@ -3,208 +3,213 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 $verydarkgreen: rgb(0, 70, 0);
 
-#guildNavbar {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-}
-main form label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 10px;
-  padding: 5px 32px;
-  font-size: 25px;
-}
-main form .error {
-  color: rgb(175, 0, 0);
-}
-.bandeau {
-  color: rgb(175, 157, 0);
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 10px;
-  padding: 5px 32px;
-  font-size: 25px;
-}
-input {
-  font-family: 'screen';
-  border: none;
-  margin: 25px 10px;
-  padding: 15px 32px;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 16px;
-  box-sizing: border-box;
-  width: calc(100% - 20px);
-}
-.button {
-  background-color: $verydarkgreen;
-  border: none;
-  margin: 25px 10px;
-  color: white;
-  padding: 15px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-.Destroy, .Leave {
-  background-color: red;
-}
-.back, .Cancel {
-  background-color: darkgrey;
-  border: 1px solid darkgrey;
-}
-
-@keyframes pixelate {
-  0% {
-    background-position-y: 0;
+#guilds {
+  #guildNavbar {
+    display: flex;
+    align-items: center;
+    justify-content: start;
   }
-  100% {
-    background-position-y: 100%;
+  main form label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 10px;
+    padding: 5px 32px;
+    font-size: 25px;
   }
-}
-#PassOwnershipButton {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-direction: column;
-}
-.button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
-  &:hover {
-   transition-delay: 0.3s;
-   animation: pixelate 0.2s steps(8) forwards;
+  main form .error {
+    color: rgb(175, 0, 0);
   }
-}
-.button:hover {
-  background: green url(pixel_green.svg);
-    background-size: auto 460px;
-}
-.Destroy, .Leave {
-  &:hover {
-    background: lightcoral url(pixel_lightcoral.svg);
-    background-size: auto 460px;
-}
-}
-.back, .Cancel {
-  &:hover {
-    background: black url(pixel_black.svg);
-    background-size: auto 460px;
+  .bandeau {
+    color: rgb(175, 157, 0);
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 10px;
+    padding: 5px 32px;
+    font-size: 25px;
+  }
+  input {
+    font-family: 'screen';
+    border: none;
+    margin: 25px 10px;
+    padding: 15px 32px;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    box-sizing: border-box;
+    width: calc(100% - 20px);
+  }
+  .button {
+    background-color: $verydarkgreen;
+    border: none;
+    margin: 25px 10px;
+    color: white;
+    padding: 15px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .Destroy, .Leave {
+    background-color: red;
+  }
+  .back, .Cancel {
+    background-color: darkgrey;
     border: 1px solid darkgrey;
   }
-}
-.cursorButton {
-  cursor: pointer;
-}
-.kickButton {
-  padding: 0 25px;
-}
-.guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 10px;
-  padding: 5px 32px;
-  height: 120px;
-  font-size: 25px;
-  text-align: center;
-  border-width: 1px;
-  & div {
-    width: 400px;
-  }
-  & div:first-child {
-    width: 200px;
-  }
-  & div:last-child {
-    width: 200px;
-  }
-}
-.guildFigures {
-  background-color: rgba(0, 128, 0, 0.815);
-}
-.myGuildRow {
-  border-style: solid;
-  margin: 20px 10px;
-  order: -1;
-}
-.guildRow/* , .guildInvitesRow, .guildMemberRow */ {
-  &:nth-of-type(odd) {
-    background-color: darkgrey;
-  }
-  &:nth-of-type(even) {
-    background-color: black;
-  }
-}
-.guildRow, .guildInvitesRow, .guildMemberRow {
-  border-left: solid;
-  border-right: solid;
-  &:first-of-type {
-    border-top: solid;
-  }
-  &:last-of-type {
-    border-bottom: solid;
-  }
-}
-.rankTrophy {
-  display: flex;
-  height: 50px;
-  align-items: center;
-  justify-content: center;
-  & img, div {
-    position: absolute;
-  }
-}
-#inviteButtons {
-  display: flex;
-  justify-content:space-around;
-  align-items: center;
-}
-// .guildRow:first-child, .guildInvitesRow:first-child, .guildMemberRow:first-child {
-//   border-top: solid;
-// }
-// .guildRow:last-child, .guildInvitesRow:last-child, .guildMemberRow:last-child {
-  // border-bottom: solid;
-// }
-.myGuildRow:hover, .guildRow:nth-of-type(even):hover {
-  background: darkgrey url(pixel_darkgrey.svg);
-  background-size: auto 640px;
-}
-.guildRow:nth-of-type(odd):hover {
-  background: black url(pixel_black.svg);
-  background-size: auto 640px;
-}
-.uppercase {
-  text-transform: uppercase;
-}
 
-/* For Mobile */
-@media screen and (max-width: 1080px) {
-  main form label {
+  @keyframes pixelate {
+    0% {
+      background-position-y: 0;
+    }
+    100% {
+      background-position-y: 100%;
+    }
+  }
+  #PassOwnershipButton {
+    display: flex;
+    align-items: center;
+    justify-content: start;
     flex-direction: column;
-    justify-content: center;
+  }
+  .button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
+    &:hover {
+    transition-delay: 0.3s;
+    animation: pixelate 0.2s steps(8) forwards;
+    }
+  }
+  .button:hover {
+    background: green url(pixel_green.svg);
+      background-size: auto 460px;
+  }
+  .Destroy, .Leave {
+    &:hover {
+      background: lightcoral url(pixel_lightcoral.svg);
+      background-size: auto 460px;
+  }
+  }
+  .back, .Cancel {
+    &:hover {
+      background: black url(pixel_black.svg);
+      background-size: auto 460px;
+      border: 1px solid darkgrey;
+    }
+  }
+  .cursorButton {
+    cursor: pointer;
+  }
+  .kickButton {
+    padding: 0 25px;
+  }
+  .guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 10px;
+    padding: 5px 32px;
+    height: 120px;
+    font-size: 25px;
+    text-align: center;
+    border-width: 1px;
+    & div {
+      width: 400px;
+    }
+    & div:first-child {
+      width: 200px;
+    }
+    & div:last-child {
+      width: 200px;
+    }
   }
   .guildFigures {
-    flex-wrap: wrap;
-    & div:first-child {
-      width: 100%
+    background-color: rgba(0, 128, 0, 0.815);
+  }
+  .myGuildRow {
+    border-style: solid;
+    margin: 20px 10px;
+    order: -1;
+  }
+  .guildRow/* , .guildInvitesRow, .guildMemberRow */ {
+    &:nth-of-type(odd) {
+      background-color: darkgrey;
+    }
+    &:nth-of-type(even) {
+      background-color: black;
+    }
+  }
+  .guildRow, .guildInvitesRow, .guildMemberRow {
+    border-left: solid;
+    border-right: solid;
+    &:first-of-type {
+      border-top: solid;
+    }
+    &:last-of-type {
+      border-bottom: solid;
+    }
+  }
+  .rankTrophy {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    & img, div {
+      position: absolute;
+    }
+  }
+  #inviteButtons {
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+  }
+  // .guildRow:first-child, .guildInvitesRow:first-child, .guildMemberRow:first-child {
+  //   border-top: solid;
+  // }
+  // .guildRow:last-child, .guildInvitesRow:last-child, .guildMemberRow:last-child {
+    // border-bottom: solid;
+  // }
+  .myGuildRow:hover, .guildRow:nth-of-type(even):hover {
+    background: darkgrey url(pixel_darkgrey.svg);
+    background-size: auto 640px;
+  }
+  .guildRow:nth-of-type(odd):hover {
+    background: black url(pixel_black.svg);
+    background-size: auto 640px;
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+  /* For Mobile */
+  @media screen and (max-width: 1080px) {
+    main form label {
+      flex-direction: column;
+      justify-content: center;
+    }
+    .guildFigures {
+      flex-wrap: wrap;
+      & div:first-child {
+        width: 100%
+      }
     }
   }
 }
-
 /* For Tablets */
 @media screen and (min-width: 540px) and (max-width: 780px) {
-  .guildFigures div:not(:first-child) {
-    flex: 1 0 50%;
+  #guilds {
+    .guildFigures div:not(:first-child) {
+      flex: 1 0 50%;
+    }
   }
 }
 
 /* For Very thin screens */
 @media screen and (min-width: 0px) and (max-width: 540px) {
-  .guildFigures div:not(:first-child) {
-    flex:1 0 25%;
+  #guilds {
+    .guildFigures div:not(:first-child) {
+      flex:1 0 25%;
+    }
   }
 }

@@ -33,13 +33,13 @@ export const Invite = Backbone.Model.extend({
 
 	accept: function (evt) {
 		Backbone.sync("delete", evt.data.model, { url: 'invites/' + evt.data.model.id + '/accept' }).done(function () {
-			evt.data.guildView.render(evt.data.guildView.guildId);
+			evt.data.guildView.render(evt.data.guildView.guild.id);
 		});
 	},
 
 	refuse: function (evt) {
 		Backbone.sync("delete", evt.data.model, { url: 'invites/' + evt.data.model.id + '/refuse' }).done(function () {
-			evt.data.guildView.render(evt.data.guildView.guildId);
+			evt.data.guildView.render(evt.data.guildView.guild.id);
 		});
 	}
 });

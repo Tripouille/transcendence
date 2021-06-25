@@ -35,6 +35,9 @@ export const GuildNewView = Backbone.View.extend({
 	},
 	/* render the form page */
 	render: function () {
+		this.$el.empty();
+		this.$el.attr({id: 'guilds'});
+
 		let that = this;
 		window.currentUser.fetch().done(function () {
 			let guildId = window.currentUser.get('guild_id');

@@ -8,21 +8,12 @@ import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
-import { Users } from 'collections/users';
-
-import { Guilds } from 'collections/guilds';
-import { Invites } from 'collections/invites';
 
 window.intervals = new Array();
 window.timeouts = new Array();
 
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUser.id });
-
-/* Creation des instances de collections ici, pour les fetch dans leur view respectives (gain perf.) */
-window.users = new Users();
-window.guilds = new Guilds();
-window.invites = new Invites();
 
 $(function () {
 

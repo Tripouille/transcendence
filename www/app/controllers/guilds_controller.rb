@@ -3,35 +3,41 @@ class GuildsController < ApplicationController
 
   # GET /guilds or /guilds.json
   def index
-    @guilds = Guild.all
-    # render json: @guilds
+    @guilds = Guild.all.sort_by{ |guild| -guild.score }
+    @users = User.all.where.not(:guild_id => nil)
+
+    @result = @guilds.map { |i| i.attributes.merge({
+      owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
+      rank: @guilds.find_index{ |guild| guild.id == i.id } + 1,
+      route: '#guilds/' + i.id.to_s,
+      my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
+      })
+    }
+    render json: @result.as_json
+
   end
 
   # GET /guilds/1 or /guilds/1.json
   def show
-    puts "============= ici =========="
-
     if (user_exists?)
       @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
       @users = User.all.where(:guild_id => @guild[:id])
       @guilds = Guild.all.sort_by{ |guild| -guild.score }
-
-      # puts @users.inspect
-      puts "============= ici =========="
+      @matches = Match.all # to remove after
+      # @matches = Match.all.where(:left_guild => @guild[:id]).or(Match.all.where(:right_guild => @guild[:id]))
 
       render json: @guild.as_json.merge({
         "rank" => @guilds.find_index{ |guild| guild.id == @guild[:id]} + 1,
         "active_members" => @users.length,
         "owner_name" => @users.find{ |user| user.id == @guild[:owner_id]}[:username],
-        
         "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
-        
         "invites" => @invites.map { |i| i.attributes.merge({
           username: User.find(i.user_id)[:username]
           }) }.as_json,
         "users" => @users.map { |i| i.attributes.merge({
           rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),
-          contribution: 0
+          contribution: @matches.find_all{ |match| match.winner == i.id }.length()
+          # contribution: @matches.find_all{ |match| (match.winner == i.id && match.left_guild != match.right_guild) }.length()
           }) }.as_json
       })
     end

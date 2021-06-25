@@ -34,7 +34,12 @@ export const User = Backbone.Model.extend({
 	/* A function to call to kick members from their guild: modification of their own guild_id value */
 	kick: function (evt) {
 		Backbone.sync("patch", evt.data.model, { url: 'users/' + evt.data.model.id + '/kick' }).done(function () {
-			evt.data.guildView.render(evt.data.guildView.guildId);
+			evt.data.guildView.render(evt.data.guildView.guild.id);
+		});
+	},
+	leave: function (model, thisView) {
+		Backbone.sync("patch", model, { url: 'users/' + this.id + '/leave' }).done(function () {
+			thisView.render(thisView.guild.id);
 		});
 	},
 });
