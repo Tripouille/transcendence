@@ -6,7 +6,7 @@
 
 	</br>
 	<ul>
-		<li id="profile_name">
+		<li>
 			<p>Profile Picture</p>
 			<img id="avatar_profile" alt="<%%= login %> Profile Picture"
 				style="max-width:250px; max-height:155px; width: auto; height: auto;" />
@@ -40,15 +40,15 @@
 	<form id="updateUserForm" name="updateuserform">
 		<div class="field">
 			<label for="avatard">Profile Picture:</label> </br>
-			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
-				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
+			<img id="avatar_profile" alt="<%%= login %> Profile Picture"
+				style="max-width:250px; max-height:155px; width: auto; height: auto;" /></br>
 			<span class="file-input btn btn-block btn-primary btn-file">
 				<input id="fileInput" type="file" name="avatard" accept="image/*" >
 			</span>
 		</div>
 		<div class="field" style="padding: 1em;">
 			<label for="username">Username:</label></br>
-			<input type="text" id="username" name="username" placeholder="<%%= username %>" required >
+			<input type="text" id="username" name="username" value="<%%= username %>" required >
 		</div>
 		<div id="formSubmitUpdateUser" class="actions" style="padding: 1em;">
 			<input type="submit" value="Modify User" />

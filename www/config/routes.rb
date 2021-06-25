@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   resources :users do
     get :avatar, on: :member
+    post :avatar_update, on: :member
   end
 
   get '/login', to: redirect('/#login')

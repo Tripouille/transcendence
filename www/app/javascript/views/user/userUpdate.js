@@ -20,6 +20,18 @@ export const UserUpdateView = Backbone.View.extend({
 			this.model.fetch().done(function() {
 				_thisView.$el.empty();
 				_thisView.$el.append(_thisView.template(_thisView.model.attributes));
+				$.ajax({
+				type: "GET",
+				url: "users/" + initCurrentUserId + "/avatar",
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success (data) {
+					const url = window.URL || window.webkitURL;
+					const src = url.createObjectURL(data);
+					$('#avatar_profile').attr('src', src);
+				}
+			});
 				return _thisView;
 			});
 		} else {
@@ -27,45 +39,34 @@ export const UserUpdateView = Backbone.View.extend({
 		}
 	},
 
-	getFileExt: function() {
-		let files = $('input[name="image"]')[0].files;
-		let ext = null;
-		if(files[0] != null){
-		 let filename =
-			 files[0].name.replace(/\\/g, '/').replace(/.*\//, '');
-		 ext = filename.replace(/^.*\./, '').toLowerCase();
-		}
-		return ext;
-	},
-
-	saveFile: function() {
-		let picture = $('input[name="image"]')[0].files[0];
-		let filename = this.model.get('login') + '_' + $.now() + '.' + this.getFileExt();
-		let data = new FormData();
-		data.append('file', picture, filename);
-		$.ajax({
-		  url: 'user/1/avatar'+this.model.get('picture'),
-		  data: data,
-		  cache: false,
-		  contentType: false,
-		  processData: false,
-		  type: 'POST',
-		  success: function(data){
-			$('#loadingModal').modal('hide');
-		  },
-		  error: function(data){
-			alert('no upload');
-			$('#loadingModal').modal('hide');
-		  }
-		});
-		return data;
-	},
-
 	onFormSubmit: function(e) {
 		e.preventDefault();
+		var fd = new FormData();
+		const files = $('#fileInput')[0].files;
+		if(files.length > 0 ){
+			fd.append('file',files[0]);}
+		console.log(fd);
+		$.ajax({
+			url: "users/" + initCurrentUserId + "/avatar_update",
+			type: 'post',
+			data: fd,
+			contentType: false,
+			processData: false,
+			headers: {
+				'X-Transaction': 'POST Example',
+				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+			},
+			success: function(response){
+				if(response != 0){
+					console.log("Upload");
+				}else{
+					alert('file not uploaded');
+				}
+			},
+		});
+		console.log(files);
 		console.log(this.model.toJSON());
 		this.model.set('username', $('#username').val());
-		//this.model.set('pictures', this.saveFile());
 		console.log(this.model.toJSON());
 		_.bindAll(this, "render");
 		this.model.save({

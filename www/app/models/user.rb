@@ -5,7 +5,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :omniauthable, omniauth_providers: [:marvin]
   has_one_attached :avatar
-  after_commit :add_default_avatar, on: %i[create update]
+  after_commit :add_default_avatar, on: %i[create]
 
 
   def self.from_omniauth(auth)
