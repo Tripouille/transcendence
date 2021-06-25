@@ -19,6 +19,20 @@ export const UserView = Backbone.View.extend({
 		this.model.fetch().done(function() {
 			_thisView.$el.empty();
 			_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+			var result;
+			$.ajax({
+				type: "GET",
+				url: "users/" + initCurrentUserId + "/avatar",
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success (data) {
+					const url = window.URL || window.webkitURL;
+					const src = url.createObjectURL(data);
+					$('#avatar_profile').attr('src', src);
+				}
+			}).done(function() {
+			});
 			return _thisView;
 		});
 	},

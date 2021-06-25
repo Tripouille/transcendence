@@ -56,6 +56,7 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /users/1/avatar
   def avatar
     user = User.find_by(id: params[:id])
 

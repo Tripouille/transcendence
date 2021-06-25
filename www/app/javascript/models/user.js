@@ -6,9 +6,12 @@ export const User = Backbone.Model.extend({
 		pictures: "",
 		email: "",
 		login: "",
+		avatar: "",
 		guild_id: null,
 	},
+
 	idAttribute: "id",
+
 	initialize: function() {
 		console.log('User has been initialized');
 	},
