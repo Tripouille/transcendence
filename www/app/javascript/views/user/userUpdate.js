@@ -44,30 +44,27 @@ export const UserUpdateView = Backbone.View.extend({
 		var fd = new FormData();
 		const files = $('#fileInput')[0].files;
 		if(files.length > 0 ){
-			fd.append('file',files[0]);}
-		console.log(fd);
-		$.ajax({
-			url: "users/" + initCurrentUserId + "/avatar_update",
-			type: 'post',
-			data: fd,
-			contentType: false,
-			processData: false,
-			headers: {
-				'X-Transaction': 'POST Example',
-				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-			},
-			success: function(response){
-				if(response != 0){
-					console.log("Upload");
-				}else{
-					alert('file not uploaded');
-				}
-			},
-		});
-		console.log(files);
-		console.log(this.model.toJSON());
+			fd.append('file',files[0]);
+			$.ajax({
+				url: "users/" + initCurrentUserId + "/avatar_update",
+				type: 'post',
+				data: fd,
+				contentType: false,
+				processData: false,
+				headers: {
+					'X-Transaction': 'POST Example',
+					'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+				},
+				success: function(response){
+					if(response != 0){
+						Backbone.history.navigate("user", { trigger: true })
+					}else{
+						Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true })
+					}
+				},
+			});
+		}
 		this.model.set('username', $('#username').val());
-		console.log(this.model.toJSON());
 		_.bindAll(this, "render");
 		this.model.save({
 			success: this.render

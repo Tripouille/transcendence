@@ -31,37 +31,34 @@ export const UserCreateView = Backbone.View.extend({
 		}
 	},
 
-	saveFile: function() {
-		var picture = $('input[name="image"]')[0].files[0];
-		console.log('picture');
-		var data = new FormData();
-		data.append('file', picture);
-		console.log('data');
-		$.ajax({
-		  url: 'rest/accounts/upload/'+this.model.get('picture'),
-		  data: data,
-		  cache: false,
-		  contentType: false,
-		  processData: false,
-		  type: 'POST',
-		  success: function(data){
-			$('#loadingModal').modal('hide');
-		  },
-		  error: function(data){
-			alert('no upload');
-			$('#loadingModal').modal('hide');
-		  }
-		});
-		return picture;
-	},
-
 	onFormSubmit: function(e) {
 		e.preventDefault();
+		var fd = new FormData();
+		const files = $('#fileInput')[0].files;
+		if(files.length > 0 ){
+			fd.append('file',files[0]);}
+		$.ajax({
+			url: "users/" + initCurrentUserId + "/avatar_update",
+			type: 'post',
+			data: fd,
+			contentType: false,
+			processData: false,
+			headers: {
+				'X-Transaction': 'POST Example',
+				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+			},
+			success: function(response){
+				if(response != 0){
+					Backbone.history.navigate("user", { trigger: true })
+				}else{
+					Backbone.history.navigate("user/" + initCurrentUserId + "/create", { trigger: true })
+				}
+			},
+		});
 		this.model.set('username', $('#username').val());
-		//this.model.set('pictures', this.saveFile());
 		_.bindAll(this, "render");
 		this.model.save({
-			success: Backbone.history.navigate("user", { trigger: true })
+			success: this.render
 		});
 	}
 
