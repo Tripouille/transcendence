@@ -5,7 +5,7 @@ $bg-color: $verydarkgreen;
 $border-width: $responsive-ratio;
 $banners-height: calc(4.5 * #{$responsive-ratio});
 $banners-font-size: calc(2 * #{$responsive-ratio});
-$banners-padding-top: calc(0.2 * #{$responsive-ratio});
+$banners-padding-top: calc(0.2 * #{$banners-font-size});
 $aside-font-size: calc(2 * #{$responsive-ratio});
 
 %bordered {
@@ -15,7 +15,7 @@ $aside-font-size: calc(2 * #{$responsive-ratio});
 }
 
 $nav-font-size: calc(0.5 * #{$nav-height});
-$nav-link-padding: calc(0.5 * #{$responsive-ratio});
+$nav-link-padding-top: calc(0.2 * #{$nav-font-size});
 $link-border-width: calc(0.5 * #{$border-width});
 nav {
 	@extend %bordered;
@@ -41,7 +41,7 @@ nav {
 	#account_div {
 		display: block;
 		margin: 0 1%;
-		padding: $nav-link-padding 1% 0 1%;
+		padding: $nav-link-padding-top 1% 0 1%;
 		text-transform: uppercase;
 		font-size: $nav-font-size;
 	}
@@ -132,20 +132,74 @@ nav {
 	z-index: 3;
 	background: url('wallpaper_long');
 	background-size: 100% 100%;
+	text-align: center;
 	&:hover {
 		cursor: pointer;
 	}
 }
 
+$friends-width: 15vw;
 %friends {
 	position: fixed;
 	right: 0;
-	width: 15vw;
+	width: $friends-width;
 }
 #friends_banner {
 	@extend %friends;
 	@extend %banner;
 	top: 0;
+
+	.plus {
+		display: inline-block;
+		position: absolute;
+		right: calc(0.3 * #{$responsive-ratio});
+		top: calc(0.3 * #{$responsive-ratio});
+		vertical-align: middle;
+		border: 1px lightgray solid;
+		border-radius: 50%;
+		height: $banners-font-size;
+		width: $banners-font-size;
+		color: lightgray;
+	}
+
+	#add_friend {
+		display: none;
+		position: absolute;
+		left: calc(0.02 * #{$friends-width});
+		top: calc(0.3 * #{$responsive-ratio});
+		width: calc(0.75 * #{$friends-width});
+		background-color: black;
+
+		input {
+			position: relative;
+			height: 100%;
+			background-color: black;
+			width: 100%;
+			color: white;
+			caret-color: white;
+
+			&:focus {
+				outline: none;
+				border-color: white;
+			}
+		}
+
+		.error {
+			color: red;
+			position: absolute;
+			top: 100%;
+			left: calc(0.02 * #{$friends-width});
+			height: 100%;
+			width: 100%;
+			background-color: black;
+			font-size: calc(1 * #{$responsive-ratio});
+			padding: calc(0.5 * #{$responsive-ratio});
+			border: 1px lightgray solid;
+			border-top: none;
+			text-transform: none;
+			text-align: left;
+		}
+	}
 }
 $friends-height: 55vh;
 $friends-top-position: $banners-height;
@@ -153,35 +207,39 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 #friends {
 	@extend %friends;
 	@extend %bordered;
+	display: none;
 	border-top: none;
 	top: $friends-top-position;
 	padding-top: 1vh;
-	height: $friends-height;
+	padding-left: 0.3vw;
+	max-height: $friends-height;
 	z-index: 2;
 	font-size: $aside-font-size;
 	text-align: center;
 	overflow: auto;
-	transition: height 0.4s, top 0.4s;
+	transition: max-height 0.4s, top 0.4s;
 	scrollbar-width: none;
 	&::-webkit-scrollbar {
 		width: 0;
 	}
 
 	&.folded {
-		height: 0;
+		max-height: 0;
 		top: 0;
 	}
 
-	p {
+	div.friend {
 		text-align: left;
 		display: flex;
 		align-items: center;
 		margin-bottom: 1%;
 
 		&:hover {
-			//background-color: $veryverydarkgreen;
 			font-weight: bold;
 			cursor: pointer;
+		}
+		&.active {
+			background-color: $veryverydarkgreen;
 		}
 
 		span {
@@ -198,7 +256,7 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 				background-color: lightgreen;
 			}
 			&.ingame {
-				background-color: white;
+				background-color: yellow;
 			}
 
 			&:last-child {
@@ -206,9 +264,29 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
-				// &:hover {
-				// 	cursor: pointer;
-				// }
+			}
+		}
+	}
+
+	#friends_menu {
+		display: none;
+		position: fixed;
+		right: calc(0.5 * #{$border-width});
+		width: calc(#{$friends-width} - 1.5 * #{$border-width});
+		font-weight: normal;
+		background-color: black;
+		border: 3px $veryverydarkgreen solid;
+		list-style: none;
+		z-index: 100;
+		padding: 0;
+		margin: 0;
+
+		li {
+			padding: 2px;
+			&:hover {
+				background-color: $veryverydarkgreen;
+				cursor: pointer;
+				font-weight: bold;
 			}
 		}
 	}
@@ -300,15 +378,14 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 					font-family: 'screen';
 				}
 			}
-	&::-webkit-scrollbar {
-		width: 0;
-	}
+			&::-webkit-scrollbar {
+				width: 0;
+			}
 		}
 		input {
 			position: absolute;
 			left: $chat-input-left;
 			bottom: 0;
-			//background-color: green;
 			background-color: transparent;
 			width: $chat-input-width;
 			height: 5%;

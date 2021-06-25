@@ -30,4 +30,8 @@ Rails.application.routes.draw do
     delete 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
+  post '/friendships', to: 'friendships#create'
+  get '/friends', to: 'friendships#all'
+  delete '/friends/:id', to: 'friendships#remove'
+
 end

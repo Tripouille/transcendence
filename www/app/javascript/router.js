@@ -2,6 +2,7 @@ import { GuildsView } from 'views/guild/guilds';
 import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
 import * as GC from 'views/garbage_collector';
+import FriendsListView from 'views/friendsList';
 import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
@@ -15,7 +16,8 @@ window.timeouts = new Array();
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUser.id });
 
-$(function () {
+$(function() {
+	window.friendsListView = new FriendsListView();
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({

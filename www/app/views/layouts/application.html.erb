@@ -6,11 +6,10 @@
 		<%= csrf_meta_tags %>
 		<%= csp_meta_tag %>
 
-  	<%= render 'templates/main' %>
   	<%= render 'templates/guilds' %>
-    <%= render 'templates/game' %>
     <%= render 'templates/users' %>
   	<%= render 'templates/initializers' %>
+	<%= render 'templates/friend' %>
     <%= render 'templates/selectMode' %>
 	<%= render 'templates/matchmaking' %>
     <%= render 'templates/game' %>
@@ -48,26 +47,21 @@
 				</button>
 			</div>
 		</nav>
-		<button id="friends_banner">Friends</button>
+		<div id="friends_banner">
+			Friends
+			<div class="plus">+</div>
+			<div id="add_friend">
+				<input type="text">
+			</div>
+		</div>
 		<aside id="friends">
-			<p><span class="online"></span><span>Joueur 1</span></p>
-			<p><span class="offline"></span><span>Joueur 2</span></p>
-			<p><span class="ingame"></span><span>Joueur 3</span></p>
-			<p><span></span><span>Joueur 4</span></p>
-			<p><span></span><span>Joueur 5</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 666666666</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
-			<p><span></span><span>Joueur 6</span></p>
+			<ul id="friends_menu">
+				<li>Send pm</li>
+				<li>Play against</li>
+				<li id="remove_friend">Remove friend</li>
+			</ul>
+			<!--<p><span class="offline"></span><span>Joueur 2</span></p>
+			<p><span class="ingame"></span><span>Joueur 3</span></p>-->
 		</aside>
 		<aside id="chat">
 			<div id="chat_banner">Chat</div>

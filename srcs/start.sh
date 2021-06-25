@@ -16,7 +16,7 @@ redis-server --daemonize yes
 cd /www
 bundle install --jobs 42
 rails db:migrate
-if [ "$RAILS_ENV" == "production" ]; then rails assets:precompile; fi
+rails assets:precompile
 rm -f /www/tmp/pids/server.pid
 rails s -b "0.0.0.0"
 tail -f
