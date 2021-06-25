@@ -1,0 +1,8 @@
+<script type="template" id="chatRoomTemplate">
+	<p><%%= name %></p>
+	<div>
+		<%% _.each(users, function(user) { %>
+			<p><%%= user.login %></p>
+		<%% }); %>
+	</div>
+</script>

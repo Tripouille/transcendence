@@ -335,7 +335,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		text-align: center;
 	}
 
-	#chans {
+	#chat_rooms {
 		flex: 1;
 		border-right: 1px $veryverydarkgreen solid;
 		overflow-y: auto;
@@ -346,12 +346,43 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			width: 0;
 		}
 
-		p {
-			margin: 2px 0.5%;;
-			&:hover {
-				cursor: pointer;
-				//background-color: $veryverydarkgreen;
-				font-weight: bold;
+		> div { //a chat room
+			margin: 0 0.5%;
+			padding: 2% 0;
+			display: flex;
+			flex-direction: column;
+
+			p {
+				&:hover {
+					cursor: pointer;
+					font-weight: bold;
+				}
+			}
+
+			> p { //the room name
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			div { //the room members
+				margin-left: auto;
+				$chat-room-font-size: calc(0.75 * #{$aside-font-size});
+				float: right;
+				width: 90%;
+				font-size: $chat-room-font-size;
+				max-height: calc(3.5 * #{$chat-room-font-size});
+				overflow: auto;
+				scrollbar-width: none;
+				&::-webkit-scrollbar {
+					width: 0;
+				}
+
+				p {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
 			}
 		}
 	}

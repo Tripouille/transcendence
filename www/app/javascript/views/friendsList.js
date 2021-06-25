@@ -10,28 +10,40 @@ const FriendsListView = Backbone.View.extend({
 	},
 
 	initialize: function() {
-		this.setElement($('#friends'));
-		this.friendsCollection.on('add', this.addFriend, this);
-		this.actualize();
 		this.connectChannel();
+		this.setElement($('#friends'));
+		this.friendsCollection.fetch({context: this, success: function() {
+			if (this.friendsCollection.length)
+				this.$el.show();
+			this.render();
+			this.friendsCollection.on('add', this.addFriend, this);
+			this.friendsCollection.on('change', this.reload, this);
+		}});
+		this.actualize();
 	},
 
-	addFriend: function(friend) {
-		this.$el.show();
-		const friendView = new FriendView({model: friend});
-		this.$el.append(friendView.$el);
+	render: function() {
+		this.friendsCollection.each(function(friend) {
+			const friendView = new FriendView({model: friend});
+			this.$el.append(friendView.$el);
+		}, this);
 	},
-	removeFriend: function(e) {
+	reload: function() {
+		this.friendsCollection.sort();
+		this.$el.find('div').remove();
+		this.render();
+	},
+	addFriend: function() {
+		this.$el.show();
+		this.reload();
+	},
+	removeFriend: function() {
 		this.friendsCollection.get(window.active_friend).destroy();
 		if (!this.friendsCollection.length)
 			this.$el.hide();
 	},
 	actualize: function() {
-		const collection = this.friendsCollection;
-		collection.fetch();
-		setInterval(function() {
-			collection.fetch();
-		}, 5000);
+		setInterval(() => {this.friendsCollection.fetch();}, 5000);
 	},
 
 	connectChannel: function() {

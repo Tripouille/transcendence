@@ -13,7 +13,6 @@ window.timeouts = new Array();
 $(function() {
 	window.friendsListView = new FriendsListView();
 	window.chatRoomsView = new ChatRoomsView();
-	//window.chatMessagesView = new ChatMessagesView();
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
