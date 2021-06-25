@@ -6,7 +6,6 @@ export const User = Backbone.Model.extend({
 		pictures: "",
 		email: "",
 		login: "",
-		avatar: "",
 		guild_id: null,
 	},
 
