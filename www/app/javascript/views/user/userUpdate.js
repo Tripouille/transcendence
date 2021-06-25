@@ -5,7 +5,8 @@ export const UserUpdateView = Backbone.View.extend({
 	template: _.template($('#user-modify').html()),
 
 	events: {
-		'click #formSubmitUpdateUser input' : 'onFormSubmit'
+		'click #formSubmitUpdateUser input' : 'onFormSubmit',
+		'click .back-btn' : 'clickHandler'
 	},
 
 	model: new User({ id:initCurrentUserId }),
@@ -69,6 +70,11 @@ export const UserUpdateView = Backbone.View.extend({
 		this.model.save({
 			success: this.render
 		});
+	},
+
+	clickHandler : function(e ){
+		e.preventDefault()
+		Backbone.history.navigate("user", { trigger: true })
 	}
 
 });
