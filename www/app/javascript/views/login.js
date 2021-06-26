@@ -11,10 +11,14 @@ export const LoginView = Backbone.View.extend({
 	},
 
 	render: function(){
-		$("#mainNav").empty();
-		$("#contacts").empty();
-		$("#chat").empty();
-		$("main").empty();
+		$("nav")[0].style.display = "none";
+		$("#friends_banner")[0].style.display = "none";
+		$("#chat")[0].style.display = "none";
+		$("main")[0].style.height = 'auto';
+		$("main")[0].style.width = 'auto';
+		$("main")[0].style.position = 'relative';
+		$("main")[0].style.top = '5%';
+		$("main")[0].setAttribute('id', "login");
         $("main").html(this.template);
 		this.$el.html(this.template());
         return this;

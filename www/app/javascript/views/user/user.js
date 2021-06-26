@@ -17,7 +17,7 @@ export const UserView = Backbone.View.extend({
 	render: function() {
 		let _thisView = this;
 		this.model.fetch().done(function() {
-			_thisView.$el.empty();
+
 			_thisView.$el.html(_thisView.template(_thisView.model.attributes));
 			$.ajax({
 				type: "GET",

@@ -25,12 +25,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       @root = 'user/' + @user.id.to_s + '/create'
       root_path(:anchor => @root)
     else
-      root_path(:anchor => 'homepage')
+      root_path
     end
   end
 
   def after_omniauth_failure_path_for scope
-    root_path(:anchor => 'homepage')
+    root_path
   end
 
 end
