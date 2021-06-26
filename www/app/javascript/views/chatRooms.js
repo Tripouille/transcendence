@@ -22,6 +22,7 @@ const ChatRoomsView = Backbone.View.extend({
 			let chatRoomView = new ChatRoomView({model: room});
 			this.$el.append(chatRoomView.$el);
 			this.chatRoomViews.push(chatRoomView);
+			chatRoomView.on('selectRoom', this.selectRoom, this);
 		}, this);
 	},
 	reload: function() {
@@ -32,6 +33,10 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	actualize: function() {
 		setInterval(() => {this.chatRoomsCollection.fetch();}, 5000);
+	},
+
+	selectRoom: function() {
+		this.$el.children('div').removeClass('active');
 	}
 });
 

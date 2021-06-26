@@ -352,6 +352,9 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			display: flex;
 			flex-direction: column;
 
+			&.active p {
+				font-weight: bold;
+			}
 			p {
 				&:hover {
 					cursor: pointer;
@@ -399,14 +402,21 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		#chat_body {
 			p {
 				font-family: sans-serif;
-				margin-bottom: 10px;
+				margin-bottom: 3%;
 				&.mine {
 					text-align: right;
 				}
 	
-				span:first-child {
-					display: block;
+				span:first-child { //the author's name
+					width: min-content;
 					font-family: 'screen';
+					&:hover {
+						font-weight: bold;
+						cursor: pointer;
+					}
+				}
+				span:last-child {
+					display: block;
 				}
 			}
 			&::-webkit-scrollbar {

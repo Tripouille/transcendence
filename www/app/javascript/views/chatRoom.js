@@ -39,8 +39,8 @@ let ChatRoomView = Backbone.View.extend({
 		return this;
 	},
 	selectRoomAndRenderMessages: function() {
-		console.log('selectRoomAndRenderMessages');
-		
+		this.trigger('selectRoom');
+		this.$el.addClass('active');
 		const $chatBody = $('#chat_body');
 		$chatBody.empty();
 		this.messages.each(function(message) {

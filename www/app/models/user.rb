@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :friends, :through => :friendships
   has_many :chat_memberships
   has_many :chat_rooms, :through => :chat_memberships
+  has_many :messages
 
 
   # Include default devise modules. Others available are:
