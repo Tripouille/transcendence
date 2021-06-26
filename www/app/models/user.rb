@@ -1,4 +1,3 @@
-require 'open-uri'
 
 class User < ApplicationRecord
   has_many :friendships
@@ -25,7 +24,7 @@ class User < ApplicationRecord
   def add_default_avatar()
     unless avatar.attached?
       @name = self.login + '.jpg'
-      downloaded_image = open(self.pictures)
+      downloaded_image = URI.open(self.pictures)
       avatar.attach(io: downloaded_image, filename: @name)
     end
   end
