@@ -29,6 +29,10 @@ $link-border-width: calc(0.5 * #{$border-width});
 	text-decoration: none;
 	height: $link-height;
 
+	#login {
+		display: flex;
+	}
+
 	#avatar {
 
 		label#text-avatar {
