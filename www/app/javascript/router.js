@@ -68,8 +68,13 @@ $(function() {
 			this.gameView.render(id);
 		},
 		login: function() {
-			console.log("> Login - Page");
-			this.loginView.render();
+			if (initCurrentUserId == null) {
+				console.log("> Login - Page");
+				this.loginView.render();
+			}
+			else {
+				Backbone.history.navigate("", { trigger: true })
+			}
 		},
 
 		user: function() {
