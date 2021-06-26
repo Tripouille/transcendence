@@ -13,6 +13,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       session[:user_id] = @user.id
+	  session[:user] = @user
     else
       session["devise.marvin_data"] = request.env["omniauth.auth"]
       redirect_to(root_path(:anchor => 'login'))

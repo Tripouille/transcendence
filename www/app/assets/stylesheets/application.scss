@@ -1,0 +1,71 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ @import "variables";
+
+@font-face {
+	font-family: 'screen';
+	src: url('ScreenMatrix.ttf');
+}
+
+html {
+	height: 99.9%;
+	font-size: 1rem;
+}
+
+body {
+	height: 100%;
+	background-color: black;
+	color: $text-color;
+	font-family: 'screen';
+	margin: 0;
+	background: url('wallpaper_general');
+	background-size: 100% 100%;
+
+	&.stop-transitions * {
+		transition: none !important;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+main {
+	position: fixed;
+	top: 11%;
+	padding: 10px;
+	height: $main-height;
+	width: $main-width;
+}
+
+p {
+	margin: 0;
+}
+
+a {
+	color: $text-color;
+}
+
+button {
+	padding: 0;
+	border: none;
+	outline: none;
+	color: inherit;
+	font-family: inherit;
+	background: inherit;
+	font-size: inherit;
+}

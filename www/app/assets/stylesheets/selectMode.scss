@@ -1,0 +1,30 @@
+@import "variables";
+$link-width: calc(0.5 * #{$main-width});
+$link-height: calc(0.4 * #{$main-height});
+$link-font-size: calc(16 * #{$responsive-ratio});
+
+#selectMode {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+
+	& > a {
+		width: $link-width;
+		text-align: center;
+		border-width: 5px;
+		border-color: lightgreen;
+		border-style: ridge groove groove ridge;
+		background-color: $verydarkgreen;
+		text-decoration: none;
+		border-radius: calc(0.1 * Min(#{$link-height}, #{$link-width}));
+		height: $link-height;
+		line-height: calc(#{$link-height} - 10px);
+		font-size: $link-font-size;
+		text-transform: uppercase;
+		&:hover {
+			border-width: 10px;
+			line-height: calc(#{$link-height} - 20px);
+		}
+	}
+}
