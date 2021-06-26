@@ -1,6 +1,5 @@
 import * as GC from 'views/garbage_collector';
 import FriendsListView from 'views/friendsList';
-import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
@@ -21,7 +20,6 @@ $(function() {
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
-		usersView: new UsersView(),
 		gameView: new GameView({el: $main}),
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
@@ -35,7 +33,6 @@ $(function() {
 			"game": "selectMode",
 			"game/matchmaking": "matchmaking",
 			"game/:id": "game",
-			"users": "users",
 			"user": "user",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
@@ -53,11 +50,6 @@ $(function() {
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
-		},
-
-		users: function() {
-			$('#rank_link').addClass('selected');
-			this.usersView.render($main);
 		},
 		selectMode: function() {
 			$('#game_link').addClass('selected');
