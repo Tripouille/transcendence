@@ -1,9 +1,4 @@
 <script id="user-display" type="text/template">
-
-	<div class="header-user">
-		<h1>Bienvenue sur la page user</h1>
-	</div>
-
 	<ul>
 		<li>
 			<p>Profile Picture</p>
@@ -42,7 +37,7 @@
 			<img id="avatar_profile" alt="<%%= login %> Profile Picture"
 				style="max-width:250px; max-height:155px; width: auto; height: auto;" /></br>
 			<span class="file-input btn btn-block btn-primary btn-file">
-				<input id="fileInput" type="file" name="avatard" accept="image/*" >
+				<input class="custom-file-input" type="file" name="avatard" accept="image/*" >
 			</span>
 		</div>
 		<div class="field" style="padding: 1em;">
@@ -64,22 +59,23 @@
 	</div>
 
 	</br>
-	<form id="newUserForm" name="newuserform">
-		<div class="field">
-			<label for="image">Profile Picture:</label></br>
-			<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture"
-				style="max-width:250px; max-height:155px; width: auto; height: auto;"></br>
-			<span class="file-input btn btn-block btn-primary btn-file">
-				<input id="fileInput" type="file" name="avatard" accept="image/*" >
-			</span>
-		</div>
-		<div class="field" style="padding: 1em;">
-			<label for="username">Username:</label></br>
-			<input type="text" id="username" name="username" placeholder="Username" required>
-		</div>
-		<div id="formSubmitCreateUser" class="actions" style="padding: 1em;">
-			<input type="submit" value="Create User" />
-		</div>
-	</form>
+	<div class="screen">
+		<form id="newUserForm" name="newuserform">
+			<div id="avatar" class="field">
+				<label id="text-avatar" for="image">Avatar:</label></br>
+				<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture" /></br>
+				<span class="file-input btn btn-block btn-primary btn-file">
+					<input class="custom-file-input" type="file" name="avatard" accept="image/*" >
+				</span>
+			</div>
+			<div id="name" class="field" style="padding: 1em;">
+				<label id="text-username" for="username">Username:</label>
+				<input type="text" id="username" name="username" placeholder="Username" required>
+			</div>
+			<div id="formSubmitCreateUser" class="actions" style="padding: 1em;">
+				<input type="submit" value="Create User" />
+			</div>
+		</form>
+	</div>
 
 </script>
