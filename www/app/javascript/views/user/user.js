@@ -37,8 +37,6 @@ export const UserView = Backbone.View.extend({
 	chargePage: function(_thisView, src) {
 		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
 		$('#avatar_profile').attr('src', src);
-		_thisView.$el.removeClass('loading');
-		_thisView.$el.removeClass('lds-ripple');
 		return _thisView;
 	},
 
