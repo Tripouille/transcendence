@@ -8,7 +8,7 @@ let MessageView = Backbone.View.extend({
 	},
 	render: function() {
 		this.$el.html(this.template(this.model.attributes));
-		if (this.model.get('mine'))
+		if (this.model.get('user_id') == window.user_id)
 			this.$el.addClass('mine');
 		return this;
 	}

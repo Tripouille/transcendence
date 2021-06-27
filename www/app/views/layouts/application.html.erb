@@ -6,6 +6,9 @@
 		<%= csrf_meta_tags %>
 		<%= csp_meta_tag %>
 
+		<script type="text/javascript">
+			window.user_id = <%= session[:user_id] %>;
+		</script>
 		<script type="template" id="userTemplate">
 			<%%= name %>
 		</script>

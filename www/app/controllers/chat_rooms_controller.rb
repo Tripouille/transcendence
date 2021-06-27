@@ -7,9 +7,7 @@ class ChatRoomsController < ApplicationController
 				.merge(users: room.users.where(status: 'online').where.not(id: session[:user_id]).order(:login).select(:id, :login))
 				.merge(messages:
 					room.messages.includes(:user).order(:created_at).map{|message|
-						message.as_json()
-							.merge(login: message.user.login)
-							.merge(mine: message.user_id == @user.id)
+						message.as_json().merge(login: message.user.login)
 					}
 				)
 		}
