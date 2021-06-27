@@ -4,26 +4,27 @@
 			<img id="avatar_profile" alt="<%%= login %> Profile Picture"
 				style="max-width:250px; max-height:155px; width: auto; height: auto;" />
 		</div>
-		<div id="login">
-			<label>login:</label></br>
-			<p><%%= login %></p>
-		</div>
-		<ul>
-			<li>
-				<p>Login:</p>
-				<p><%%= login %></p>
-			</li>
-			<li>
-				<p>Username:</p>
-				<p><%%= username %></p>
-			</li>
-			<li>
-				<p>Email:</p>
-				<p><%%= email %></p>
-			</li>
-		</ul>
 
-		<button type="button" class="edit-btn">Edit User</button>
+		<br />
+
+		<div id="login">
+			<label>login:</label>
+			<div id="login_text"><%%= login %></div>
+		</div>
+		<div id="username">
+			<label>Username:</label>
+			<div id="username_text"><%%= username %></div>
+		</div>
+		<div id="email">
+			<label>Email:</label>
+			<div id="email_text"><%%= email %></div>
+		</div>
+
+		<br />
+
+		<div id="boutton_show">
+			<button type="button" class="edit-btn">Edit Profil</button>
+		</div>
 	</div>
 
 </script>
@@ -38,22 +39,24 @@
 	<div class="screen">
 		<form id="updateUserForm" name="updateuserform">
 			<div id="avatar" class="field">
-				<label for="avatar">Profile Picture:</label> </br>
-				<img id="avatar_profile" alt="<%%= login %> Profile Picture"
-					style="max-width:250px; max-height:155px; width: auto; height: auto;" /></br>
+				<img id="avatar_profile" alt="<%%= login %> Profile Picture" /></br>
 				<span class="file-input btn btn-block btn-primary btn-file">
-					<input class="custom-file-input" type="file" name="avatard" accept="image/*" >
+					<input class="custom-file-input" type="file" name="avatar" accept="image/*" >
 				</span>
 			</div>
-			<div class="field" style="padding: 1em;">
-				<label for="username">Username:</label></br>
-				<input type="text" id="username" name="username" value="<%%= username %>" required >
+			<div id="username-edit" class="field" style="padding: 1em;">
+				<label id="text-username" for="username">Username:</label>
+				<input type="text" id="username" name="username" placeholder="Username" value="<%%= username %>" required >
 			</div>
 			<div id="formSubmitUpdateUser" class="actions" style="padding: 1em;">
-				<input type="submit" value="Modify User" />
+				<div id="boutton_show">
+					<input type="submit" value="update" />
+				</div>
 			</div>
 		</form>
-	<button type="button" class="back-btn">back</button>
+		<div id="boutton_show">
+			<button type="button" class="back-btn">back</button>
+		</div>
 	</div>
 
 </script>
@@ -68,10 +71,9 @@
 	<div class="screen">
 		<form id="newUserForm" name="newuserform">
 			<div id="avatar" class="field">
-				<label id="text-avatar" for="image">Avatar:</label></br>
-				<img src="<%%= pictures %>" alt="<%%= login%> Profile Picture" /></br>
+				<img id="avatar_profile" src="<%%= pictures %>" alt="<%%= login%> Profile Picture" /></br>
 				<span class="file-input btn btn-block btn-primary btn-file">
-					<input class="custom-file-input" type="file" name="avatard" accept="image/*" >
+					<input class="custom-file-input" type="file" name="avatar" accept="image/*" >
 				</span>
 			</div>
 			<div id="name" class="field" style="padding: 1em;">
@@ -79,7 +81,9 @@
 				<input type="text" id="username" name="username" placeholder="Username" required>
 			</div>
 			<div id="formSubmitCreateUser" class="actions" style="padding: 1em;">
-				<input type="submit" value="Create User" />
+				<div id="boutton_show">
+					<input type="submit" value="Create User" />
+				</div>
 			</div>
 		</form>
 	</div>

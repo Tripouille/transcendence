@@ -21,7 +21,7 @@ $link-border-width: calc(0.5 * #{$border-width});
 	display: flex;
 	flex-direction: column;
 	flex-grow: 0;
-	justify-content: center;
+	justify-content: flex-start;
 	border-width: 5px;
 	border-color: green;
 	border-style: ridge groove groove ridge;
@@ -29,8 +29,73 @@ $link-border-width: calc(0.5 * #{$border-width});
 	text-decoration: none;
 	height: $link-height;
 
+	#boutton_show {
+		margin-top: auto;
+		margin-left: auto;
+		margin-right: auto;
+		padding-bottom: 5%;
+		input {
+			font-family: 'screen';
+			background-color: rgba(0, 0, 0, 0);
+			color: white;
+		}
+		button, input {
+			border: 2px solid rgba(0, 128, 0, 0.75);
+			border-radius: 3px;
+			padding: 5px 8px;
+			white-space: nowrap;
+			cursor: pointer;
+			font-size: 15pt;
+			transition: transform 500ms;
+			&:hover {
+				border-color: black;
+				background-color: rgba(0, 128, 0, 0.75);
+			}
+			&:active {
+				transform: scale(0.6);
+				box-shadow: rgba(0.8, 0, 0, 0) 3px 6px;
+			}
+		}
+	}
+
 	#login {
 		display: flex;
+		flex-direction:row;
+		margin-right: auto;
+		padding-top: 0.5em;
+		label {
+			font-size: 2em;
+		}
+		#login_text {
+			font-size: 1.5em;
+			padding-left: 1em;
+		}
+	}
+	#username {
+		display: flex;
+		flex-direction:row;
+		margin-right: auto;
+		padding-top: 0.5em;
+		label {
+			font-size: 2em;
+		}
+		#username_text {
+			font-size: 1.5em;
+			padding-left: 1em;
+		}
+	}
+	#email {
+		display: flex;
+		flex-direction:row;
+		margin-right: auto;
+		padding-top: 0.5em;
+		label {
+			font-size: 2em;
+		}
+		#email_text {
+			font-size: 1.5em;
+			padding-left: 1em;
+		}
 	}
 
 	#avatar {
@@ -92,21 +157,23 @@ $link-border-width: calc(0.5 * #{$border-width});
 		}
 	}
 
-	label#text-username {
-		font-family: 'screen';
-		font-size: 1.2em;
+	#name, #username-edit {
+		display: flex;
+		flex-direction:row;
+
+		label#text-username {
+			font-size: 1.5em;
+		}
+		input#username {
+			border: none;
+			padding: 1.5% 3.2% ;
+			margin-left: 5%;
+			align-items: center;
+			justify-content: center;
+			text-decoration: none;
+			box-sizing: border-box;
+			width: 30%;
+		}
 	}
 
-	input#username {
-		font-family: 'screen';
-		border: none;
-		margin: 25px 10px;
-		padding: 15px 32px;
-		align-items: center;
-		justify-content: center;
-		text-decoration: none;
-		font-size: 16px;
-		box-sizing: border-box;
-		width: 25%;
-	}
 }

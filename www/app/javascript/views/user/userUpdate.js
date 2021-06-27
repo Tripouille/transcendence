@@ -68,7 +68,7 @@ export const UserUpdateView = Backbone.View.extend({
 		this.model.set('username', $('#username').val());
 		_.bindAll(this, "render");
 		this.model.save({
-			success: this.render
+			success: Backbone.history.navigate("user", { trigger: true })
 		});
 	},
 

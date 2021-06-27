@@ -30,7 +30,7 @@ export const UserView = Backbone.View.extend({
 					const src = url.createObjectURL(data);
 					$('#avatar_profile').attr('src', src);
 				}
-			});
+			}).done(function() {});
 			return _thisView;
 		});
 	},
