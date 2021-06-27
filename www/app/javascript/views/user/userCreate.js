@@ -34,7 +34,7 @@ export const UserCreateView = Backbone.View.extend({
 	onFormSubmit: function(e) {
 		e.preventDefault();
 		var fd = new FormData();
-		const files = $('#fileInput')[0].files;
+		const files = $('.custom-file-input')[0].files;
 		if(files.length > 0 ){
 			fd.append('file',files[0]);}
 		$.ajax({

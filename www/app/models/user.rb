@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'tmpdir'
 
 class User < ApplicationRecord
   has_many :friendships
