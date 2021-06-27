@@ -18,26 +18,33 @@ export const UserUpdateView = Backbone.View.extend({
 	render: function(id) {
 		if (initCurrentUserId == id) {
 			let _thisView = this;
+
+			this.$el.append('<div class="loading">Loading...</div>');
+			this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
 			this.model.fetch().done(function() {
-				_thisView.$el.empty();
-				_thisView.$el.append(_thisView.template(_thisView.model.attributes));
 				$.ajax({
-				type: "GET",
-				url: "users/" + initCurrentUserId + "/avatar",
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success (data) {
+					type: "GET",
+					url: "users/" + initCurrentUserId + "/avatar",
+					xhrFields: {
+						responseType: 'blob'
+					}
+				}).done(function(data) {
 					const url = window.URL || window.webkitURL;
 					const src = url.createObjectURL(data);
-					$('#avatar_profile').attr('src', src);
-				}
-			});
-				return _thisView;
+					_thisView.chargePage(_thisView, src)
+				});
 			});
 		} else {
 			Backbone.history.navigate("user", { trigger: true })
 		}
+	},
+
+	chargePage: function(_thisView, src) {
+		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('#avatar_profile').attr('src', src);
+		_thisView.$el.removeClass('loading');
+		_thisView.$el.removeClass('lds-ripple');
+		return _thisView;
 	},
 
 	onFormSubmit: function(e) {

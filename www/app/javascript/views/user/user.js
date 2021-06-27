@@ -16,28 +16,35 @@ export const UserView = Backbone.View.extend({
 
 	render: function() {
 		let _thisView = this;
-		this.model.fetch().done(function() {
 
-			_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		this.$el.append('<div class="loading">Loading...</div>');
+		this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
+		this.model.on('reset', this.render).fetch().done(function() {
 			$.ajax({
 				type: "GET",
 				url: "users/" + initCurrentUserId + "/avatar",
 				xhrFields: {
 					responseType: 'blob'
-				},
-				success (data) {
-					const url = window.URL || window.webkitURL;
-					const src = url.createObjectURL(data);
-					$('#avatar_profile').attr('src', src);
 				}
-			}).done(function() {});
-			return _thisView;
+			}).done(function(data) {
+				const url = window.URL || window.webkitURL;
+				const src = url.createObjectURL(data);
+				_thisView.chargePage(_thisView, src)
+			});
 		});
 	},
 
-	clickHandler : function(e ){
+	chargePage: function(_thisView, src) {
+		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('#avatar_profile').attr('src', src);
+		_thisView.$el.removeClass('loading');
+		_thisView.$el.removeClass('lds-ripple');
+		return _thisView;
+	},
+
+	clickHandler: function(e){
 		e.preventDefault()
 		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true })
-	}
+	},
 
 });
