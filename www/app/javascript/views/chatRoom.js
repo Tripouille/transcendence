@@ -2,7 +2,6 @@ import consumer from "../channels/consumer";
 import Messages from "../collections/messages";
 import MessageView from "./message";
 
-
 // TODO : plus de actualize, passer entierement par le channel ?
 let ChatRoomView = Backbone.View.extend({
 	tagName: 'div',
@@ -20,7 +19,6 @@ let ChatRoomView = Backbone.View.extend({
 		//this.model.on('change', this.render, this);
 		this.model.on('remove', this.remove, this);
 		this.on('sendMessage', this.sendMessage, this);
-		this.messages.on('add', this.addMessage, this);
 
 		const room = this.model;
 		const messages = this.messages;
@@ -45,27 +43,18 @@ let ChatRoomView = Backbone.View.extend({
 		return this;
 	},
 	selectRoomAndRenderMessages: function() {
-		this.trigger('selectRoom', this.model.id);
-		this.$el.addClass('active');
 		const $chatBody = $('#chat_body');
 		$chatBody.empty();
 		this.messages.each(function(message) {
 			const messageView = new MessageView({model: message});
 			$chatBody.append(messageView.$el);
 		}, this);
-		this.scrollBottom();
+		this.trigger('selectRoom', this.model.id);
+		this.$el.addClass('active');
 	},
-	sendMessage: function(p) {
-		this.subscription.send({message: p});
+	sendMessage: function(content) {
+		this.subscription.send({content: content});
 	},
-	addMessage: function(message) {
-		const messageView = new MessageView({model: message});
-		$('#chat_body').append(messageView.$el);
-		this.scrollBottom();
-	},
-	scrollBottom: function() {
-		$('#chat_body_container').scrollTop($('#chat_body_container').prop('scrollHeight'));
-	}
 });
 
 export default ChatRoomView;

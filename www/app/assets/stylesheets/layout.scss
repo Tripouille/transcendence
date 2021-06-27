@@ -352,9 +352,6 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			display: flex;
 			flex-direction: column;
 
-			&.active p {
-				font-weight: bold;
-			}
 			p {
 				&:hover {
 					cursor: pointer;
@@ -367,8 +364,17 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				overflow: hidden;
 				text-overflow: ellipsis;
 			}
+			&.active {
+				> p {
+					font-weight: bold;
+				}
+				div {
+					display: block;
+				}
+			}
 
-			div { //the room members
+			> div { //the room members
+				display: none;
 				margin-left: auto;
 				$chat-room-font-size: calc(0.75 * #{$aside-font-size});
 				float: right;
@@ -380,11 +386,54 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				&::-webkit-scrollbar {
 					width: 0;
 				}
-
 				p {
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
+				}
+			}
+		}
+
+		button#create_room {
+			position: absolute;
+			bottom: 0;
+			width: calc(0.5 * #{$chat-input-width});
+			border: 1px gray solid;
+			border-radius: 3px;
+			&:hover {
+				cursor: pointer;
+				font-weight: bold;
+				border-color: white;
+			}
+		}
+
+		form#room_form {
+			position: absolute;
+			right: calc(100% + #{$border-width});
+			bottom: 0;
+			padding: 5px 5px 5px 0;
+			border: 1px gray solid;
+			width: max-content;
+			display: flex;
+			flex-direction: column;
+
+			> div {
+				width: 100%;
+				display: flex;
+				justify-content: space-around;
+				margin-top: 3%;
+				input {
+					background-color: black;
+				}
+				button {
+					border: 1px gray solid;
+					border-radius: 3px;
+					padding: 0 5px;
+					&:hover {
+						cursor: pointer;
+						font-weight: bold;
+						border-color: white;
+					}
 				}
 			}
 		}

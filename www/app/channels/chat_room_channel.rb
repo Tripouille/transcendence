@@ -15,8 +15,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
-		puts 'received ' + data.inspect
-		message = ActionController::Base.helpers.strip_tags(data['message'])
+		message = ActionController::Base.helpers.strip_tags(data['content'])
 		message_record = Message.new(user_id: @user.id, content: message)
 		@chatRoom.messages << message_record
 		@chatRoom.save

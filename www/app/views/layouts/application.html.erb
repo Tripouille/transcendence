@@ -68,6 +68,16 @@
 		<aside id="chat">
 			<div id="chat_banner">Chat</div>
 			<div id="chat_rooms">
+				<button id="create_room">Create</button>
+				<form id="room_form">
+					<label><input type="radio" id="room_type" name="room_type" value="public">Public</label>
+					<label><input type="radio" id="room_type" name="room_type" value="private">Private</label>
+					<label><input type="radio" id="room_type" name="room_type" value="password_protected">Password protected <input type="text"></label>
+					<div>
+						<button type="cancel">Cancel</button>
+						<button type="submit">Create</button>
+					</div>
+				</form>
 			</div>
 			<div id="chat_body_container">
 				<input type="text" placeholder="Write here">
