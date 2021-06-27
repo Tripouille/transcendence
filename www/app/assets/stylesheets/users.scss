@@ -14,6 +14,23 @@ $link-border-width: calc(0.5 * #{$border-width});
 #avatar_profile {
 	border: 4px solid green
 }
+.screen-top {
+	margin-left: auto;
+	margin-right: auto;
+	width: $main-width / 2;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 0;
+	justify-content: flex-start;
+	border-width: 5px;
+	border-color: green;
+	border-style: ridge groove groove ridge;
+	border-bottom: none;
+	background-color: $verydarkgreen;
+	text-align: center;
+	font-size: 0.6em;
+}
+
 .screen {
 	margin-left: auto;
     margin-right: auto;
