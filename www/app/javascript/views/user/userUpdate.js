@@ -56,41 +56,44 @@ export const UserUpdateView = Backbone.View.extend({
 		});
 	},
 
-
 	onFormSubmit: function(e) {
 		e.preventDefault();
 		var fd = new FormData();
 		const files = $('.custom-file-input')[0].files;
 		let _thisView = this;
 
-		if(files.length > 0 ){
-			if (files[0].type.substr(0, 6) === 'image/')
-			{
-				fd.append('file',files[0]);
-				$.ajax({
-					url: "users/" + initCurrentUserId + "/avatar_update",
-					type: 'post',
-					data: fd,
-					contentType: false,
-					processData: false,
-					headers: {
-						'X-Transaction': 'POST Example',
-						'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-					}
-				}).done(function(response) {
-					if(response != 0){
-						_thisView.updateProfil();
-						Backbone.history.navigate("user", { trigger: true });
-					}else{
-						Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
-					}
-				});
-			} else {
-				console.log('Error');
-				Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
-			}
+		if ($('#username').val().length < 0) {
+			Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
 		} else {
-			this.updateProfil();
+			if(files.length > 0) {
+				if (files[0].type.substr(0, 6) === 'image/')
+				{
+					fd.append('file',files[0]);
+					$.ajax({
+						url: "users/" + initCurrentUserId + "/avatar_update",
+						type: 'post',
+						data: fd,
+						contentType: false,
+						processData: false,
+						headers: {
+							'X-Transaction': 'POST Example',
+							'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+						}
+					}).done(function(response) {
+						if(response != 0){
+							_thisView.updateProfil();
+							Backbone.history.navigate("user", { trigger: true });
+						}else{
+							Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
+						}
+					});
+				} else {
+					console.log('Error');
+					Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
+				}
+			} else {
+				this.updateProfil();
+			}
 		}
 	},
 
