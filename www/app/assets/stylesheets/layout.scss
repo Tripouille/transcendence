@@ -229,7 +229,7 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 	font-size: $aside-font-size;
 	text-align: center;
 	overflow: auto;
-	transition: max-height 0.4s, top 0.4s;
+	transition: max-height 0.4s, top 0.4s, font-size 0.4s;
 	scrollbar-width: none;
 	&::-webkit-scrollbar {
 		width: 0;
@@ -238,6 +238,7 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 	&.folded {
 		max-height: 0;
 		top: 0;
+		font-size: 0;
 	}
 
 	div.friend {
@@ -326,14 +327,25 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 	background-color: transparent;
 	font-size: $aside-font-size;
 	display: flex;
-	transition: height 0.4s, padding-top 0.4s;
+	transition: height 0.4s, padding-top 0.4s, font-size 0.4s;
 
 	&.folded {
+		font-size: 0;
 		height: $banners-height;
 		padding-top: 0;
+		#chat_rooms {
+			button {
+				height: 0;
+			}
+			> div > div {
+				font-size: 0;
+			}
+		}
 		#chat_body_container {
+			font-size: 0;
 			input {
-				display: none;
+				height: 0;
+				padding: 0;
 			}
 		}
 	}
@@ -396,6 +408,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				max-height: calc(3.5 * #{$chat-room-font-size});
 				overflow: auto;
 				scrollbar-width: none;
+				transition: font-size 0.4s;
 				&::-webkit-scrollbar {
 					width: 0;
 				}
@@ -419,12 +432,14 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				border: 1px gray solid;
 				border-radius: 3px;
 				margin-bottom: 2%;
+				height: calc(2 * #{$chat-room-font-size});
+				overflow-y: hidden;
+				transition: height 0.4s;
 				&:hover {
 					cursor: pointer;
 					font-weight: bold;
 					border-color: white;
 				}
-
 			}
 		}
 	}
@@ -435,6 +450,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		padding: $chat-body-padding;
 		margin-bottom: $chat-body-bottom-space;
 		font-size: $messages-font-size;
+		transition: font-size 0.4s;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
 			display: none;
@@ -471,6 +487,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			width: $chat-input-width;
 			height: 5%;
 			font-size: $messages-font-size;
+			transition: height 0.4s, padding 0.4s;
 			&::placeholder {
 				color: darkgreen;
 			}
@@ -520,7 +537,8 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				height: calc(1.5 * #{$responsive-ratio});
 			}
 		}
-		&#room_joining_form {
+		&#room_joining_form,
+		&#room_password_form {
 			align-items: center;
 			label {
 				margin-top: 20%;
@@ -529,7 +547,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				text-align: center;
 				input {
 					margin-top: 5%;
-					width: 100%;
+					width: calc(0.7 * #{$chat-width});
 				}
 			}
 		}

@@ -8,8 +8,8 @@ const ChatRoomsView = Backbone.View.extend({
 	activeRoomId: null,
 
 	events: {
-		"click #create_room": "displayRoomCreationForm",
-		"click #join_room": "displayRoomJoiningForm"
+		"click #create_room": function() {this.displayForm($('#room_creation_form'))},
+		"click #join_room": function() {this.displayForm($('#room_joining_form'))}
 	},
 
 	initialize: function() {
@@ -75,21 +75,20 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 
 	prepareForms: function() {
-		this.$roomCreationForm = $('#room_creation_form');
-		this.$roomCreationForm.on('submit', this.submitCreationForm);
-		this.$roomCreationForm.on('click', 'button.cancel', this.cancelForm);
-		this.$roomJoiningForm = $('#room_joining_form');
-		this.$roomJoiningForm.on('submit', this.submitJoiningForm);
-		this.$roomJoiningForm.on('click', 'button.cancel', this.cancelForm);
+		$('#room_creation_form').on('submit', this.submitCreationForm);
+		$('#room_joining_form').on('submit', this.submitJoiningForm);
+		$('#room_password_form').on('submit', this.submitPasswordForm);
+		$('#chat form').on('click', 'button.cancel', function(e) {
+			window.chatRoomsView.cancelForm($(e.delegateTarget));
+		});
 	},
-	cancelForm: function(e) {
-		const $form = $(e.delegateTarget);
+	cancelForm: function($form) {
 		$form.trigger('reset');
 		$form.removeClass('visible');
 	},
-	displayRoomCreationForm: function() {
-		this.$roomCreationForm.addClass('visible');
-		this.$roomCreationForm.find('input.room_name').focus();
+	displayForm: function($form) {
+		$form.addClass('visible');
+		$form.find('input').first().focus();
 	},
 	submitCreationForm: function(e) {
 		e.preventDefault();
@@ -118,12 +117,9 @@ const ChatRoomsView = Backbone.View.extend({
 			$form.removeClass('visible');
 		}
 	},
-	displayRoomJoiningForm: function() {
-		this.$roomJoiningForm.addClass('visible');
-		this.$roomJoiningForm.find('input.room_name').focus();
-	},
 	submitJoiningForm: function(e) {
 		e.preventDefault();
+		const chatRoomsView = window.chatRoomsView;
 		const $form = $(e.target);
 		const $room_name_input = $form.find('input.room_name');
 		if (!$room_name_input.val().trim()) {
@@ -139,16 +135,45 @@ const ChatRoomsView = Backbone.View.extend({
 			data: {name: $room_name_input.val().trim()},
 			success: function(response) {
 				if (response.error) {
-					window.chatRoomsView.animateInvalidInput($room_name_input);
-					console.log('Error when trying to join room : ' + response.error);
+					chatRoomsView.animateInvalidInput($room_name_input);
+					console.log('Error when trying to join chat room : ' + response.error);
 				}
 				else if (response.password_needed) {
-					console.log('password needed');
+					chatRoomsView.cancelForm($form);
+					chatRoomsView.displayForm($('#room_password_form'));
+					$('#room_password_form').data('room-id', response.room_id);
 				}
 				else {
-					window.chatRoomsView.chatRoomsCollection.add(response.room);
-					$form.trigger('reset');
-					$form.removeClass('visible');
+					chatRoomsView.chatRoomsCollection.add(response.room);
+					chatRoomsView.cancelForm($form);
+				}
+			}
+		});
+	},
+	submitPasswordForm: function(e) {
+		e.preventDefault();
+		const chatRoomsView = window.chatRoomsView;
+		const $form = $(e.target);
+		const $room_password_input = $form.find('input.room_password');
+		if (!$room_password_input.val()) {
+			this.animateInvalidInput($room_password_input);
+			return ;
+		}
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/join_with_password',
+			headers: {
+				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+			},
+			data: {id: $form.data('room-id'), password: $room_password_input.val()},
+			success: function(response) {
+				if (response.error) {
+					chatRoomsView.animateInvalidInput($room_password_input);
+					console.log('Error when trying to join chat room : ' + response.error);
+				}
+				else {
+					chatRoomsView.chatRoomsCollection.add(response.room);
+					chatRoomsView.cancelForm($form);
 				}
 			}
 		});

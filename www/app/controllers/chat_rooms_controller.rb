@@ -19,15 +19,12 @@ class ChatRoomsController < ApplicationController
 
 	def join
 		chatroom = ChatRoom.find_by_name(params[:name])
-		puts 'chatroom : ' + chatroom.inspect
 		if not chatroom
 			render json: {error: "Invalid room name"}
-		elsif chatroom.room_type == "private"
-			render json: {error: "Private room"}
 		elsif chatroom.users.include?(current_user)
 			render json: {error: "Already in room"}
 		elsif chatroom.password_digest
-			render json: {password_needed: true}
+			render json: {password_needed: true, room_id: chatroom.id}
 		else
 			chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
 			chatroom.save
@@ -35,6 +32,21 @@ class ChatRoomsController < ApplicationController
 				password_needed: false,
 				room: complete_room_infos(chatroom)
 			}
+		end
+	end
+
+	def join_with_password
+		chatroom = ChatRoom.find_by_id(params[:id])
+		if not chatroom
+			render json: {error: "Invalid room"}
+		elsif chatroom.users.include?(current_user)
+			render json: {error: "Already in room"}
+		elsif not chatroom.authenticate(params[:password])
+			render json: {error: "Invalid password"}
+		else
+			chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
+			chatroom.save
+			render json: {room: complete_room_infos(chatroom)}
 		end
 	end
 

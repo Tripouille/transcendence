@@ -20,10 +20,6 @@
 			<input type="radio" id="public_choice" name="room_type" value="public" checked>
 			Public
 		</label>
-		<label for="private_choice">
-			<input type="radio" id="private_choice" name="room_type" value="private">
-			Private
-		</label>
 		<label for="password_protected_choice">
 			<input type="radio" id="password_protected_choice" name="room_type" value="password_protected">
 			Password protected
@@ -38,6 +34,16 @@
 		<label for="room_name">
 			Room name
 			<input type="text" class="room_name" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">Join</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+	<form id="room_password_form">
+		<label for="room_password">
+			Room password
+			<input type="password" class="room_password" autocomplete="off">
 		</label>
 		<div>
 			<button type="submit">Join</button>

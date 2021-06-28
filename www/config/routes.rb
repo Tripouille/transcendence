@@ -17,5 +17,6 @@ Rails.application.routes.draw do
 
   resources :chat_rooms, only: [:index, :create]
   post '/chat_rooms/join', to: 'chat_rooms#join'
+  post '/chat_rooms/join_with_password', to: 'chat_rooms#join_with_password'
 
 end
