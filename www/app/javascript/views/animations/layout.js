@@ -130,4 +130,41 @@ $(function() {
 			}
 		}
 	});
+
+	const $room_form = $('#room_form');
+	$room_form.find('#cancel_room_creation').on('click', function() {
+		$room_form.trigger('reset');
+		$room_form.removeClass('visible');
+	});
+	$room_form.on('submit', function(e) {
+		e.preventDefault();
+		let valid_form = true;
+		const $this = $(this);
+		const $room_password_input = $this.find('input#room_password');
+		const $room_type_inputs = $this.find('input[name=room_type]:checked');
+		if ($room_type_inputs.val() == 'password_protected'
+		&& !$room_password_input.val().trim()) {
+			$room_password_input.css('border-color', 'red');
+			setTimeout(function() {$room_password_input.css('border-color', '');}, 1000);
+			$room_password_input.focus();
+			valid_form = false;
+		}
+		const $room_name_input = $this.find('input#room_name');
+		if (!$room_name_input.val().trim()) {
+			$room_name_input.css('border-color', 'red');
+			setTimeout(function() {$room_name_input.css('border-color', '');}, 1000);
+			$room_name_input.focus();
+			valid_form = false;
+		}
+
+		if (valid_form) {
+			window.chatRoomsView.chatRoomsCollection.create({
+				name: $room_name_input.val(),
+				room_type: $room_type_inputs.val(),
+				password: $room_password_input.val()
+			}, {wait: true});
+			$this.trigger('reset');
+			$this.removeClass('visible');
+		}
+	});
 });

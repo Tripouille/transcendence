@@ -24,67 +24,9 @@
 	</head>
 
 	<body>
-		<nav>
-			<a id="game_link" href="#game">Game</a>
-			<a id="rank_link" href="#users">Rank</a>
-			<a id="guild_link" href="#game">Guild</a>
-			<div id="account_div">
-				<button id="account_button" href="#game">
-					<%= current_user ? session[:user]['login'] : 'login' %>
-					<div id="account_menu">
-						<% if current_user then %>
-							<div class="option">
-								<div class="ball_selector"></div>
-								<%= link_to "Modify account", "#game" %>
-							</div>
-							<div class="option">
-								<div class="ball_selector"></div>
-								<%= link_to "Sign out", destroy_user_session_path, method: :delete %>
-							</div>
-						<% else %>
-							<div class="option">
-								<div class="ball_selector"></div>
-								<%= link_to "Sign in with 42", user_marvin_omniauth_authorize_path %>
-							</div>
-						<% end %>
-					</div>
-				</button>
-			</div>
-		</nav>
-		<div id="friends_banner">
-			Friends
-			<div class="plus">+</div>
-			<div id="add_friend">
-				<input type="text">
-			</div>
-		</div>
-		<aside id="friends">
-			<ul id="friends_menu">
-				<li>Send pm</li>
-				<li>Play against</li>
-				<li id="remove_friend">Remove friend</li>
-			</ul>
-		</aside>
-		<aside id="chat">
-			<div id="chat_banner">Chat</div>
-			<div id="chat_rooms">
-				<button id="create_room">Create</button>
-				<form id="room_form">
-					<label><input type="radio" id="room_type" name="room_type" value="public">Public</label>
-					<label><input type="radio" id="room_type" name="room_type" value="private">Private</label>
-					<label><input type="radio" id="room_type" name="room_type" value="password_protected">Password protected <input type="text"></label>
-					<div>
-						<button type="cancel">Cancel</button>
-						<button type="submit">Create</button>
-					</div>
-				</form>
-			</div>
-			<div id="chat_body_container">
-				<input type="text" placeholder="Write here">
-				<div id="chat_body">
-				</div>
-			</div>
-		</aside>
+		<%= render 'layouts/menu' %>
+		<%= render 'layouts/friendsList' %>
+		<%= render 'layouts/chat' %>
 		<%= yield %>
 	</body>
 </html>

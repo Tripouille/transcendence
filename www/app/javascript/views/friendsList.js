@@ -19,7 +19,7 @@ const FriendsListView = Backbone.View.extend({
 			this.friendsCollection.on('add', this.addFriend, this);
 			this.friendsCollection.on('change', this.reload, this);
 		}});
-		this.actualize();
+		//this.actualize();
 	},
 
 	render: function() {

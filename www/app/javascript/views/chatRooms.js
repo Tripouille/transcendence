@@ -7,12 +7,16 @@ const ChatRoomsView = Backbone.View.extend({
 	chatRoomViews: {},
 	activeRoomId: null,
 
+	events: {
+		"click #create_room": "displayRoomCreationFrom"
+	},
+
 	initialize: function() {
 		this.setElement($('#chat #chat_rooms'));
 		this.chatRoomsCollection.fetch({context: this, success: function() {
 			this.render();
-			//this.chatRoomsCollection.on('add', this.reload, this);
-			//this.chatRoomsCollection.on('change', this.reload, this);
+			this.chatRoomsCollection.on('add', this.addCreatedRoom, this);
+			//this.chatRoomsCollection.on('change', this.reload, this); //change:name ?
 			if (this.chatRoomsCollection.length) {
 				this.activeRoomId = this.chatRoomsCollection.at(0).id;
 				this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
@@ -23,17 +27,26 @@ const ChatRoomsView = Backbone.View.extend({
 
 	render: function() {
 		this.chatRoomsCollection.each(function(room) {
-			let chatRoomView = new ChatRoomView({model: room});
-			this.$el.append(chatRoomView.$el);
-			this.chatRoomViews[room.id] = chatRoomView;
-			chatRoomView.on('selectRoom', this.selectRoom, this);
-			chatRoomView.messages.on('add', this.addMessage, this);
+			this.addRoom(room);
 		}, this);
 	},
-	reload: function() {
-		this.chatRoomsCollection.sort();
-		this.$el.empty();
-		this.render();
+	addRoom: function(room) {
+		let chatRoomView = new ChatRoomView({model: room});
+		this.chatRoomViews[room.id] = chatRoomView;
+		chatRoomView.on('selectRoom', this.selectRoom, this);
+		chatRoomView.messages.on('add', this.addMessage, this);
+		const index = this.chatRoomsCollection.indexOf(room);
+		if (index > 0)
+			chatRoomView.$el.insertAfter(
+				this.chatRoomViews[this.chatRoomsCollection.at(index - 1).id].$el
+			);
+		else
+			this.$el.prepend(chatRoomView.$el);
+	},
+	addCreatedRoom: function(newRoom) {
+		this.addRoom(newRoom);
+		this.activeRoomId = newRoom.id;
+		this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
 	},
 
 	selectRoom: function(chatRoomId) {
@@ -57,6 +70,11 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	scrollBottom: function() {
 		$('#chat_body_container').scrollTop($('#chat_body_container').prop('scrollHeight'));
+	},
+
+	displayRoomCreationFrom: function() {
+		$('#room_form').addClass('visible');
+		$('#room_form input#room_name').focus();
 	}
 });
 
