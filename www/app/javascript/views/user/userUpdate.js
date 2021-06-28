@@ -51,8 +51,8 @@ export const UserUpdateView = Backbone.View.extend({
 	updateProfil: function() {
 		this.model.set('username', $('#username').val());
 		_.bindAll(this, "render");
-		this.model.save({
-			success: Backbone.history.navigate("user", { trigger: true })
+		this.model.save({}).done(function() {
+			Backbone.history.navigate("user", { trigger: true })
 		});
 	},
 
@@ -82,9 +82,6 @@ export const UserUpdateView = Backbone.View.extend({
 					}).done(function(response) {
 						if(response != 0){
 							_thisView.updateProfil();
-							Backbone.history.navigate("user", { trigger: true });
-						}else{
-							Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
 						}
 					});
 				} else {
