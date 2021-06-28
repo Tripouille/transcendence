@@ -7,12 +7,13 @@
 		<%= csp_meta_tag %>
 
   	<%= render 'templates/guilds' %>
-    <%= render 'templates/users' %>
   	<%= render 'templates/initializers' %>
 	<%= render 'templates/friend' %>
     <%= render 'templates/selectMode' %>
 	<%= render 'templates/matchmaking' %>
     <%= render 'templates/game' %>
+	<%= render 'templates/login' %>
+	<%= render 'templates/user' %>
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_pack_tag 'application' %>
@@ -31,7 +32,7 @@
 						<% if current_user then %>
 							<div class="option">
 								<div class="ball_selector"></div>
-								<%= link_to "Modify account", "#game" %>
+								<%= link_to "Modify account", "#user" %>
 							</div>
 							<div class="option">
 								<div class="ball_selector"></div>

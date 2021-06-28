@@ -1,0 +1,115 @@
+@import "variables";
+$link-width: calc(0.5 * #{$main-width});
+$link-height: calc(0.2 * #{$main-height});
+$link-font-size: calc(14 * #{$responsive-ratio});
+
+
+@font-face {
+	font-family: 'Press Start 2P';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Press Start 2P'), url('https://fonts.cdnfonts.com/s/15306/PressStart2P-Regular.woff') format('woff');
+}
+
+  #title {
+	position: relative;
+	margin: 70px auto 50px;
+	font-size: 60px;
+	font-family: 'Press Start 2P', cursive;
+  }
+
+  .wrapper {
+	position: relative;
+	display: inline-block;
+	margin: 35px auto;
+  }
+
+  //
+  // ---Retro Header---
+  //
+  .header-wrap {
+	display: block;
+	width: auto;
+	height: auto;
+	padding: 0;
+	text-align: center;
+	font-size: 1.5em;
+	font-family: 'Press Start 2P', cursive;
+	transform: perspective(200px) rotateX(10deg);
+	letter-spacing: .1em;
+	user-select: none;
+	text-shadow:
+	  0 -1px 0 #fff,
+	  0 1px 0 #004d40,
+	  0 2px 0 #00483B,
+	  0 3px 0 #004639,
+	  0 4px 0 #004336,
+	  0 5px 0 #004134,
+	  0 6px 0 #003F32,
+	  0 7px 0 #003D30,
+	  0 8px 0 #003A2D,
+	  0 9px 0 #00382B,
+	  0 10px 0 #003528,
+	  0 11px 0 #003225,
+	  0 12px 0 #002F22,
+	  0 13px 0 #002B1E,
+	  0 14px 0 #00281C,
+	  0 15px 0 #001F13,
+	  0 22px 30px rgba(0,0,0, 0.9),
+	  0 22px 30px rgba(0, 0, 0, 0.9),
+	  0 22px 15px rgba(0, 0, 0, 0.9),
+	  0 11px 15px rgba(0, 0, 0, 0.9),
+	  0 15px 20px rgba(0, 0, 0, 0.9),
+	  0 15px 11px rgba(0, 0, 0, 0.9),
+	  0 16px 11px rgba(0, 0, 0, 0.9);
+
+	transition: text-shadow .3s ease .3s,
+	  transform .3s ease .3s,
+	  letter-spacing .3s ease .3s;
+
+	&:hover {
+	  transition: text-shadow .33s ease,
+		transform .3s ease,
+		letter-spacing .3s ease;
+	  text-shadow: 0 0 0 #004134,
+		0 1px 0 #00483B,
+		0 2px 0 #003528,
+		0 3px 3px rgba(0, 0, 0, 0.9);
+	  transform: translate(0px, 15px)
+		perspective(200px)
+		rotateX(10deg);
+	  letter-spacing: .125em;
+	}
+  }
+
+#login {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+
+	& > a {
+		width: $link-width;
+		text-align: center;
+		border-width: 5px;
+		border-color: lightgreen;
+		border-style: ridge groove groove ridge;
+		background-color: $verydarkgreen;
+		text-decoration: none;
+		border-radius: calc(0.1 * Min(#{$link-height}, #{$link-width}));
+		height: $link-height;
+		line-height: calc(#{$link-height} - 10px);
+		font-size: $link-font-size;
+		text-transform: uppercase;
+		transition: transform 1000ms;
+		&:hover {
+			border-width: 10px;
+			line-height: calc(#{$link-height} - 20px);
+		}
+		&:active {
+			transform: scale(-1.1);
+			box-shadow: 0 3px 6px;
+		}
+	}
+
+}

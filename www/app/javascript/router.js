@@ -3,18 +3,20 @@ import { GuildView } from 'views/guild/guild';
 import { GuildNewView } from 'views/guild/guildNew';
 import * as GC from 'views/garbage_collector';
 import FriendsListView from 'views/friendsList';
-import UsersView from 'views/users';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
-window.intervals = new Array();
-window.timeouts = new Array();
+import { LoginView } from 'views/login';
+import { UserView } from './views/user/user';
+import UsersView from 'views/users';
+import { UserUpdateView } from './views/user/userUpdate';
+import { UserCreateView } from './views/user/userCreate';
 
 /* a voir pour supprimer plus tard */
-window.currentUser = new User({ id: initCurrentUser.id });
+window.currentUser = new User({ id: initCurrentUserId });
 
 $(function() {
 	window.friendsListView = new FriendsListView();
@@ -28,6 +30,10 @@ $(function() {
 		gameView: new GameView({el: $main}),
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
+		loginView:	new LoginView({ el: $main }),
+		userView: new UserView({ el: $main }),
+		userUpdateView: new UserUpdateView({ el: $main }),
+		userCreateView: new UserCreateView({ el: $main }),
 
 		routes: {
 			"": "selectMode",
@@ -38,7 +44,11 @@ $(function() {
 			"guilds/new": "newguild",
 			"guilds/:id": "displayguild",
 			"game": "game",
-			"users": "users"
+			"users": "users",
+			"user": "user",
+			"user/:id/edit": "updateUser",
+			"user/:id/create": "createUser",
+			"login": "login",
 		},
 
 		execute: function (callback, args, name) {
@@ -88,6 +98,30 @@ $(function() {
 			}
 			this.gameView.render(id);
 		},
+		login: function() {
+			if (initCurrentUserId == null) {
+				console.log("> Login - Page");
+				this.loginView.render();
+			}
+			else {
+				Backbone.history.navigate("", { trigger: true })
+			}
+		},
+
+		user: function() {
+			console.log("> User - Page")
+			this.userView.render();
+		},
+
+		updateUser: function(id) {
+			console.log("> Update User - Page - " + id)
+			this.userUpdateView.render(id);
+		},
+
+		createUser: function(id) {
+			console.log("> Create User - Page - " + id)
+			this.userCreateView.render(id);
+		}
 	});
 	window.router = new myRouter();
 	Backbone.history.start();

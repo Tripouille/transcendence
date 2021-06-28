@@ -1,5 +1,5 @@
 import { Users } from '../collections/users';
-import { UserView } from '../views/user';
+import { UserView } from '../views/user/user';
 
 const UsersView = Backbone.View.extend({
 	tagName: "ul",

@@ -36,6 +36,9 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
+    print '-------------'
+    print params[:avatar]
+    print '-------------'
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: "User was successfully updated." }
@@ -81,6 +84,24 @@ class UsersController < ApplicationController
       end
     end
   end
+    
+  # GET /users/1/avatar
+  def avatar
+    user = User.find_by(id: params[:id])
+
+    if user&.avatar&.attached?
+      redirect_to rails_blob_url(user.avatar)
+    else
+      head :not_found
+    end
+  end
+
+  def avatar_update
+    user = User.find_by(id: params[:id])
+
+    user&.avatar&.purge
+    user&.avatar&.attach(params[:file])
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -90,7 +111,8 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:username, :pictures, :email, :login, :provider, :uid, :guild_id)
+      params.require(:user).permit(:username, :pictures, :email, :login, :avatar, :guild_id, :id, :created_at, :updated_at)
+      # params.require(:user).permit(:username, :pictures, :email, :login, :provider, :uid, :guild_id)
     end
 
     # A function to check if user is authenticated and if the user doesn't have a guild yet

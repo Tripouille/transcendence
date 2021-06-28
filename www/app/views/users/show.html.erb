@@ -21,18 +21,13 @@
 </p>
 
 <p>
-  <strong>Provider:</strong>
-  <%= @user.provider %>
-</p>
-
-<p>
-  <strong>Uid:</strong>
-  <%= @user.uid %>
-</p>
-
-<p>
   <strong>Guild:</strong>
   <%= @user.guild_id %>
+</p>
+
+<p>
+  <strong>Login:</strong>
+  <%= image_tag @user.avatar if @user.avatar.persisted? %>
 </p>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |
