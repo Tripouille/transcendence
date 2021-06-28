@@ -1,7 +1,7 @@
 // Place all the styles related to the Guilds controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
-$verydarkgreen: rgb(0, 70, 0);
+@import "variables";
 
 #guilds {
   #guildNavbar {
@@ -42,7 +42,8 @@ $verydarkgreen: rgb(0, 70, 0);
   }
   .button {
     background-color: $verydarkgreen;
-    border: none;
+    border: 2px solid rgba(0, 128, 0, 0.75);
+    border-radius: 3px;
     margin: 25px 10px;
     color: white;
     padding: 15px 32px;
@@ -55,6 +56,7 @@ $verydarkgreen: rgb(0, 70, 0);
   }
   .Destroy, .Leave {
     background-color: red;
+    border: 1px solid red;
   }
   .back, .Cancel {
     background-color: darkgrey;
@@ -101,10 +103,13 @@ $verydarkgreen: rgb(0, 70, 0);
   .cursorButton {
     cursor: pointer;
   }
+  .validation:hover {
+    filter:brightness(120%);
+  }
   .kickButton {
     padding: 0 25px;
   }
-  .guildRow, .myGuildRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
+  .guildRow, .myGuildRow, .userRow, .myUserRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -113,7 +118,6 @@ $verydarkgreen: rgb(0, 70, 0);
     height: 120px;
     font-size: 25px;
     text-align: center;
-    border-width: 1px;
     & div {
       width: 400px;
     }
@@ -127,27 +131,29 @@ $verydarkgreen: rgb(0, 70, 0);
   .guildFigures {
     background-color: rgba(0, 128, 0, 0.815);
   }
-  .myGuildRow {
+  .myGuildRow, .guildInvitesRow, .myUserRow {
+    border: 2px solid rgba(0, 128, 0, 0.75);
     border-style: solid;
     margin: 20px 10px;
     order: -1;
   }
-  .guildRow/* , .guildInvitesRow, .guildMemberRow */ {
+  .guildRow, .guildMemberRow, .userRow {
     &:nth-of-type(odd) {
-      background-color: darkgrey;
+      background-color: $verydarkgreen;
     }
     &:nth-of-type(even) {
-      background-color: black;
+      background-color: green;
     }
   }
-  .guildRow, .guildInvitesRow, .guildMemberRow {
-    border-left: solid;
-    border-right: solid;
+  .guildRow, .guildMemberRow, .userRow {
+    // border: 2px solid rgba(0, 128, 0, 0.75);
+    border-left: 2px solid rgba(0, 128, 0, 0.75);
+    border-right: 2px solid rgba(0, 128, 0, 0.75);
     &:first-of-type {
-      border-top: solid;
+      border-top: 2px solid rgba(0, 128, 0, 0.75);
     }
     &:last-of-type {
-      border-bottom: solid;
+      border-bottom: 2px solid rgba(0, 128, 0, 0.75);
     }
   }
   .rankTrophy {
@@ -171,11 +177,11 @@ $verydarkgreen: rgb(0, 70, 0);
     // border-bottom: solid;
   // }
   .myGuildRow:hover, .guildRow:nth-of-type(even):hover {
-    background: darkgrey url(pixel_darkgrey.svg);
+    background: $verydarkgreen url(pixel_darkgreen.svg);
     background-size: auto 640px;
   }
   .guildRow:nth-of-type(odd):hover {
-    background: black url(pixel_black.svg);
+    background: green url(pixel_green.svg);
     background-size: auto 640px;
   }
   .uppercase {

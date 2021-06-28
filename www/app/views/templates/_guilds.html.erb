@@ -91,8 +91,8 @@
 
 <!-- Template for kick button in guild display view -->
 <script id="guildKickMemberTableData" type="text/template">
-	<div id="<%%= kick %>" class="cursorButton">
-		<img src="assets/kick_img.svg" width="50" alt="kick">
+	<div id="<%%= kick %>" class="cursorButton validation">
+		<img src="assets/close.svg" width=25% alt="kick">
 	</div>
 </script>
 
@@ -130,11 +130,11 @@
 		<div><%%= mmr %></div>
 		<div><%%= created_at %></div>
 		<div id="inviteButtons">
-			<div id="<%%= accept %>" class="cursorButton">
-				<img src="assets/tick_img.png" alt="accept">
+			<div id="<%%= accept %>" class="cursorButton validation">
+				<img src="assets/check.svg" width=50% alt="accept">
 			</div>
-			<div id="<%%= refuse %>" class="cursorButton">
-				<img src="assets/cross_img.png" alt="refuse">
+			<div id="<%%= refuse %>" class="cursorButton validation">
+				<img src="assets/close.svg" width=50% alt="refuse">
 			</div>
 		</div>
 	</div>

@@ -11,7 +11,7 @@ import * as Pong from 'views/animations/game';
 
 import { LoginView } from 'views/login';
 import { UserView } from './views/user/user';
-import UsersView from 'views/users';
+import { UsersView } from 'views/users';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
 
@@ -26,7 +26,7 @@ $(function() {
 		guildsView: new GuildsView({ el: $main }),
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
-		usersView: new UsersView(),
+		usersView: new UsersView({ el: $main }),
 		gameView: new GameView({el: $main}),
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
@@ -65,22 +65,25 @@ $(function() {
 		},
 
 		guilds: function () {
+			$('#guild_link').addClass('selected');
 			console.log("> guilds - page");
 			this.guildsView.render();
 		},
 
 		displayguild: function (id) {
+			$('#guild_link').addClass('selected');
 			console.log("> guilds - No" + id);
 			this.guildView.render(parseInt(id));
 		},
 
 		newguild: function () {
+			$('#guild_link').addClass('selected');
 			console.log("> guilds - page #new");
 			this.guildNewView.render();
 		},
 		users: function () {
 			$('#rank_link').addClass('selected');
-			this.usersView.render($main);
+			this.usersView.render();
 		},
 		selectMode: function () {
 			$('#game_link').addClass('selected');

@@ -13,8 +13,10 @@ class GuildsController < ApplicationController
       my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
       })
     }
-    render json: @result.as_json
-
+    respond_to do |format|
+      format.html { }
+      format.json { render json: @result.as_json }
+    end
   end
 
   # GET /guilds/1 or /guilds/1.json

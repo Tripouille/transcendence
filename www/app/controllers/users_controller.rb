@@ -4,6 +4,20 @@ class UsersController < ApplicationController
   # GET /users or /users.json
   def index
     @users = User.all
+    # @users = User.all.sort_by{ |user| -user.mmr }
+    @guilds = Guild.all
+
+    @result = @users.map { |i| i.attributes.merge({
+      guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : nil,
+      rank: @users.find_index{ |user| user.id == i.id } + 1,
+      mmr: 0,
+      my_user: (i.id == session[:user_id]) ? true : false
+      })
+    }
+    respond_to do |format|
+      format.html { }
+      format.json { render json: @result.as_json }
+    end
   end
 
   # GET /users/1 or /users/1.json
