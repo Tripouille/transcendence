@@ -16,5 +16,6 @@ Rails.application.routes.draw do
   delete '/friends/:id', to: 'friendships#remove'
 
   resources :chat_rooms, only: [:index, :create]
+  post '/chat_rooms/join', to: 'chat_rooms#join'
 
 end

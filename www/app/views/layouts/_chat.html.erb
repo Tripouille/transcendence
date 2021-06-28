@@ -1,17 +1,20 @@
 <aside id="chat">
 	<div id="chat_banner">Chat</div>
 	<div id="chat_rooms">
-		<button id="create_room">Create</button>
+		<nav>
+			<button id="join_room">Join</button>
+			<button id="create_room">Create</button>
+		</nav>
 	</div>
 	<div id="chat_body_container">
 		<input type="text" placeholder="Write here">
 		<div id="chat_body">
 		</div>
 	</div>
-	<form id="room_form">
+	<form id="room_creation_form">
 		<label for="room_name">
 			Room name
-			<input type="text" id="room_name" autocomplete="off">
+			<input type="text" class="room_name" autocomplete="off">
 		</label>
 		<label for="public_choice">
 			<input type="radio" id="public_choice" name="room_type" value="public" checked>
@@ -25,10 +28,20 @@
 			<input type="radio" id="password_protected_choice" name="room_type" value="password_protected">
 			Password protected
 		</label>
-		<input type="password" id="room_password" autocomplete="off">
+		<input type="password" class="room_password" autocomplete="off">
 		<div>
 			<button type="submit">Create</button>
-			<button type="button" id="cancel_room_creation">Cancel</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+	<form id="room_joining_form">
+		<label for="room_name">
+			Room name
+			<input type="text" class="room_name" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">Join</button>
+			<button type="button" class="cancel">Cancel</button>
 		</div>
 	</form>
 </aside>

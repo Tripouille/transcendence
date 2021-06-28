@@ -17,7 +17,7 @@ $aside-font-size: calc(2 * #{$responsive-ratio});
 $nav-font-size: calc(0.5 * #{$nav-height});
 $nav-link-padding-top: calc(0.2 * #{$nav-font-size});
 $link-border-width: calc(0.5 * #{$border-width});
-nav {
+body > nav {
 	@extend %bordered;
 	position: fixed;
 	top: 0;
@@ -407,17 +407,24 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			}
 		}
 
-		button#create_room {
+		nav {
+			width: calc(0.3 * #{$chat-width});
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 			position: absolute;
 			bottom: 0;
-			left: calc(0.025 * #{$chat-input-width});
-			width: calc(0.45 * #{$chat-input-width});
-			border: 1px gray solid;
-			border-radius: 3px;
-			&:hover {
-				cursor: pointer;
-				font-weight: bold;
-				border-color: white;
+			button {
+				width: calc(0.45 * #{$chat-input-width});
+				border: 1px gray solid;
+				border-radius: 3px;
+				margin-bottom: 2%;
+				&:hover {
+					cursor: pointer;
+					font-weight: bold;
+					border-color: white;
+				}
+
 			}
 		}
 	}
@@ -473,7 +480,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		}
 	}
 
-	form#room_form {
+	form {
 		display: none;
 		position: absolute;
 		left: 0;
@@ -484,32 +491,46 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		flex-direction: column;
 		background-color: black;
 		white-space: nowrap;
-		overflow: hidden;
 		font-size: calc(1.2 * #{$aside-font-size});
-
 		&.visible {
 			display: flex;
 		}
-		label:not([for="room_name"]) {
-			margin-top: calc(2 * #{$responsive-ratio});
-		}
-		input[type="radio"] {
-			border: 0;
-			width: calc(1.5 * #{$responsive-ratio});
-			height: calc(1.5 * #{$responsive-ratio});
-		}
-		input#room_name, input#room_password {
+		input[type="text"], input[type="password"] {
 			height: calc(0.08 * #{$chat-height});
 			&:focus {
 				border-color: white;
 			}
-			&#room_name {
+			&.room_name {
 				width: calc(100% - 15 * #{$responsive-ratio});
 				margin-left: 2%;
 			}
-			&#room_password {
+			&.room_password {
 				margin-left: calc(3.5 * #{$responsive-ratio});
 				margin-top: 3%;
+			}
+		}
+
+		&#room_creation_form {
+			label:not([for="room_name"]) {
+				margin-top: calc(2 * #{$responsive-ratio});
+			}
+			input[type="radio"] {
+				border: 0;
+				width: calc(1.5 * #{$responsive-ratio});
+				height: calc(1.5 * #{$responsive-ratio});
+			}
+		}
+		&#room_joining_form {
+			align-items: center;
+			label {
+				margin-top: 20%;
+				display: flex;
+				flex-direction: column;
+				text-align: center;
+				input {
+					margin-top: 5%;
+					width: 100%;
+				}
 			}
 		}
 

@@ -27,8 +27,8 @@ let ChatRoomView = Backbone.View.extend({
 			room_id: room.id
 		},
 		{
-			connected() { console.log('connected to chatroom', room.id); },
-			disconnected() { console.log('disconnected from chatroom', room.id); },
+			connected() { /*console.log('connected to chatroom', room.id);*/},
+			disconnected() { /*console.log('disconnected from chatroom', room.id);*/ },
 			received(data) {
 				console.log('Received data from chat room', room.id, ' : ', data.content);
 				if (data.content.message) {
@@ -38,7 +38,6 @@ let ChatRoomView = Backbone.View.extend({
 		});
 	},
 	render: function() {
-		console.log('rendering chatRoomView');
 		this.$el.html(this.template(this.model.attributes));
 		return this;
 	},
