@@ -34,6 +34,7 @@ export const UserCreateView = Backbone.View.extend({
 	},
 
 	updateProfil: function() {
+		console.log($('#username').val().length);
 		this.model.set('username', $('#username').val());
 		_.bindAll(this, "render");
 		this.model.save({}).done(function() {
@@ -47,7 +48,7 @@ export const UserCreateView = Backbone.View.extend({
 		const files = $('.custom-file-input')[0].files;
 		let _thisView = this;
 
-		if ($('#username').val().length < 0) {
+		if ($('#username').val().length < 1) {
 			Backbone.history.navigate("user/" + initCurrentUserId + "/create", { trigger: true });
 		} else {
 			if(files.length > 0) {

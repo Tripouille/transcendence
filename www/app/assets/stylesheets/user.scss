@@ -204,7 +204,7 @@ $link-border-width: calc(0.5 * #{$border-width});
 
 				&:before  {
 					font-family: 'screen';
-					content: 'Select image';
+					content: attr(name);
 					display: inline-block;
 					border: 1px solid rgba(0, 128, 0, 0.75);
 					border-radius: 3px;

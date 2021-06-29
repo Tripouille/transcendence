@@ -74,10 +74,6 @@ class UsersController < ApplicationController
     user = User.find_by(id: params[:id])
 
     @type = params[:file].content_type.at(0..5)
-    print '---------------'
-    print params[:file].inspect
-    print @type == 'image/'
-    print '--------------'
     if @type == 'image/'
       user&.avatar&.purge
       user&.avatar&.attach(params[:file])

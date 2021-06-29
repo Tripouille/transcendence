@@ -6,7 +6,8 @@ export const UserUpdateView = Backbone.View.extend({
 
 	events: {
 		'click #formSubmitUpdateUser input' : 'onFormSubmit',
-		'click .back-btn' : 'clickHandler'
+		'click .back-btn' : 'clickHandler',
+		'change .custom-file-input' : 'changeFileName'
 	},
 
 	model: new User({ id:initCurrentUserId }),
@@ -28,7 +29,7 @@ export const UserUpdateView = Backbone.View.extend({
 					url: "users/" + initCurrentUserId + "/avatar",
 					xhrFields: {
 						responseType: 'blob'
-					}
+					},
 				}).done(function(data) {
 					const url = window.URL || window.webkitURL;
 					const src = url.createObjectURL(data);
@@ -62,7 +63,7 @@ export const UserUpdateView = Backbone.View.extend({
 		const files = $('.custom-file-input')[0].files;
 		let _thisView = this;
 
-		if ($('#username').val().length < 0) {
+		if ($('#username').val().length < 1) {
 			Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
 		} else {
 			if(files.length > 0) {
@@ -94,9 +95,14 @@ export const UserUpdateView = Backbone.View.extend({
 		}
 	},
 
-	clickHandler : function(e ){
+	clickHandler: function(e){
 		e.preventDefault()
 		Backbone.history.navigate("user", { trigger: true })
+	},
+
+	changeFileName: function(e) {
+		const files = $('.custom-file-input')[0].files[0].name;
+		$('.custom-file-input').attr('name', files);
 	}
 
 });
