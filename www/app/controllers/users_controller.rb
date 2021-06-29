@@ -146,8 +146,13 @@ class UsersController < ApplicationController
   def avatar_update
     user = User.find_by(id: params[:id])
 
-    user&.avatar&.purge
-    user&.avatar&.attach(params[:file])
+    @type = params[:file].content_type.at(0..5)
+    if @type == 'image/'
+      user&.avatar&.purge
+      user&.avatar&.attach(params[:file])
+    else
+      head :not_acceptable
+    end
   end
 
   private
