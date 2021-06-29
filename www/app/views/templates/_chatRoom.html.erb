@@ -6,6 +6,11 @@
 		<%% }); %>
 	</div>
 	<ul>
+		<%% if (owner_id == window.user_id) { %>
+			<%% if (room_type == 'password_protected') { %>
+				<li class="remove_password">Remove password</li>
+			<%% } %>
+		<%% } %>
 		<%% if (room_type == 'direct_message') { %>
 			<li class="hide">Hide room</li>
 		<%% } else { %>

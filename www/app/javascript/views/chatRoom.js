@@ -12,7 +12,8 @@ let ChatRoomView = Backbone.View.extend({
 		"contextmenu": function(e) {e.preventDefault()},
 		"contextmenu > p": 'rightClickHandler',
 		"click li.hide": 'hideRoom',
-		"click li.leave": 'leaveRoom'
+		"click li.leave": 'leaveRoom',
+		"click li.remove_password": 'removePassword',
 	},
 
 	initialize: function() {
@@ -80,6 +81,16 @@ let ChatRoomView = Backbone.View.extend({
 			data: {id: this.model.id}
 		});
 		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
+	},
+	removePassword: function() {
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/remove_password',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {id: this.model.id}
+		});
+		this.model.set('room_type', 'public');
+		this.render();
 	}
 });
 

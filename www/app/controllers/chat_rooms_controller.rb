@@ -43,7 +43,7 @@ class ChatRoomsController < ApplicationController
 			render json: {error: "Invalid room name"}
 		elsif chatroom.users.include?(current_user)
 			render json: {error: "Already in room"}
-		elsif chatroom.password_digest
+		elsif chatroom.room_type == 'password_protected'
 			render json: {password_needed: true, room_id: chatroom.id}
 		else
 			chatroom.chat_memberships.build(user_id: current_user.id, admin: chatroom.owner == current_user)
@@ -83,13 +83,18 @@ class ChatRoomsController < ApplicationController
 		if chatroom.owner == current_user
 			best_membership = chatroom.chat_memberships.order(admin: :desc, created_at: :asc).first
 			if best_membership
-				best_membership.update(admin: true)
-				best_membership.save
-				chatroom.owner = best_membership.user
-				chatroom.save
+				best_membership.update_attribute(:admin, true)
+				chatroom.update_attribute(:owner, best_membership.user)
 			end
 		end
 		head :ok
+	end
+
+	def remove_password
+		chatroom = current_user.chat_rooms.where(room_type: "password_protected").find_by_id(params[:id])
+		if chatroom.owner == current_user
+			chatroom.update_attribute(:room_type, 'public')
+		end
 	end
 
 	private
