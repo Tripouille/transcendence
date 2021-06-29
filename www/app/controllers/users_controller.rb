@@ -4,16 +4,49 @@ class UsersController < ApplicationController
   # GET /users or /users.json
   def index
     @users = User.all
-    # @users = User.all.sort_by{ |user| -user.mmr }
     @guilds = Guild.all
+    @matches = Match.all
+
+    # def complete_user_infos(user)
+    #   # user.as_json(:only => [:id, :owner_id, :name, :room_type])
+    #   user.as_json()
+    #         .merge(
+    #           # users: room.users.where.not(id: session[:user_id]).order(:login).select(:id, :login, :status)
+    #           guild_name: (@guilds.find{ |guild| guild.id == user.guild_id}) ? @guilds.find{ |guild| guild.id == user.guild_id}[:name] : nil,
+    #           score: (@matches.find_all{ |match| match.winner == user.id}) ? @matches.find_all{ |match| match.winner == user.id}.length() : 0,
+    #           my_user: (user.id == session[:user_id]) ? true : false,
+    #           rank: @users.find_index{ |otheruser| otheruser.id == user.id } + 1
+
+    #         )
+    #   # user.as_json()
+    #   #       .order(:score)
+    # end
+    # def add_rank(user)
+    #   user.as_json()
+    #         .merge(
+    #           # messages: room.messages.includes(:user).order(:created_at).map{ |message| message.as_json().merge(login: message.user.login) }
+    #           rank: @users.find_index{ |otheruser| otheruser.id == user.id } + 1
+    #         )
+    # end
+
+    # @result = @users.map{ |user| complete_user_infos(user) }.sort_by! { |res| -res[:score] }.map{ |user| add_rank(user) }
+    # @result = @users.map{ |user| complete_user_infos(user) }.sort_by! { |res| -res[:score] }.each{ |user| add_rank(user) }
 
     @result = @users.map { |i| i.attributes.merge({
       guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : nil,
-      rank: @users.find_index{ |user| user.id == i.id } + 1,
-      mmr: 0,
-      my_user: (i.id == session[:user_id]) ? true : false
+      score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
+      my_user: (i.id == session[:user_id]) ? true : false,
+      rank: @users.find_index{ |user| user.id == i.id } + 1
       })
     }
+    # @result.sort_by! { |res| -res[:score] }
+    # @result = @result.map { |i| i.attributes.merge({
+    #   rank: @users.find_index{ |user| user.id == i.id } + 1
+    #   })
+    # }
+    puts "================================"
+    puts @result.inspect
+
     respond_to do |format|
       format.html { }
       format.json { render json: @result.as_json }
@@ -98,7 +131,7 @@ class UsersController < ApplicationController
       end
     end
   end
-    
+
   # GET /users/1/avatar
   def avatar
     user = User.find_by(id: params[:id])
