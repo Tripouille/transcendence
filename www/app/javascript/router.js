@@ -43,7 +43,6 @@ $(function() {
 			"guilds": "guilds",
 			"guilds/new": "newguild",
 			"guilds/:id": "displayguild",
-			"game": "game",
 			"users": "users",
 			"user": "user",
 			"user/:id/edit": "updateUser",
