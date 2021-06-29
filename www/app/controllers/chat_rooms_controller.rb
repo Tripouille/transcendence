@@ -74,7 +74,6 @@ class ChatRoomsController < ApplicationController
 		chatroom = current_user.chat_rooms.where(room_type: "direct_message").find_by_id(params[:id])
 		chat_membership = chatroom.chat_memberships.find_by_user_id(current_user.id)
 		chat_membership.update(hidden: true)
-		head :ok
 	end
 
 	def leave
@@ -87,13 +86,25 @@ class ChatRoomsController < ApplicationController
 				chatroom.update_attribute(:owner, best_membership.user)
 			end
 		end
-		head :ok
 	end
 
 	def remove_password
 		chatroom = current_user.chat_rooms.where(room_type: "password_protected").find_by_id(params[:id])
 		if chatroom.owner == current_user
 			chatroom.update_attribute(:room_type, 'public')
+		end
+	end
+
+	def add_password
+		chatroom = current_user.chat_rooms.find_by_id(params[:id])
+		if chatroom.owner == current_user
+			if chatroom.room_type == 'public' #add
+				chatroom.room_type = 'password_protected'
+				chatroom.password = params[:password]
+			elsif chatroom.room_type == 'password_protected' #change
+				chatroom.password = params[:password]
+			end
+			chatroom.save
 		end
 	end
 

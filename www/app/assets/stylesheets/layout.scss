@@ -569,7 +569,8 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			}			
 		}
 		&#room_joining_form,
-		&#room_password_form {
+		&#room_password_form,
+		&#add_room_password_form {
 			align-items: center;
 			label {
 				margin-top: 20%;

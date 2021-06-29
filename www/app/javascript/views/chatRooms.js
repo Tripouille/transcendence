@@ -79,6 +79,7 @@ const ChatRoomsView = Backbone.View.extend({
 		$roomCreationForm.on('submit', this.submitCreationForm);
 		$('#room_joining_form').on('submit', this.submitJoiningForm);
 		$('#room_password_form').on('submit', this.submitPasswordForm);
+		$('#add_room_password_form').on('submit', this.submitAddPasswordForm);
 		$('#chat form').on('click', 'button.cancel', function(e) {
 			window.chatRoomsView.cancelForm($(e.delegateTarget));
 		});
@@ -202,6 +203,27 @@ const ChatRoomsView = Backbone.View.extend({
 					chatRoomsView.chatRoomsCollection.add(response.room);
 					chatRoomsView.cancelForm($form);
 				}
+			}
+		});
+	},
+	submitAddPasswordForm: function(e) {
+		e.preventDefault();
+		const chatRoomsView = window.chatRoomsView;
+		const $form = $(e.target);
+		const $room_password_input = $form.find('input.room_password');
+		if (!$room_password_input.val()) {
+			window.chatRoomsView.animateInvalidInput($room_password_input);
+			return ;
+		}
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/add_password',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {id: $form.data('room-id'), password: $room_password_input.val()},
+			success: function() {
+				chatRoomsView.chatRoomsCollection.get($form.data('room-id')).set('room_type', 'password_protected');
+				chatRoomsView.chatRoomViews[$form.data('room-id')].render();
+				chatRoomsView.cancelForm($form);
 			}
 		});
 	},

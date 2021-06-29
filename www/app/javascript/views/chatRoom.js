@@ -14,6 +14,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.hide": 'hideRoom',
 		"click li.leave": 'leaveRoom',
 		"click li.remove_password": 'removePassword',
+		"click li.add_password": 'addPasswordForm',
 	},
 
 	initialize: function() {
@@ -91,6 +92,10 @@ let ChatRoomView = Backbone.View.extend({
 		});
 		this.model.set('room_type', 'public');
 		this.render();
+	},
+	addPasswordForm: function() {
+		window.chatRoomsView.displayForm($('#add_room_password_form'));
+		$('#add_room_password_form').data('room-id', this.model.id);
 	}
 });
 

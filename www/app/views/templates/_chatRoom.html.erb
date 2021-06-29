@@ -9,6 +9,8 @@
 		<%% if (owner_id == window.user_id) { %>
 			<%% if (room_type == 'password_protected') { %>
 				<li class="remove_password">Remove password</li>
+			<%% } else if (room_type == 'public') { %>
+				<li class="add_password">Add password</li>
 			<%% } %>
 		<%% } %>
 		<%% if (room_type == 'direct_message') { %>
