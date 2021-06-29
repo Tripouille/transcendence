@@ -373,6 +373,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		}
 
 		> div { //a chat room
+			position: relative;
 			margin: 0 0.5%;
 			padding: 2% 0;
 			display: flex;
@@ -416,6 +417,30 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
+				}
+			}
+
+			> ul {
+				display: none;
+				position: absolute;
+				top: calc(1.8 * #{$chat-room-font-size});
+				left: 10%;
+				width: 90%;
+				background-color: black;
+				list-style: none;
+				z-index: 100;
+				padding: 0;
+				margin: 0;
+				border: 3px $veryverydarkgreen solid;
+				font-size: calc(0.9 * #{$chat-room-font-size});
+		
+				li {
+					padding: 2px;
+					&:hover {
+						background-color: $veryverydarkgreen;
+						cursor: pointer;
+						font-weight: bold;
+					}
 				}
 			}
 		}

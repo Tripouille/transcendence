@@ -70,6 +70,13 @@ class ChatRoomsController < ApplicationController
 		end
 	end
 
+	def hide
+		chatroom = current_user.chat_rooms.where(room_type: "direct_message").find_by_id(params[:id])
+		chat_membership = chatroom.chat_memberships.find_by_user_id(current_user.id)
+		chat_membership.update(hidden: true)
+		head :ok
+	end
+
 	private
     def chat_room_params
 		params.permit(:name, :room_type, :password)
@@ -78,10 +85,9 @@ class ChatRoomsController < ApplicationController
 	def complete_room_infos(room)
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
-				.where(status: 'online')
 				.where.not(id: session[:user_id])
 				.order(:login)
-				.select(:id, :login))
+				.select(:id, :login, :status))
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
 					.map{|message| message.as_json().merge(login: message.user.login)})

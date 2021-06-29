@@ -8,7 +8,9 @@ let ChatRoomView = Backbone.View.extend({
 	template: _.template($('#chatRoomTemplate').html()),
 
 	events: {
-		"click > p": 'selectRoomAndRenderMessages'
+		"click > p": 'selectRoomAndRenderMessages',
+		"contextmenu": 'rightClickHandler',
+		"click li.hide": 'hideRoom'
 	},
 
 	initialize: function() {
@@ -27,8 +29,8 @@ let ChatRoomView = Backbone.View.extend({
 			room_id: room.id
 		},
 		{
-			connected() { /*console.log('connected to chatroom', room.id);*/},
-			disconnected() { /*console.log('disconnected from chatroom', room.id);*/ },
+			connected() { console.log('connected to chatroom', room.id);},
+			disconnected() { console.log('disconnected from chatroom', room.id); },
 			received(data) {
 				//console.log('Received data from chat room', room.id, ' : ', data.content);
 				if (data.content.message) {
@@ -38,7 +40,7 @@ let ChatRoomView = Backbone.View.extend({
 		});
 	},
 	render: function() {
-		this.$el.html(this.template(this.model.attributes));
+		this.$el.html(this.template(this.model.toJSONDecorated()));
 		return this;
 	},
 	selectRoomAndRenderMessages: function() {
@@ -54,6 +56,21 @@ let ChatRoomView = Backbone.View.extend({
 	sendMessage: function(content) {
 		this.subscription.send({content: content});
 	},
+
+	rightClickHandler: function(e) {
+		e.preventDefault();
+		$('#chat_rooms ul').hide();
+		this.$el.find('ul').show();
+	},
+	hideRoom: function() {
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/hide',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {id: this.model.id}
+		});
+		let model = window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
+	}
 });
 
 export default ChatRoomView;

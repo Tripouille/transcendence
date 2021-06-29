@@ -128,5 +128,6 @@ $(function() {
 				window.active_friend = null;
 			}
 		}
+		$('#chat_rooms ul').hide();
 	});
 });
