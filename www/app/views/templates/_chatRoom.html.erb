@@ -9,14 +9,14 @@
 						<ul class="user_menu">
 							<li>See profile</li>
 							<li>Challenge</li>
-							<%% if (owner_id == window.user_id) { %>
+							<%% if (owner_id == window.user_id && room_type != 'direct_message') { %>
 								<%% if (user.admin) { %>
 									<li class="demote_admin">Demote admin</li>
 								<%% } else { %>
 									<li class="promote_admin">Promote admin</li>
 								<%% } %>
 							<%% } %>
-							<%% if (admin) { %>
+							<%% if (admin && room_type != 'direct_message') { %>
 								<li>Mute</li>
 								<li>Ban</li>
 							<%% } %>

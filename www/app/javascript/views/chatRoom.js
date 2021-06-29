@@ -66,7 +66,6 @@ let ChatRoomView = Backbone.View.extend({
 
 	roomMenu: function() {
 		$('#chat ul.user_menu').hide();
-		$('#chat div.room_members').css('overflow', 'auto');
 		$('#chat_rooms ul.room_menu').hide();
 		this.$el.find('ul.room_menu').show();
 	},

@@ -5,7 +5,7 @@ const ChatRooms = Backbone.Collection.extend({
 	url: "/chat_rooms",
 
 	comparator: function(r) {
-		return (r.get('name').toLowerCase());
+		return (r.get('name') ? r.get('name').toLowerCase() : 0);
 	}
 });
 

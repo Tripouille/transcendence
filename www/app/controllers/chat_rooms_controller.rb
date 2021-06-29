@@ -22,7 +22,7 @@ class ChatRoomsController < ApplicationController
 			if chatroom
 				ChatMembership.where(chat_room_id: chatroom.id, user_id: current_user.id).update(hidden: false)
 			else
-				chatroom = ChatRoom.new(room_type: "direct_message")
+				chatroom = ChatRoom.new(room_type: "direct_message", owner: current_user)
 				chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
 				chatroom.chat_memberships.build(user_id: user_to_dm.id, admin: false)
 				chatroom.save

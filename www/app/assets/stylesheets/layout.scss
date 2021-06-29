@@ -333,6 +333,9 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		font-size: 0;
 		height: $banners-height;
 		padding-top: 0;
+		button {
+			height: 0;
+		}
 		#chat_rooms {
 			button {
 				height: 0;
@@ -347,6 +350,9 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				height: 0;
 				padding: 0;
 			}
+		}
+		form button {
+			height: 0;
 		}
 	}
 
@@ -618,6 +624,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				border-radius: 3px;
 				padding: 0 5px;
 				font-size: calc(1.5 * #{$aside-font-size});
+				transition: height 0.4s;
 				&:hover {
 					cursor: pointer;
 					font-weight: bold;
@@ -625,5 +632,10 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				}
 			}
 		}
+	}
+
+	span.new_message {
+		display: none;
+		position: relative;
 	}
 }
