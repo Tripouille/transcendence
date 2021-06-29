@@ -1,7 +1,7 @@
 class ChatRoomsController < ApplicationController
 
 	def index
-		rooms = current_user.chat_rooms.order(:name)
+		rooms = current_user.chat_rooms.order(:name).joins(:chat_memberships).where('chat_memberships.hidden = false')
 		rooms_completed = rooms.map{|room| complete_room_infos(room)}
 		render json: rooms_completed
 	end
@@ -10,15 +10,35 @@ class ChatRoomsController < ApplicationController
 		if params[:room_type] == 'password_protected' and params[:password].blank?
 			head :bad_request and return
 		end
-		chatroom = ChatRoom.new(chat_room_params)
-		chatroom.owner_id = current_user.id
-		chatroom.chat_memberships.build(user_id: chatroom.owner.id, admin: true)
-		chatroom.save
-		render json: complete_room_infos(chatroom)
+		if params[:room_type] == "direct_message"
+			user_to_dm = User.find_by("username = ? OR login = ?", params[:name], params[:name])
+			if not user_to_dm
+				render json: {error: "Invalid username"} and return
+			end
+			chatroom = ChatRoom.where(room_type: "direct_message")
+								.where(id: ChatMembership.where(user_id: current_user.id).select(:chat_room_id)) #where(id: current_user.chat_memberships.select(:chat_room_id)) ?
+								.where(id: ChatMembership.where(user_id: user_to_dm.id).select(:chat_room_id))
+								.first
+			if chatroom
+				ChatMembership.where(chat_room_id: chatroom.id, user_id: current_user.id).update(hidden: false)
+			else
+				chatroom = ChatRoom.new(room_type: "direct_message")
+				chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
+				chatroom.chat_memberships.build(user_id: user_to_dm.id, admin: false)
+				chatroom.save
+			end
+			render json: {room: complete_room_infos(chatroom)}
+		else
+			chatroom = ChatRoom.new(chat_room_params)
+			chatroom.owner_id = current_user.id
+			chatroom.chat_memberships.build(user_id: chatroom.owner.id, admin: true)
+			chatroom.save
+			render json: {room: complete_room_infos(chatroom)}
+		end
 	end
 
 	def join
-		chatroom = ChatRoom.find_by_name(params[:name])
+		chatroom = ChatRoom.where.not(room_type: "direct_message").find_by_name(params[:name])
 		if not chatroom
 			render json: {error: "Invalid room name"}
 		elsif chatroom.users.include?(current_user)
@@ -36,7 +56,7 @@ class ChatRoomsController < ApplicationController
 	end
 
 	def join_with_password
-		chatroom = ChatRoom.find_by_id(params[:id])
+		chatroom = ChatRoom.where(room_type: "password_protected").find_by_id(params[:id])
 		if not chatroom
 			render json: {error: "Invalid room"}
 		elsif chatroom.users.include?(current_user)
@@ -57,11 +77,13 @@ class ChatRoomsController < ApplicationController
 
 	def complete_room_infos(room)
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
-			.merge(users: room.users.where(status: 'online').where.not(id: session[:user_id]).order(:login).select(:id, :login))
-			.merge(messages:
-				room.messages.includes(:user).order(:created_at).map{|message|
-					message.as_json().merge(login: message.user.login)
-				}
-			)
+			.merge(users: room.users
+				.where(status: 'online')
+				.where.not(id: session[:user_id])
+				.order(:login)
+				.select(:id, :login))
+			.merge(messages: room.messages.includes(:user)
+					.order(:created_at)
+					.map{|message| message.as_json().merge(login: message.user.login)})
 	end
 end

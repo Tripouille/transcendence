@@ -365,7 +365,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		border-right: 1px $veryverydarkgreen solid;
 		overflow-y: auto;
 		padding: 3px;
-		margin-bottom: calc(2 * #{$chat-room-font-size});
+		margin-bottom: calc(4.5 * #{$chat-room-font-size});
 		overflow-wrap: break-word;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
@@ -521,21 +521,27 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				width: calc(100% - 15 * #{$responsive-ratio});
 				margin-left: 2%;
 			}
-			&.room_password {
+			&.room_password, &#login_to_dm {
 				margin-left: calc(3.5 * #{$responsive-ratio});
 				margin-top: 3%;
 			}
 		}
 
 		&#room_creation_form {
-			label:not([for="room_name"]) {
-				margin-top: calc(2 * #{$responsive-ratio});
+			padding-top: calc(2* #{$responsive-ratio});
+			label[for="public_choice"],
+			input[type="password"],
+			label[for="direct_message_choice"] {
+				margin-bottom: calc(2 * #{$responsive-ratio});
 			}
 			input[type="radio"] {
 				border: 0;
 				width: calc(1.5 * #{$responsive-ratio});
 				height: calc(1.5 * #{$responsive-ratio});
 			}
+			input.room_name {
+				margin-top: calc(2 * #{$responsive-ratio});
+			}			
 		}
 		&#room_joining_form,
 		&#room_password_form {

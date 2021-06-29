@@ -1,5 +1,9 @@
 <script type="template" id="chatRoomTemplate">
-	<p><%%= name %></p>
+	<%% if (room_type == "direct_message") { %>
+		<p><%%= users[0].login %></p>
+	<%% } else { %>
+		<p><%%= name %></p>
+	<%% } %>
 	<div>
 		<%% _.each(users, function(user) { %>
 			<p><%%= user.login %></p>

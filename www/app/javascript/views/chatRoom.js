@@ -30,7 +30,7 @@ let ChatRoomView = Backbone.View.extend({
 			connected() { /*console.log('connected to chatroom', room.id);*/},
 			disconnected() { /*console.log('disconnected from chatroom', room.id);*/ },
 			received(data) {
-				console.log('Received data from chat room', room.id, ' : ', data.content);
+				//console.log('Received data from chat room', room.id, ' : ', data.content);
 				if (data.content.message) {
 					messages.add(data.content.message, {merge: true});
 				}

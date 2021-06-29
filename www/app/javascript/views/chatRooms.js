@@ -75,16 +75,34 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 
 	prepareForms: function() {
-		$('#room_creation_form').on('submit', this.submitCreationForm);
+		const $roomCreationForm = $('#room_creation_form');
+		$roomCreationForm.on('submit', this.submitCreationForm);
 		$('#room_joining_form').on('submit', this.submitJoiningForm);
 		$('#room_password_form').on('submit', this.submitPasswordForm);
 		$('#chat form').on('click', 'button.cancel', function(e) {
 			window.chatRoomsView.cancelForm($(e.delegateTarget));
 		});
+		$roomCreationForm.find('input.room_password').on('click', function() {
+			$roomCreationForm.find('#password_protected_choice').prop('checked', true);
+			$roomCreationForm.find('label[for="room_name"] span').text('Room name');
+		});
+		$roomCreationForm.find('label[for="public_choice"]').on('click', function() {
+			$roomCreationForm.find('input.room_name').focus();
+			$roomCreationForm.find('label[for="room_name"] span').text('Room name');
+		});
+		$roomCreationForm.find('label[for="password_protected_choice"]').on('click', function() {
+			$roomCreationForm.find('input.room_password').focus();
+			$roomCreationForm.find('label[for="room_name"] span').text('Room name');
+		});
+		$roomCreationForm.find('label[for="direct_message_choice"]').on('click', function() {
+			$roomCreationForm.find('label[for="room_name"] span').text('Username');
+			$roomCreationForm.find('input.room_name').focus();
+		});
 	},
 	cancelForm: function($form) {
 		$form.trigger('reset');
 		$form.removeClass('visible');
+		$form.find('label[for="room_name"] span').text('Room name');
 	},
 	displayForm: function($form) {
 		$form.addClass('visible');
@@ -98,23 +116,36 @@ const ChatRoomsView = Backbone.View.extend({
 		const $room_type_inputs = $form.find('input[name=room_type]:checked');
 		if ($room_type_inputs.val() == 'password_protected'
 		&& !$room_password_input.val().trim()) {
-			this.animateInvalidInput($room_password_input);
+			window.chatRoomsView.animateInvalidInput($room_password_input);
 			valid_form = false;
 		}
 		const $room_name_input = $form.find('input.room_name');
 		if (!$room_name_input.val().trim()) {
-			this.animateInvalidInput($room_name_input);
+			window.chatRoomsView.animateInvalidInput($room_name_input);
 			valid_form = false;
 		}
 
 		if (valid_form) {
-			window.chatRoomsView.chatRoomsCollection.create({
-				name: $room_name_input.val().trim(),
-				room_type: $room_type_inputs.val(),
-				password: $room_password_input.val()
-			}, {wait: true});
-			$form.trigger('reset');
-			$form.removeClass('visible');
+			$.ajax({
+				type: 'POST',
+				url: '/chat_rooms',
+				headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+				data: {
+					name: $room_name_input.val().trim(),
+					room_type: $room_type_inputs.val(),
+					password: $room_password_input.val()
+				},
+				success: function(response) {
+					if (response.error) {
+						chatRoomsView.animateInvalidInput($room_name_input);
+						console.log('Error when trying to create chat room : ' + response.error);
+					}
+					else {
+						chatRoomsView.chatRoomsCollection.add(response.room);
+						chatRoomsView.cancelForm($form);
+					}
+				}
+			});
 		}
 	},
 	submitJoiningForm: function(e) {
@@ -123,15 +154,13 @@ const ChatRoomsView = Backbone.View.extend({
 		const $form = $(e.target);
 		const $room_name_input = $form.find('input.room_name');
 		if (!$room_name_input.val().trim()) {
-			this.animateInvalidInput($room_name_input);
+			window.chatRoomsView.animateInvalidInput($room_name_input);
 			return ;
 		}
 		$.ajax({
 			type: 'POST',
 			url: '/chat_rooms/join',
-			headers: {
-				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-			},
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {name: $room_name_input.val().trim()},
 			success: function(response) {
 				if (response.error) {
@@ -156,15 +185,13 @@ const ChatRoomsView = Backbone.View.extend({
 		const $form = $(e.target);
 		const $room_password_input = $form.find('input.room_password');
 		if (!$room_password_input.val()) {
-			this.animateInvalidInput($room_password_input);
+			window.chatRoomsView.animateInvalidInput($room_password_input);
 			return ;
 		}
 		$.ajax({
 			type: 'POST',
 			url: '/chat_rooms/join_with_password',
-			headers: {
-				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-			},
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {id: $form.data('room-id'), password: $room_password_input.val()},
 			success: function(response) {
 				if (response.error) {
