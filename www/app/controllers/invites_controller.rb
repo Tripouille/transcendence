@@ -118,7 +118,7 @@ class InvitesController < ApplicationController
     end
 
     def admin?
-      return (session[:user_id] && User.find(session[:user_id])[:login] == 'olidon') ? true : false
+      return (session[:user_id] && User.find(session[:user_id])[:login] == '') ? true : false
     end
 
     # # A function to check if user is authenticated and if the user doesn't have a guild yet

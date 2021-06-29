@@ -59,7 +59,7 @@ class GuildsController < ApplicationController
     if self.admin?
       @guild = Guild.new(params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id]))
     else
-      @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation      
+      @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation
     end
 
     @user = User.find(session[:user_id])
@@ -138,7 +138,7 @@ class GuildsController < ApplicationController
     end
 
     def admin?
-      return (session[:user_id] && User.find(session[:user_id])[:login] == "olidon") ? true : false
+      return (session[:user_id] && User.find(session[:user_id])[:login] == "") ? true : false
     end
 
     # A function to set the owner_id corresponding to the current session user id
