@@ -93,7 +93,7 @@ $(function() {
 
 	const $friends_menu = $friends.find('#friends_menu');
 	window.active_friend = null;
-	$friends.on('click', 'div.friend', function(e) {
+	$friends.on('click', 'div.friend', function() {
 		$friends.find('div.friend').removeClass('active');
 		const $this = $(this);
 		if (window.active_friend == this.id) {
@@ -106,7 +106,7 @@ $(function() {
 			$friends_menu.show();
 			window.active_friend = this.id;
 		}
-	});
+	}).on('mousedown', function(e) {e.preventDefault();});
 
 	const $chat_banner = $('#chat_banner');
 	$chat = $('#chat');
@@ -128,6 +128,10 @@ $(function() {
 				window.active_friend = null;
 			}
 		}
-		$('#chat_rooms ul').hide();
+		$('#chat_rooms ul.room_menu').hide();
+		const $chat_members_lists = $('#chat div.room_members');
+		if (!$chat_members_lists.is(e.target) && !$chat_members_lists.has(e.target).length) {
+			$chat_members_lists.find('ul.user_menu').hide();
+		}
 	});
 });

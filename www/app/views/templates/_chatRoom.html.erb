@@ -1,11 +1,32 @@
 <script type="template" id="chatRoomTemplate">
 	<p><%%= name %></p>
-	<div>
+	<div class="room_members">
 		<%% _.each(users, function(user) { %>
-			<p><%%= user.login %></p>
+			<%% if (user.status == 'online') { %>
+				<div data-id="<%%= user.id %>" class="room_member">
+					<p class="member_name"><%%= user.login %></p>
+					<%% if (user.id != window.user_id) { %>
+						<ul class="user_menu">
+							<li>See profile</li>
+							<li>Challenge</li>
+							<%% if (owner_id == window.user_id) { %>
+								<%% if (user.admin) { %>
+									<li class="demote_admin">Demote admin</li>
+								<%% } else { %>
+									<li class="promote_admin">Promote admin</li>
+								<%% } %>
+							<%% } %>
+							<%% if (admin) { %>
+								<li>Mute</li>
+								<li>Ban</li>
+							<%% } %>
+						</ul>
+					<%% } %>
+				</div>
+			<%% } %>
 		<%% }); %>
 	</div>
-	<ul>
+	<ul class="room_menu">
 		<%% if (owner_id == window.user_id) { %>
 			<%% if (room_type == 'password_protected') { %>
 				<li class="add_password">Change password</li>

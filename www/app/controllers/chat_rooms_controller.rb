@@ -108,6 +108,13 @@ class ChatRoomsController < ApplicationController
 		end
 	end
 
+	def change_admin_status
+		chatroom = current_user.chat_rooms.find_by_id(params[:room_id])
+		if chatroom.owner == current_user and params[:user_id] != current_user.id
+			chatroom.chat_memberships.find_by_user_id(params[:user_id]).update_attribute(:admin, params[:admin])
+		end
+	end
+
 	private
     def chat_room_params
 		params.permit(:name, :room_type, :password)
@@ -116,9 +123,8 @@ class ChatRoomsController < ApplicationController
 	def complete_room_infos(room)
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
-				.where.not(id: session[:user_id])
 				.order(:login)
-				.select(:id, :login, :status))
+				.select(:id, :login, :status, :admin))
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
 					.map{|message| message.as_json().merge(login: message.user.login)})

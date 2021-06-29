@@ -337,7 +337,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			button {
 				height: 0;
 			}
-			> div > div {
+			> div > div.room_members {
 				font-size: 0;
 			}
 		}
@@ -378,6 +378,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			padding: 2% 0;
 			display: flex;
 			flex-direction: column;
+			overflow: visible;
 
 			p {
 				&:hover {
@@ -390,40 +391,64 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				z-index: 2;
 			}
 			&.active {
 				> p {
 					font-weight: bold;
 				}
-				div {
+				> div.room_members {
 					display: block;
 				}
 			}
 
-			> div { //the room members
+			> div.room_members { //the room members
 				display: none;
 				margin-left: auto;
 				float: right;
 				width: 90%;
 				font-size: $chat-room-font-size;
-				max-height: calc(3.5 * #{$chat-room-font-size});
-				overflow: auto;
 				scrollbar-width: none;
 				transition: font-size 0.4s;
 				&::-webkit-scrollbar {
 					width: 0;
 				}
-				p {
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
+				div.room_member {
+					position: relative;
+					p.member_name {
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+					ul.user_menu {
+						display: none;
+						position: absolute;
+						top: calc(1 * #{$chat-room-font-size});
+						left: 10%;
+						width: 90%;
+						background-color: black;
+						list-style: none;
+						z-index: 100;
+						padding: 0;
+						margin: 0;
+						border: 3px $veryverydarkgreen solid;
+						font-size: calc(0.9 * #{$chat-room-font-size});
+						li {
+							padding: 2px;
+							&:hover {
+								background-color: $veryverydarkgreen;
+								cursor: pointer;
+								font-weight: bold;
+							}
+						}
+					}
 				}
 			}
 
-			> ul {
+			> ul.room_menu {
 				display: none;
 				position: absolute;
-				top: calc(1.8 * #{$chat-room-font-size});
+				top: calc(1.5 * #{$chat-room-font-size});
 				left: 10%;
 				width: 90%;
 				background-color: black;
@@ -433,7 +458,6 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				margin: 0;
 				border: 3px $veryverydarkgreen solid;
 				font-size: calc(0.9 * #{$chat-room-font-size});
-		
 				li {
 					padding: 2px;
 					&:hover {
@@ -491,10 +515,6 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				span:first-child { //the author's name
 					width: min-content;
 					font-family: 'screen';
-					&:hover {
-						font-weight: bold;
-						cursor: pointer;
-					}
 				}
 				span:last-child {
 					display: block;
@@ -534,6 +554,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		background-color: black;
 		white-space: nowrap;
 		font-size: calc(1.2 * #{$aside-font-size});
+		z-index: 200;
 		&.visible {
 			display: flex;
 		}

@@ -222,7 +222,6 @@ const ChatRoomsView = Backbone.View.extend({
 			data: {id: $form.data('room-id'), password: $room_password_input.val()},
 			success: function() {
 				chatRoomsView.chatRoomsCollection.get($form.data('room-id')).set('room_type', 'password_protected');
-				chatRoomsView.chatRoomViews[$form.data('room-id')].render();
 				chatRoomsView.cancelForm($form);
 			}
 		});
