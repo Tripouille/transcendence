@@ -8,6 +8,7 @@
 	<ul>
 		<%% if (owner_id == window.user_id) { %>
 			<%% if (room_type == 'password_protected') { %>
+				<li class="add_password">Change password</li>
 				<li class="remove_password">Remove password</li>
 			<%% } else if (room_type == 'public') { %>
 				<li class="add_password">Add password</li>

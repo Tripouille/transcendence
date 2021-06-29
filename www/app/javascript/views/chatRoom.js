@@ -14,7 +14,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.hide": 'hideRoom',
 		"click li.leave": 'leaveRoom',
 		"click li.remove_password": 'removePassword',
-		"click li.add_password": 'addPasswordForm',
+		"click li.add_password": 'addPasswordForm'
 	},
 
 	initialize: function() {
