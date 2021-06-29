@@ -46,7 +46,7 @@ class ChatRoomsController < ApplicationController
 		elsif chatroom.password_digest
 			render json: {password_needed: true, room_id: chatroom.id}
 		else
-			chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
+			chatroom.chat_memberships.build(user_id: current_user.id, admin: chatroom.owner == current_user)
 			chatroom.save
 			render json: {
 				password_needed: false,
@@ -64,7 +64,7 @@ class ChatRoomsController < ApplicationController
 		elsif not chatroom.authenticate(params[:password])
 			render json: {error: "Invalid password"}
 		else
-			chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
+			chatroom.chat_memberships.build(user_id: current_user.id, admin: chatroom.owner == current_user)
 			chatroom.save
 			render json: {room: complete_room_infos(chatroom)}
 		end
@@ -74,6 +74,21 @@ class ChatRoomsController < ApplicationController
 		chatroom = current_user.chat_rooms.where(room_type: "direct_message").find_by_id(params[:id])
 		chat_membership = chatroom.chat_memberships.find_by_user_id(current_user.id)
 		chat_membership.update(hidden: true)
+		head :ok
+	end
+
+	def leave
+		chatroom = current_user.chat_rooms.where.not(room_type: "direct_message").find_by_id(params[:id])
+		chatroom.chat_memberships.find_by_user_id(current_user.id).destroy
+		if chatroom.owner == current_user
+			best_membership = chatroom.chat_memberships.order(admin: :desc, created_at: :asc).first
+			if best_membership
+				best_membership.update(admin: true)
+				best_membership.save
+				chatroom.owner = best_membership.user
+				chatroom.save
+			end
+		end
 		head :ok
 	end
 

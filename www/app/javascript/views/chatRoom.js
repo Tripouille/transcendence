@@ -9,8 +9,10 @@ let ChatRoomView = Backbone.View.extend({
 
 	events: {
 		"click > p": 'selectRoomAndRenderMessages',
-		"contextmenu": 'rightClickHandler',
-		"click li.hide": 'hideRoom'
+		"contextmenu": function(e) {e.preventDefault()},
+		"contextmenu > p": 'rightClickHandler',
+		"click li.hide": 'hideRoom',
+		"click li.leave": 'leaveRoom'
 	},
 
 	initialize: function() {
@@ -58,7 +60,6 @@ let ChatRoomView = Backbone.View.extend({
 	},
 
 	rightClickHandler: function(e) {
-		e.preventDefault();
 		$('#chat_rooms ul').hide();
 		this.$el.find('ul').show();
 	},
@@ -69,7 +70,16 @@ let ChatRoomView = Backbone.View.extend({
 			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {id: this.model.id}
 		});
-		let model = window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
+		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
+	},
+	leaveRoom: function() {
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/leave',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {id: this.model.id}
+		});
+		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 	}
 });
 
