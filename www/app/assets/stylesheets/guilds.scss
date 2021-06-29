@@ -3,13 +3,23 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 @import "variables";
 
+// A SUPPRIMER CSS POUR LES /GUILDS /INVITES /USERS
+html body {
+  & table {
+    margin-top: 80px;
+  }
+  & form {
+    margin-top: 80px;
+  }
+}
+
 #guilds {
   #guildNavbar {
     display: flex;
     align-items: center;
     justify-content: start;
   }
-  main form label {
+  form label {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,8 +27,20 @@
     padding: 5px 32px;
     font-size: 25px;
   }
-  main form .error {
+  form .error {
     color: rgb(175, 0, 0);
+  }
+  #errorPopUp {
+    display: none;
+    position: absolute;
+    top: 50px;
+    margin: 25px 10px;
+    padding: 15px 32px;
+    border: 2px solid red;
+    border-radius: 3px;
+    left: 50%;
+    background-color: indianred;
+    justify-content: center;
   }
   .bandeau {
     color: rgb(175, 157, 0);
@@ -73,9 +95,25 @@
   }
   #PassOwnershipButton {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: start;
     flex-direction: column;
+  }
+  #mainGuildMembersList {
+    position: fixed;
+    margin-top: 35px;
+    margin-left: -34px;
+    z-index: 300;
+    & .Ownership {
+      // display: inline;
+      width: 250px;
+      min-width: 0;
+      margin: auto;
+      justify-content: start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
   .button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
     &:hover {
@@ -118,6 +156,28 @@
     height: 120px;
     font-size: 25px;
     text-align: center;
+
+  }
+  .guildMemberRow {
+    & div {
+      width: 200px;
+    }
+    & div:first-child {
+      width: 400px;
+    }
+  }
+  .guildRow, .myGuildRow {
+    & div {
+      width: 400px;
+    }
+    & div:first-child {
+      width: 200px;
+    }
+    & div:last-child {
+      width: 200px;
+    }
+  }
+  .myUserRow, .userRow {
     & div {
       width: 400px;
     }
@@ -130,6 +190,29 @@
   }
   .guildFigures {
     background-color: rgba(0, 128, 0, 0.815);
+    & div {
+      & p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    & > div:first-child {
+      min-width: 200px;
+    }
+    & > div:nth-child(2) {
+      min-width: 100px;
+    }
+    & > div:nth-child(3) {
+      min-width: 200px;
+    }
+    & > div:last-child {
+      & p {
+        white-space: normal;
+      }
+      width: 220px;
+      min-width: 100px;
+    }
   }
   .myGuildRow, .guildInvitesRow, .myUserRow {
     border: 2px solid rgba(0, 128, 0, 0.75);
@@ -146,7 +229,6 @@
     }
   }
   .guildRow, .guildMemberRow, .userRow {
-    // border: 2px solid rgba(0, 128, 0, 0.75);
     border-left: 2px solid rgba(0, 128, 0, 0.75);
     border-right: 2px solid rgba(0, 128, 0, 0.75);
     &:first-of-type {
@@ -170,12 +252,6 @@
     justify-content:space-around;
     align-items: center;
   }
-  // .guildRow:first-child, .guildInvitesRow:first-child, .guildMemberRow:first-child {
-  //   border-top: solid;
-  // }
-  // .guildRow:last-child, .guildInvitesRow:last-child, .guildMemberRow:last-child {
-    // border-bottom: solid;
-  // }
   .myGuildRow:hover, .guildRow:nth-of-type(even):hover {
     background: $verydarkgreen url(pixel_darkgreen.svg);
     background-size: auto 640px;
@@ -187,10 +263,12 @@
   .uppercase {
     text-transform: uppercase;
   }
+}
 
-  /* For Mobile */
-  @media screen and (max-width: 1080px) {
-    main form label {
+/* For Mobile */
+@media screen and (max-width: 1080px) {
+  #guild {
+    form label {
       flex-direction: column;
       justify-content: center;
     }

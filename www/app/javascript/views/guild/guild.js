@@ -65,20 +65,19 @@ export const GuildView = Backbone.View.extend({
 
     createUserList: function () {
         let self = this;
-        let filteredCollection = new Users(self.guild.get("users"));
+        let filteredCollection = new Users(this.guild.get("users"));
 
         let membersListTemplate = _.template($('#mainGuildMembersListTemplate').html());
         let membersListRowTemplate = _.template('<div class="button Ownership" id="<%= username %>"><%= username %></div>')
 
         $('#PassOwnershipButton').append(membersListTemplate);
-
         filteredCollection.forEach(function (user, id) {
             if (user.id != window.currentUser.id) {
                 $('#mainGuildMembersList').append(membersListRowTemplate(user.toJSON()));
                 $('#mainGuildMembersList div:last-child').on('click', function () {
                     if (confirm("You are about to pass ownership to " + user.get('username') + ". Are you sure ?")) {
-                        this.guild.save({ 'owner_id': user.id }, {
-                            context: this,
+                        self.guild.save({ 'owner_id': user.id }, {
+                            context: self,
                             success: function (model, resp, options) {
                                 this.render(this.guild.id);
                             },
@@ -123,7 +122,7 @@ export const GuildView = Backbone.View.extend({
                     buttonText = "Leave";
                 let model = new Backbone.Model({ name: buttonText, id: buttonText.replace(' ', '') + 'Button' });
                 $('#guildNavbar').append(joinButtonTemplate(model.toJSON()));
-                
+
                 if (buttonText == "Pass Ownership") {
                     this.createUserList();
                 }
@@ -142,9 +141,9 @@ export const GuildView = Backbone.View.extend({
     render: function (guildId) {
         this.$el.empty();
         this.$el.attr({id: 'guilds'});
-        let self = this;
         this.guild.set({ id: guildId });
-        
+        let self = this;
+
         $.when(this.guild.fetch(), window.currentUser.fetch()).then(
             function success() {
                 self.$el.prepend('<div id="guildNavbar"><a class="button Cancel" href="#guilds">Back</a></div>');
@@ -155,7 +154,6 @@ export const GuildView = Backbone.View.extend({
                 self.$el.append(self.membersView.render(self).el);
             },
             function error() {
-                console.log("Caught an error while fetching the database, rendering back to guilds");
                 Backbone.history.navigate("guilds", { trigger: true });
             }
         );

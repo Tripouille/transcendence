@@ -19,11 +19,13 @@ export const GuildsView = Backbone.View.extend({
             else {
                 let myGuildModel = self.guilds.findWhere({ id: window.currentUser.get('guild_id') });
                 self.$el.prepend(self.dynamicTemplate(myGuildModel.toJSON()));
-                
+
                 $('div[data-href="#guilds/' + myGuildModel.id + '"]').one("click", function () {
                     Backbone.history.navigate('#guilds/' + myGuildModel.id, { trigger: true })
                 });
             }
+            // while (!self.allRendered)
+                // self.renderPage();
             while (($(window).height() >= $(document).height()) && !self.allRendered)
                 self.renderPage();
             $(window).scroll(function () {
@@ -45,7 +47,7 @@ export const GuildsView = Backbone.View.extend({
             guildsPage.forEach(function (guild, i) {
                 if (guild.id != myGuildId)
                     $guildsTable.append(this.dynamicTemplate(guild.toJSON()));
-        
+
                 $('div[data-href="#guilds/' + guild.id + '"]').one("click", function () {
                     Backbone.history.navigate('#guilds/' + guild.id, { trigger: true })
                 });

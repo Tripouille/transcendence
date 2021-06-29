@@ -12,11 +12,11 @@ export const User = Backbone.Model.extend({
 	idAttribute: "id",
 
 	initialize: function() {
-		console.log('User has been initialized');
+		// console.log('User has been initialized');
 	},
 
 	constructor: function() {
-		console.log("Constructor User has been called")
+		// console.log("Constructor User has been called")
 		Backbone.Model.apply(this, arguments);
 	},
 

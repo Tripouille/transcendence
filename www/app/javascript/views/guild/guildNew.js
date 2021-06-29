@@ -15,8 +15,6 @@ export const GuildNewView = Backbone.View.extend({
 	onFormSubmit: function () {
 		/* get data from form on submit button */
 		/* save the new guild and the guild_id to the current user databses */
-		this.resetInputErrors("name");
-		this.resetInputErrors("anagram");
 		let model = new Guild();
 		var self = this;
 		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
@@ -24,9 +22,12 @@ export const GuildNewView = Backbone.View.extend({
 				Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
 			},
 			error: function (model, response, options) {
-				console.log("Something went wrong while saving the new guild");
-				/* TROUVER UN MOYEN DE PARSER LE RETOUR D'ERREUR DU SERVEUR */
-				self.showInputErrors("Unknown server error.", "name");
+				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_name\"\n'))
+					self.showPopUpError("Guild name already exist.");
+				else if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_anagram\"\n'))
+					self.showPopUpError("Anagram already exist.");
+				else
+					self.showPopUpError("Server error.");
 			}
 		});
 	},
@@ -54,8 +55,8 @@ export const GuildNewView = Backbone.View.extend({
 	/* validate the labels on the go */
 	validateOnChange: function (attr) {
 		if (attr.name == "name") {
-			if (attr.value == "" || attr.value.length < 2 || attr.value.length > 30) {
-				return "Guild name must be 2 to 30 characters long."
+			if (attr.value == "" || attr.value.length < 3 || attr.value.length > 20) {
+				return "Guild name must be 2 to 20 characters long."
 			}
 		}
 		if (attr.name == "anagram") {
@@ -80,5 +81,17 @@ export const GuildNewView = Backbone.View.extend({
 
 		errorHTML += this.templates.error({ error: errors });
 		$target.append(errorHTML);
+	},
+	showPopUpError: function (error) {
+		const $erroPopUp = $('#errorPopUp');
+
+		$erroPopUp.html(error);
+		$erroPopUp.stop().fadeIn(100);
+		$erroPopUp.css("display", "block");
+		setTimeout(function () {
+			$erroPopUp.stop().fadeOut(1000, function () {
+				$erroPopUp.css("display", "none");
+			});
+		}, 4000);
 	}
 });

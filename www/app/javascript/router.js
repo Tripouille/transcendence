@@ -66,19 +66,16 @@ $(function() {
 
 		guilds: function () {
 			$('#guild_link').addClass('selected');
-			console.log("> guilds - page");
 			this.guildsView.render();
 		},
 
 		displayguild: function (id) {
 			$('#guild_link').addClass('selected');
-			console.log("> guilds - No" + id);
 			this.guildView.render(parseInt(id));
 		},
 
 		newguild: function () {
 			$('#guild_link').addClass('selected');
-			console.log("> guilds - page #new");
 			this.guildNewView.render();
 		},
 		users: function () {
