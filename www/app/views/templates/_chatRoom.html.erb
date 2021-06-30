@@ -1,5 +1,5 @@
 <script type="template" id="chatRoomTemplate">
-	<p><%%= name %></p>
+	<p><span class="new_message">&#9679;</span><%%= name %></p>
 	<div class="room_members">
 		<%% _.each(users, function(user) { %>
 			<%% if (user.status == 'online') { %>

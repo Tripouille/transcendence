@@ -69,6 +69,11 @@ const ChatRoomsView = Backbone.View.extend({
 			$('#chat_body').append(messageView.$el);
 			this.scrollBottom();
 		}
+		else
+			this.chatRoomViews[message.get('chat_room_id')].$el.find('span.new_message').addClass('visible');
+		if (message.get('chat_room_id') != this.activeRoomId || !window.chat_out) {
+			$('#chat_banner span.new_message').addClass('visible');
+		}
 	},
 	scrollBottom: function() {
 		$('#chat_body_container').scrollTop($('#chat_body_container').prop('scrollHeight'));
@@ -230,6 +235,12 @@ const ChatRoomsView = Backbone.View.extend({
 		$input.css('border-color', 'red');
 		setTimeout(function() {$input.css('border-color', '');}, 1000);
 		$input.focus();
+	},
+
+	unfoldTchat: function() {
+		this.chatRoomViews[this.activeRoomId].$el.find('span.new_message').removeClass('visible');
+		if (!this.$el.find('span.new_message:visible').length)
+			$('#chat_banner span.new_message').removeClass('visible');
 	}
 });
 

@@ -59,6 +59,10 @@ let ChatRoomView = Backbone.View.extend({
 		}, this);
 		this.trigger('selectRoom', this.model.id);
 		this.$el.addClass('active');
+
+		this.$el.find('span.new_message').removeClass('visible');
+		if (!$('#chat_rooms span.new_message:visible').length)
+			$('#chat_banner span.new_message').removeClass('visible');
 	},
 	sendMessage: function(content) {
 		this.subscription.send({content: content});

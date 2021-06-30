@@ -363,6 +363,17 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		left: $chat-banner-offset;
 		width: $chat-banner-width;
 		text-align: center;
+
+		span.new_message {
+			display: none;
+			position: absolute;
+			padding-left: 2%;
+			font-size: calc(1.5 * #{$banners-font-size});
+			line-height: calc(1.2 * #{$banners-font-size});
+			&.visible {
+				display: inline-block;
+			}
+		}
 	}
 
 	$chat-room-font-size: calc(0.75 * #{$aside-font-size});
@@ -398,6 +409,14 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				z-index: 2;
+
+				span.new_message {
+					display: none;
+					padding-right: calc(0.5 * #{$chat-room-font-size});
+					&.visible {
+						display: inline;
+					}
+				}
 			}
 			&.active {
 				> p {
@@ -632,10 +651,5 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				}
 			}
 		}
-	}
-
-	span.new_message {
-		display: none;
-		position: relative;
 	}
 }

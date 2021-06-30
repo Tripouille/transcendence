@@ -1,5 +1,5 @@
 let $friends, $chat, $add_friend;
-let friends_out = true, chat_out = true;
+let friends_out = true;
 let animating = false;
 
 export function foldFriends() {
@@ -14,11 +14,12 @@ function unfoldFriends() {
 
 export function foldTchat() {
 	$chat.addClass('folded');
-	chat_out = false;
+	window.chat_out = false;
 }
 function unfoldTchat() {
 	$chat.removeClass('folded');
-	chat_out = true;
+	window.chat_out = true;
+	window.chatRoomsView.unfoldTchat();
 }
 
 function addFriend(name) {
@@ -108,10 +109,11 @@ $(function() {
 		}
 	}).on('mousedown', function(e) {e.preventDefault();});
 
+	window.chat_out = true;
 	const $chat_banner = $('#chat_banner');
 	$chat = $('#chat');
 	$chat_banner.on('click', function() {
-		if (chat_out)
+		if (window.chat_out)
 			foldTchat();
 		else
 			unfoldTchat();
