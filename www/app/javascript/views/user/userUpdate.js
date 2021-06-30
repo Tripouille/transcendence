@@ -50,14 +50,14 @@ export const UserUpdateView = Backbone.View.extend({
 	},
 
 	updateProfil: function() {
+		let _thisView = this;
 		_.bindAll(this, "render");
 		this.model.save({ username: $('#username').val().trim() }, {
 			error: function (model, response, options) {
-				console.log(response.responseText)
-				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_name\"\n'))
-					self.showPopUpError("Guild name already exist.");
+				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
+					_thisView.showPopUpError("Username already exist.");
 				else
-					self.showPopUpError("Server error.");
+					_thisView.showPopUpError("Server error.");
 			}
 		}).done(function() {
 			Backbone.history.navigate("user", { trigger: true })

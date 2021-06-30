@@ -15,7 +15,6 @@ $link-border-width: calc(0.5 * #{$border-width});
 
 	#errorPopUp {
 		display: none;
-		position: absolute;
 		top: 50px;
 		margin: 25px 10px;
 		padding: 15px 32px;
@@ -131,10 +130,15 @@ $link-border-width: calc(0.5 * #{$border-width});
 				font-size: 15pt;
 				transition: transform 500ms;
 				&:hover {
+					transition-delay: 0.3s;
+   					animation: pixelate 0.2s steps(8) forwards;
+					background: url(pixel_green.svg);
 					border-color: black;
-					background-color: rgba(0, 128, 0, 0.75);
+					background-color: rgba(0, 37, 0, 0.75);
+					background-size: auto 460px;
 				}
 				&:active {
+					transition-delay: 0.0s;
 					transform: scale(0.6);
 					box-shadow: rgba(0.8, 0, 0, 0) 3px 6px;
 				}
