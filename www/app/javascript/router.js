@@ -9,7 +9,6 @@ import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
-import { LoginView } from 'views/login';
 import { UserView } from './views/user/user';
 import { UsersView } from 'views/users';
 import { UserUpdateView } from './views/user/userUpdate';
@@ -30,7 +29,6 @@ $(function() {
 		gameView: new GameView({el: $main}),
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
-		loginView:	new LoginView({ el: $main }),
 		userView: new UserView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
@@ -47,7 +45,6 @@ $(function() {
 			"user": "user",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
-			"login": "login",
 		},
 
 		execute: function (callback, args, name) {
@@ -96,15 +93,6 @@ $(function() {
 				return ;
 			}
 			this.gameView.render(id);
-		},
-		login: function() {
-			if (initCurrentUserId == null) {
-				console.log("> Login - Page");
-				this.loginView.render();
-			}
-			else {
-				Backbone.history.navigate("", { trigger: true })
-			}
 		},
 
 		user: function() {

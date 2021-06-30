@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 			unless flash[:redirect] == "Redirect login"
 				flash[:redirect] = "Redirect login"
 				flash[:error] = "You must be logged in to access this section"
-				redirect_to root_path(:anchor => 'login')
+				redirect_to login_path
 			end
 		end
 	end

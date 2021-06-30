@@ -4,6 +4,12 @@ $link-height: calc(0.2 * #{$main-height});
 $link-font-size: calc(14 * #{$responsive-ratio});
 
 
+main {
+	height: auto;
+    width: auto;
+    position: relative;
+    top: 5%;
+}
 @font-face {
 	font-family: 'Press Start 2P';
 	font-style: normal;
@@ -108,9 +114,15 @@ $link-font-size: calc(14 * #{$responsive-ratio});
 			line-height: calc(#{$link-height} - 20px);
 		}
 		&:active {
-			transform: scale(-1.1);
+			transform: scale(0.8);
 			box-shadow: 0 3px 6px;
 		}
+	}
+	main_nav {
+		height: auto;
+		width: auto;
+		position: relative;
+		top: 5%;
 	}
 
 }

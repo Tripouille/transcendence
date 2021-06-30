@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get '/matchside/:id', to: 'matches#side'
   get '/matches/:id', to: 'matches#show'
   #   get '/alreadyingame', to: 'matches#alreadyingame'
-  
+
   # === Guilds ===
   resources :guilds # TO REMOVE AT THE END
   # get '/guilds', to: 'guilds#index', as: 'index'
@@ -15,12 +15,12 @@ Rails.application.routes.draw do
   # get '/guilds/:id/edit', to: 'guilds#edit', as: 'edit' => TO REMOVE AT THE END
   # patch '/guilds/:id', to: 'guilds#update', as: 'update'
   # delete '/guilds/:id', to: 'guilds#destroy', as: 'destroy'
-  
+
   # === Invites ===
   resources :invites # TO REMOVE AT THE END
   delete '/invites/:id/accept', to: 'invites#accept', as: 'accept_invite'
   delete '/invites/:id/refuse', to: 'invites#refuse', as: 'refuse_invite'
-  
+
   # === Users ===
   resources :users
   patch '/users/:id/kick', to: 'users#kick', as: 'kick_user'
@@ -42,6 +42,6 @@ Rails.application.routes.draw do
     post :avatar_update, on: :member
   end
 
-  get '/login', to: redirect('/#login')
+  get '/login', to: 'login#index'
 
 end
