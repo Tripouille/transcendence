@@ -32,8 +32,11 @@ class ChatRoomsController < ApplicationController
 			chatroom = ChatRoom.new(chat_room_params)
 			chatroom.owner_id = current_user.id
 			chatroom.chat_memberships.build(user_id: chatroom.owner.id, admin: true)
-			chatroom.save
-			render json: {room: complete_room_infos(chatroom)}
+			if chatroom.save
+				render json: {room: complete_room_infos(chatroom)}
+			else
+				render json: {error: "Room name already taken"}
+			end
 		end
 	end
 
@@ -43,7 +46,7 @@ class ChatRoomsController < ApplicationController
 			render json: {error: "Invalid room name"}
 		elsif chatroom.users.include?(current_user)
 			render json: {error: "Already in room"}
-		elsif chatroom.room_type == 'password_protected'
+		elsif chatroom.room_type == 'password_protected' and chatroom.owner != current_user
 			render json: {password_needed: true, room_id: chatroom.id}
 		else
 			chatroom.chat_memberships.build(user_id: current_user.id, admin: chatroom.owner == current_user)

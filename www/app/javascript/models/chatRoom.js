@@ -8,7 +8,7 @@ const ChatRoom = Backbone.Model.extend({
 	toJSONDecorated: function() {
 		const result = this.toJSON();
 		if (result.room_type == 'direct_message')
-			result.name = result.users[0].id == window.user_id ? result.users[1].login : result.users[0].login;
+			result.name = this.name;
 		const me = result.users.find(user => user.id == window.user_id);
 		result.admin = me.admin;
 		return result;

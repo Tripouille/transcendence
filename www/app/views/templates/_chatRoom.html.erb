@@ -38,3 +38,18 @@
 		<li class="leave">Leave room</li>
 	</ul>
 </script>
+
+<script type="template" id="messageTemplate">
+	<span><%%= login %></span>
+	<span><%%= content %></span>
+</script>
+
+<script type="template" id="messagesIntroTemplate">
+	<%% if (room_type == 'public') { %>
+		<p>Here is the public room <%%= name %> !</p>
+	<%% } else if (room_type == 'password_protected') { %>
+		<p>Here is the password protected room <%%= name %> !</p>
+	<%% } else if (room_type == 'direct_message') { %>
+		<p>Here is your dm room with <%%= name %> !</p>
+	<%% } %>
+</script>

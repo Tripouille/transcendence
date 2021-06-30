@@ -7,4 +7,6 @@ class ChatRoom < ApplicationRecord
 	has_many :users, through: :chat_memberships
 
 	has_many :messages
+
+	validates_uniqueness_of :name
 end

@@ -531,18 +531,19 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		}
 		#chat_body {
 			p {
-				font-family: sans-serif;
 				margin-bottom: 3%;
+				&:first-child {
+					text-align: center;
+				}
 				&.mine {
 					text-align: right;
 				}
-	
 				span:first-child { //the author's name
 					width: min-content;
-					font-family: 'screen';
 				}
-				span:last-child {
+				span:last-child { //the message content
 					display: block;
+					font-family: sans-serif;
 				}
 			}
 			&::-webkit-scrollbar {

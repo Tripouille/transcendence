@@ -6,6 +6,7 @@ import MessageView from "./message";
 let ChatRoomView = Backbone.View.extend({
 	tagName: 'div',
 	template: _.template($('#chatRoomTemplate').html()),
+	messagesIntroTemplate: _.template($('#messagesIntroTemplate').html()),
 
 	events: {
 		"click > p": 'selectRoomAndRenderMessages',
@@ -52,6 +53,7 @@ let ChatRoomView = Backbone.View.extend({
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
 		$chatBody.empty();
+		$chatBody.append(this.messagesIntroTemplate(this.model.toJSONDecorated()));
 		this.messages.each(function(message) {
 			const messageView = new MessageView({model: message});
 			$chatBody.append(messageView.$el);
