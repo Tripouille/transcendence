@@ -1,6 +1,5 @@
 import Friends from '../collections/friends';
 import FriendView from './friend';
-import consumer from "../channels/consumer";
 
 const FriendsListView = Backbone.View.extend({
 	friendsCollection: new Friends(),
@@ -10,7 +9,6 @@ const FriendsListView = Backbone.View.extend({
 	},
 
 	initialize: function() {
-		this.connectChannel();
 		this.setElement($('#friends'));
 		this.friendsCollection.fetch({context: this, success: function() {
 			if (this.friendsCollection.length)
@@ -44,10 +42,6 @@ const FriendsListView = Backbone.View.extend({
 	},
 	actualize: function() {
 		setInterval(() => {this.friendsCollection.fetch();}, 5000);
-	},
-
-	connectChannel: function() {
-		consumer.subscriptions.create({channel: "OnlineChannel"});
 	}
 });
 

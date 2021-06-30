@@ -22,5 +22,25 @@ class ChatRoomChannel < ApplicationCable::Channel
 		ChatRoomChannel.broadcast_to @chatRoom, content: {
 			message: message_record.as_json().merge(login: message_record.user.login)
 		}
+		if @chatRoom.room_type == 'direct_message'
+			membership = @chatRoom.chat_memberships.where.not(user_id: @user.id).first
+			if membership.hidden
+				membership.update_attribute(:hidden, false)
+				UserChannel.broadcast_to membership.user, content: {
+					room: complete_room_infos(@chatRoom)
+				}
+			end
+		end
+	end
+
+	private
+	def complete_room_infos(room)
+		room.as_json(:only => [:id, :owner_id, :name, :room_type])
+			.merge(users: room.users
+				.order(:login)
+				.select(:id, :login, :status, :admin))
+			.merge(messages: room.messages.includes(:user)
+					.order(:created_at)
+					.map{|message| message.as_json().merge(login: message.user.login)})
 	end
 end

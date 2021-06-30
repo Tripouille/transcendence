@@ -1,3 +1,4 @@
+import consumer from "channels/consumer";
 import * as GC from 'views/garbage_collector';
 import FriendsListView from 'views/friendsList';
 import ChatRoomsView from 'views/chatRooms';
@@ -11,6 +12,7 @@ window.intervals = new Array();
 window.timeouts = new Array();
 
 $(function() {
+	connectUserChannel();
 	window.friendsListView = new FriendsListView();
 	window.chatRoomsView = new ChatRoomsView();
 
@@ -66,3 +68,18 @@ $(function() {
 	window.router = new myRouter();
 	Backbone.history.start();
 });
+
+function connectUserChannel() {
+	window.userSubscription = consumer.subscriptions.create({channel: "UserChannel"},
+	{
+		connected() { console.log('connected to user channel');},
+		disconnected() { console.log('disconnected from user channel'); },
+		received(data) {
+			console.log('Received data for user :', data.content);
+			if (data.content.room) {
+				data.content.room.silent = true;
+				window.chatRoomsView.chatRoomsCollection.add(data.content.room);
+			}
+		}
+	});
+}

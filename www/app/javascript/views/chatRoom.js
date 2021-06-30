@@ -36,8 +36,8 @@ let ChatRoomView = Backbone.View.extend({
 			room_id: room.id
 		},
 		{
-			connected() { console.log('connected to chatroom', room.id);},
-			disconnected() { console.log('disconnected from chatroom', room.id); },
+			connected() { /*console.log('connected to chatroom', room.id);*/ },
+			disconnected() { /*console.log('disconnected from chatroom', room.id);*/ },
 			received(data) {
 				//console.log('Received data from chat room', room.id, ' : ', data.content);
 				if (data.content.message) {
@@ -80,6 +80,7 @@ let ChatRoomView = Backbone.View.extend({
 			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {id: this.model.id}
 		});
+		consumer.subscriptions.remove(this.subscription);
 		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 	},
 	leaveRoom: function() {
@@ -89,6 +90,7 @@ let ChatRoomView = Backbone.View.extend({
 			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {id: this.model.id}
 		});
+		consumer.subscriptions.remove(this.subscription);
 		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 	},
 	removePassword: function() {

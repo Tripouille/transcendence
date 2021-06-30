@@ -1,4 +1,4 @@
-class OnlineChannel < ApplicationCable::Channel
+class UserChannel < ApplicationCable::Channel
 	def subscribed
 		@user = User.find_by_id(connection.session[:user_id])
 		if @user
@@ -15,6 +15,6 @@ class OnlineChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
-		puts 'data received in channel for ' + @user.id + ' : ' + data.inspect
+		puts 'data received in channel from ' + @user.id + ' : ' + data.inspect
 	end
 end

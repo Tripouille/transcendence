@@ -17,7 +17,6 @@ const ChatRoomsView = Backbone.View.extend({
 		this.chatRoomsCollection.fetch({context: this, success: function() {
 			this.render();
 			this.chatRoomsCollection.on('add', this.addNewRoom, this);
-			//this.chatRoomsCollection.on('change', this.reload, this); //change:name ?
 			if (this.chatRoomsCollection.length) {
 				this.activeRoomId = this.chatRoomsCollection.at(0).id;
 				this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
@@ -44,11 +43,18 @@ const ChatRoomsView = Backbone.View.extend({
 			);
 		else
 			this.$el.prepend(chatRoomView.$el);
+		return (chatRoomView);
 	},
 	addNewRoom: function(newRoom) {
-		this.addRoom(newRoom);
-		this.activeRoomId = newRoom.id;
-		this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
+		const chatRoomView = this.addRoom(newRoom);
+		if (!newRoom.get('silent')) {
+			this.activeRoomId = newRoom.id;
+			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
+		}
+		else {
+			chatRoomView.$el.find('span.new_message').addClass('visible');
+			$('#chat_banner span.new_message').addClass('visible');
+		}
 	},
 
 	selectRoom: function(chatRoomId) {
