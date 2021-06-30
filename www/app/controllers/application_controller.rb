@@ -11,11 +11,8 @@ class ApplicationController < ActionController::Base
 	def require_login
 		@session = session[:user_id]
 		unless @session
-			unless flash[:redirect] == "Redirect login"
-				flash[:redirect] = "Redirect login"
-				flash[:error] = "You must be logged in to access this section"
-				redirect_to login_path
-			end
+			redirect_to login_path
 		end
 	end
+
 end
