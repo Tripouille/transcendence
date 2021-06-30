@@ -103,6 +103,7 @@ $link-font-size: calc(14 * #{$responsive-ratio});
 		text-transform: uppercase;
 		transition: transform 1000ms;
 		&:hover {
+			cursor: pointer;
 			border-width: 10px;
 			line-height: calc(#{$link-height} - 20px);
 		}

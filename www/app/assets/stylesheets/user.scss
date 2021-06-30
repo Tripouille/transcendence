@@ -12,6 +12,20 @@ $border-width: $responsive-ratio;
 $link-border-width: calc(0.5 * #{$border-width});
 
 #user {
+
+	#errorPopUp {
+		display: none;
+		position: absolute;
+		top: 50px;
+		margin: 25px 10px;
+		padding: 15px 32px;
+		border: 2px solid red;
+		border-radius: 3px;
+		left: 50%;
+		background-color: indianred;
+		justify-content: center;
+	  }
+
 	#avatar_profile {
 		border: 4px solid green
 	}

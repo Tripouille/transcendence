@@ -4,14 +4,14 @@
 @import "variables";
 
 // A SUPPRIMER CSS POUR LES /GUILDS /INVITES /USERS
-html body {
-  & table {
-    margin-top: 80px;
-  }
-  & form {
-    margin-top: 80px;
-  }
-}
+// html body {
+//   & table {
+//     margin-top: 80px;
+//   }
+//   & form {
+//     margin-top: 80px;
+//   }
+// }
 
 #guilds {
   overflow: auto;
