@@ -50,9 +50,16 @@ export const UserUpdateView = Backbone.View.extend({
 	},
 
 	updateProfil: function() {
-		this.model.set('username', $('#username').val());
 		_.bindAll(this, "render");
-		this.model.save({}).done(function() {
+		this.model.save({ username: $('#username').val().trim() }, {
+			error: function (model, response, options) {
+				console.log(response.responseText)
+				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_name\"\n'))
+					self.showPopUpError("Guild name already exist.");
+				else
+					self.showPopUpError("Server error.");
+			}
+		}).done(function() {
 			Backbone.history.navigate("user", { trigger: true })
 		});
 	},
@@ -103,6 +110,19 @@ export const UserUpdateView = Backbone.View.extend({
 	changeFileName: function(e) {
 		const files = $('.custom-file-input')[0].files[0].name;
 		$('.custom-file-input').attr('name', files);
+	},
+
+	showPopUpError: function (error) {
+		const $erroPopUp = $('#errorPopUp');
+
+		$erroPopUp.html(error);
+		$erroPopUp.stop().fadeIn(100);
+		$erroPopUp.css("display", "block");
+		setTimeout(function () {
+			$erroPopUp.stop().fadeOut(1000, function () {
+				$erroPopUp.css("display", "none");
+			});
+		}, 4000);
 	}
 
 });

@@ -2,6 +2,6 @@
 
 	/* Creates a temp variable to access currentUser's session for backbone */
 	/* maybe to be deleted in the future */
-	var initCurrentUserId = <%= session[:user_id] %>;
+	var initCurrentUserId = <%= session[:user_id].to_json %>;
 
 </script>

@@ -20,7 +20,7 @@ export const UserCreateView = Backbone.View.extend({
 
 			this.$el.attr({id: 'user'});
 			this.model.fetch().done(function() {
-				if (_thisView.model.get('username').length > 0) {
+				if (_thisView.model.get('username') !== _thisView.model.get('login')) {
 					Backbone.history.navigate("user", { trigger: true });
 				} else {
 					_thisView.$el.empty();
@@ -34,8 +34,7 @@ export const UserCreateView = Backbone.View.extend({
 	},
 
 	updateProfil: function() {
-		console.log($('#username').val().length);
-		this.model.set('username', $('#username').val());
+		this.model.set('username', $('#username').val().trim());
 		_.bindAll(this, "render");
 		this.model.save({}).done(function() {
 			Backbone.history.navigate("user", { trigger: true })
