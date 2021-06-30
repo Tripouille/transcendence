@@ -34,11 +34,22 @@ export const UserCreateView = Backbone.View.extend({
 	},
 
 	updateProfil: function() {
-		this.model.set('username', $('#username').val().trim());
+		let _thisView = this;
 		_.bindAll(this, "render");
-		this.model.save({}).done(function() {
-			Backbone.history.navigate("user", { trigger: true })
-		});
+		if ($('#username').val().trim().length < 2 || $('#username').val().trim().length > 20) {
+			_thisView.showPopUpError("Invalid len Username Min 2 - Max 20");
+		} else {
+			this.model.save({ username: $('#username').val().trim() }, {
+				error: function (model, response, options) {
+					if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
+						_thisView.showPopUpError("Username already exist.");
+					else
+						_thisView.showPopUpError("Server error.");
+				}
+			}).done(function() {
+				Backbone.history.navigate("user", { trigger: true })
+			});
+		}
 	},
 
 	onFormSubmit: function(e) {
@@ -67,7 +78,6 @@ export const UserCreateView = Backbone.View.extend({
 					}).done(function(response) {
 						if(response != 0){
 							_thisView.updateProfil();
-							Backbone.history.navigate("", { trigger: true });
 						}
 					});
 				} else {
@@ -78,6 +88,24 @@ export const UserCreateView = Backbone.View.extend({
 				this.updateProfil();
 			}
 		}
+	},
+
+	changeFileName: function(e) {
+		const files = $('.custom-file-input')[0].files[0].name;
+		$('.custom-file-input').attr('name', files);
+	},
+
+	showPopUpError: function (error) {
+		const $erroPopUp = $('#errorPopUp');
+
+		$erroPopUp.html(error);
+		$erroPopUp.stop().fadeIn(100);
+		$erroPopUp.css("display", "block");
+		setTimeout(function () {
+			$erroPopUp.stop().fadeOut(1000, function () {
+				$erroPopUp.css("display", "none");
+			});
+		}, 4000);
 	}
 
 });

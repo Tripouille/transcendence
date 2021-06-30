@@ -52,16 +52,20 @@ export const UserUpdateView = Backbone.View.extend({
 	updateProfil: function() {
 		let _thisView = this;
 		_.bindAll(this, "render");
-		this.model.save({ username: $('#username').val().trim() }, {
-			error: function (model, response, options) {
-				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
-					_thisView.showPopUpError("Username already exist.");
-				else
-					_thisView.showPopUpError("Server error.");
-			}
-		}).done(function() {
-			Backbone.history.navigate("user", { trigger: true })
-		});
+		if ($('#username').val().trim().length < 2 || $('#username').val().trim().length > 20) {
+			_thisView.showPopUpError("Invalid len Username Min 2 - Max 20");
+		} else {
+			this.model.save({ username: $('#username').val().trim() }, {
+				error: function (model, response, options) {
+					if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
+						_thisView.showPopUpError("Username already exist.");
+					else
+						_thisView.showPopUpError("Server error.");
+				}
+			}).done(function() {
+				Backbone.history.navigate("user", { trigger: true })
+			});
+		}
 	},
 
 	onFormSubmit: function(e) {
