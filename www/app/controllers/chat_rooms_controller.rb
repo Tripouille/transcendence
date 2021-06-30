@@ -70,20 +70,19 @@ class ChatRoomsController < ApplicationController
 		end
 	end
 
-	def hide
-		chatroom = current_user.chat_rooms.where(room_type: "direct_message").find_by_id(params[:id])
-		chat_membership = chatroom.chat_memberships.find_by_user_id(current_user.id)
-		chat_membership.update(hidden: true)
-	end
-
 	def leave
-		chatroom = current_user.chat_rooms.where.not(room_type: "direct_message").find_by_id(params[:id])
-		chatroom.chat_memberships.find_by_user_id(current_user.id).destroy
-		if chatroom.owner == current_user
-			best_membership = chatroom.chat_memberships.order(admin: :desc, created_at: :asc).first
-			if best_membership
-				best_membership.update_attribute(:admin, true)
-				chatroom.update_attribute(:owner, best_membership.user)
+		chatroom = current_user.chat_rooms.find_by_id(params[:id])
+		chat_membership = chatroom.chat_memberships.find_by_user_id(current_user.id)
+		if chatroom.room_type == 'direct_message'
+			chat_membership.update(hidden: true)
+		else
+			chat_membership.destroy
+			if chatroom.owner == current_user
+				best_membership = chatroom.chat_memberships.order(admin: :desc, created_at: :asc).first
+				if best_membership
+					best_membership.update_attribute(:admin, true)
+					chatroom.update_attribute(:owner, best_membership.user)
+				end
 			end
 		end
 	end

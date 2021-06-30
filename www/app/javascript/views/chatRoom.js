@@ -11,7 +11,6 @@ let ChatRoomView = Backbone.View.extend({
 		"click > p": 'selectRoomAndRenderMessages',
 		"contextmenu": function(e) {e.preventDefault()},
 		"contextmenu > p": 'roomMenu',
-		"click li.hide": 'hideRoom',
 		"click li.leave": 'leaveRoom',
 		"click li.remove_password": 'removePassword',
 		"click li.add_password": 'addPasswordForm',
@@ -59,6 +58,7 @@ let ChatRoomView = Backbone.View.extend({
 		}, this);
 		this.trigger('selectRoom', this.model.id);
 		this.$el.addClass('active');
+		$('#chat_body_container input').focus();
 
 		this.$el.find('span.new_message').removeClass('visible');
 		if (!$('#chat_rooms span.new_message:visible').length)
@@ -73,16 +73,6 @@ let ChatRoomView = Backbone.View.extend({
 		$('#chat_rooms ul.room_menu').hide();
 		this.$el.find('ul.room_menu').show();
 	},
-	hideRoom: function() {
-		$.ajax({
-			type: 'POST',
-			url: '/chat_rooms/hide',
-			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
-			data: {id: this.model.id}
-		});
-		consumer.subscriptions.remove(this.subscription);
-		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
-	},
 	leaveRoom: function() {
 		$.ajax({
 			type: 'POST',
@@ -91,7 +81,11 @@ let ChatRoomView = Backbone.View.extend({
 			data: {id: this.model.id}
 		});
 		consumer.subscriptions.remove(this.subscription);
+		if (window.chatRoomsView.activeRoomId == this.model.id)
+			window.chatRoomsView.selectFirstRoom();
 		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
+		if (!$('#chat_rooms span.new_message:visible').length)
+			$('#chat_banner span.new_message').removeClass('visible');
 	},
 	removePassword: function() {
 		$.ajax({

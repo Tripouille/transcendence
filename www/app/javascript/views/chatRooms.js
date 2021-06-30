@@ -17,10 +17,7 @@ const ChatRoomsView = Backbone.View.extend({
 		this.chatRoomsCollection.fetch({context: this, success: function() {
 			this.render();
 			this.chatRoomsCollection.on('add', this.addNewRoom, this);
-			if (this.chatRoomsCollection.length) {
-				this.activeRoomId = this.chatRoomsCollection.at(0).id;
-				this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
-			}
+			this.selectFirstRoom();
 		}});
 		$('#chat #chat_body_container input').on('keypress', this, this.submitMessage);
 		this.prepareForms();
@@ -30,6 +27,14 @@ const ChatRoomsView = Backbone.View.extend({
 		this.chatRoomsCollection.each(function(room) {
 			this.addRoom(room);
 		}, this);
+	},
+	selectFirstRoom() {
+		if (this.chatRoomsCollection.length) {
+			this.activeRoomId = this.chatRoomsCollection.at(0).id;
+			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
+		}
+		else
+			$chatBody.empty();
 	},
 	addRoom: function(room) {
 		let chatRoomView = new ChatRoomView({model: room});
