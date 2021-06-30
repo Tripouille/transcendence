@@ -19,13 +19,27 @@ export const GuildNewView = Backbone.View.extend({
 		var self = this;
 		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
 			success: function (model, response, options) {
+				console.log("Success");
+				console.log(model);
+				console.log(response);
 				Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
 			},
 			error: function (model, response, options) {
+				console.log("Error");
+				console.log(response);
+				console.log(response.responseText);
 				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_name\"\n'))
 					self.showPopUpError("Guild name already exist.");
 				else if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_anagram\"\n'))
 					self.showPopUpError("Anagram already exist.");
+				else if (response.responseText.includes('"{"name":["is too long') || response.responseText.includes('{"name":["is too short'))
+					self.showPopUpError("Guild name must be 2 to 20 characters long.");
+				else if (response.responseText.includes('"{"anagram":["is too long') || response.responseText.includes('{"anagram":["is too short'))
+					self.showPopUpError("Anagram must be 1 to 5 characters long.");
+				// else if (response.status == 422) {
+				// 	Backbone.history.history.back;
+				// 	Backbone.history.navigate("guilds/new", { trigger: true });
+				// }
 				else
 					self.showPopUpError("Server error.");
 			}
@@ -37,7 +51,7 @@ export const GuildNewView = Backbone.View.extend({
 	/* render the form page */
 	render: function () {
 		this.$el.empty();
-		this.$el.attr({id: 'guilds'});
+		this.$el.attr({ id: 'guilds' });
 
 		let that = this;
 		window.currentUser.fetch().done(function () {
@@ -55,14 +69,16 @@ export const GuildNewView = Backbone.View.extend({
 	/* validate the labels on the go */
 	validateOnChange: function (attr) {
 		if (attr.name == "name") {
-			if (attr.value == "" || attr.value.length < 3 || attr.value.length > 20) {
-				return "Guild name must be 2 to 20 characters long."
-			}
+			if (attr.value == "" || attr.value.length < 2 || attr.value.length > 20)
+				return "Guild name must be 2 to 20 characters long.";
+			if (attr.value.trim() == "" || attr.value != attr.value.trim())
+				return "Guild name must not begin or end with spaces";
 		}
 		if (attr.name == "anagram") {
-			if (attr.value == "" || attr.value.length > 5) {
-				return "Anagram must be 1 to 5 characters long."
-			}
+			if (attr.value == "" || attr.value.length > 5)
+				return "Anagram must be 1 to 5 characters long.";
+			if (attr.value.trim() == "" || attr.value != attr.value.trim())
+				return "Anagram name must not begin or end with spaces";
 		}
 		return true;
 	},

@@ -28,6 +28,7 @@ class GuildsController < ApplicationController
       @matches = Match.all # to remove after
       # @matches = Match.all.where(:left_guild => @guild[:id]).or(Match.all.where(:right_guild => @guild[:id]))
 
+      puts "RENDERING================================"
       render json: @guild.as_json.merge({
         "rank" => @guilds.find_index{ |guild| guild.id == @guild[:id]} + 1,
         "active_members" => @users.length,
@@ -68,7 +69,7 @@ class GuildsController < ApplicationController
     respond_to do |format|
       if (self.admin? || (self.user_exists? && self.user_has_no_guild?)) && self.set_owner_id && @guild.save && self.set_guild_id
         format.html { redirect_to @guild, notice: "Guild was successfully created." }
-        format.json { render :show, status: :created, location: @guild }
+        format.json { render json: { id: @guild.id }, status: :created }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @guild.errors, status: :unprocessable_entity }
