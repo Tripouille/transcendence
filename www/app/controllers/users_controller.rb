@@ -6,47 +6,15 @@ class UsersController < ApplicationController
     @users = User.all
     @guilds = Guild.all
     @matches = Match.all
-
-    # def complete_user_infos(user)
-    #   # user.as_json(:only => [:id, :owner_id, :name, :room_type])
-    #   user.as_json()
-    #         .merge(
-    #           # users: room.users.where.not(id: session[:user_id]).order(:login).select(:id, :login, :status)
-    #           guild_name: (@guilds.find{ |guild| guild.id == user.guild_id}) ? @guilds.find{ |guild| guild.id == user.guild_id}[:name] : nil,
-    #           score: (@matches.find_all{ |match| match.winner == user.id}) ? @matches.find_all{ |match| match.winner == user.id}.length() : 0,
-    #           my_user: (user.id == session[:user_id]) ? true : false,
-    #           rank: @users.find_index{ |otheruser| otheruser.id == user.id } + 1
-
-    #         )
-    #   # user.as_json()
-    #   #       .order(:score)
-    # end
-    # def add_rank(user)
-    #   user.as_json()
-    #         .merge(
-    #           # messages: room.messages.includes(:user).order(:created_at).map{ |message| message.as_json().merge(login: message.user.login) }
-    #           rank: @users.find_index{ |otheruser| otheruser.id == user.id } + 1
-    #         )
-    # end
-
-    # @result = @users.map{ |user| complete_user_infos(user) }.sort_by! { |res| -res[:score] }.map{ |user| add_rank(user) }
-    # @result = @users.map{ |user| complete_user_infos(user) }.sort_by! { |res| -res[:score] }.each{ |user| add_rank(user) }
-
     @result = @users.map { |i| i.attributes.merge({
       guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : nil,
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
+      route: '#users/' + i.id.to_s,
       my_user: (i.id == session[:user_id]) ? true : false,
-      rank: @users.find_index{ |user| user.id == i.id } + 1
       })
     }
-    # @result.sort_by! { |res| -res[:score] }
-    # @result = @result.map { |i| i.attributes.merge({
-    #   rank: @users.find_index{ |user| user.id == i.id } + 1
-    #   })
-    # }
-    puts "================================"
-    puts @result.inspect
-
+    @result.sort_by! { |res| -res[:score] }
+    @result = @result.map { |i| i.merge({ rank: @result.find_index{ |user| user["id"] == i["id"] }.to_i + 1 }) }
     respond_to do |format|
       format.html { }
       format.json { render json: @result.as_json }
@@ -55,6 +23,28 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
+    @users = User.all
+    @guilds = Guild.all
+    @matches = Match.all
+    @users = @users.map { |i| i.attributes.merge({
+      score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
+      })
+    }
+    @users.sort_by! { |res| -res[:score] }
+    @allmatches = @matches.map { |i| i.attributes.merge({
+      username_left: (@users.find{ |user| user["id"] == i.left_player}) ? @users.find{ |user| user["id"] == i.left_player}["username"] : "Deleted acount",
+      username_right: (@users.find{ |user| user["id"] == i.right_player}) ? @users.find{ |user| user["id"] == i.right_player}["username"] : "Deleted acount",
+      winner_left: (i.left_player == i.winner) ? "Winner" : "Loser",
+      winner_right: (i.right_player == i.winner) ? "Winner" : "Loser",
+      })
+    }
+
+    render json: @user.as_json.merge({
+      "rank" => @users.find_index{ |user| user["id"] == @user[:id]}.to_i + 1,
+      "guild_name" => (@guilds.find{ |guild| guild.id == @user[:guild_id]}) ? @guilds.find{ |guild| guild.id ==  @user[:guild_id]}[:name] : "Not in a guild",
+      "score" => (@matches.find_all{ |match| match.winner == @user[:id]}) ? @matches.find_all{ |match| match.winner == @user[:id]}.length() : 0,
+      "matches" => @allmatches.find_all{ |match| match["left_player"] == @user[:id] || match["right_player"] == @user[:id]}
+    })
   end
 
   # GET /users/new

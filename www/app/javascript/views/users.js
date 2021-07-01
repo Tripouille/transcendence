@@ -8,14 +8,18 @@ export const UsersView = Backbone.View.extend({
 
     render: function () {
         this.$el.empty();
-        this.$el.attr({id: 'guilds'});
+        this.$el.attr({ id: 'guilds' });
         this.allRendered = false;
         this.page = 1;
         let self = this;
         self.$el.append('<div class="usersTable"></div>')
         $.when(window.currentUser.fetch(), this.users.fetch()).done(function () {
-			let myUserModel = self.users.findWhere({ id: window.currentUser.id });
-			self.$el.prepend(self.dynamicTemplate(myUserModel.toJSON()));
+            let myUserModel = self.users.findWhere({ id: window.currentUser.id });
+            self.$el.prepend(self.dynamicTemplate(myUserModel.toJSON()));
+
+            $('div[data-href="#users/' + myUserModel.id + '"]').one("click", function () {
+                Backbone.history.navigate('#users/' + myUserModel.id, { trigger: true })
+            });
 
             while (($(window).height() >= $(document).height()) && !self.allRendered)
                 self.renderPage();
@@ -38,6 +42,10 @@ export const UsersView = Backbone.View.extend({
             usersPage.forEach(function (user, i) {
                 if (user.id != myUserId)
                     $usersTable.append(this.dynamicTemplate(user.toJSON()));
+
+                $('div[data-href="#users/' + user.id + '"]').one("click", function () {
+                    Backbone.history.navigate('#users/' + user.id, { trigger: true })
+                });
             }, this);
             $('#rank1').prepend('<img src="assets/gemstone-gold.svg" width="50" alt="gemstone gold">');
             $('#rank2').prepend('<img src="assets/gemstone-silver.svg" width="50" alt="gemstone silver">');

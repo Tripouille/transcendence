@@ -10,15 +10,16 @@ import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
 import { LoginView } from 'views/login';
-import { UserView } from './views/user/user';
+import { UserView } from 'views/user/user';
 import { UsersView } from 'views/users';
+import { UserDisplay } from 'views/user';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
 
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
 
-$(function() {
+$(function () {
 	window.friendsListView = new FriendsListView();
 
 	const $main = $('main');
@@ -27,10 +28,11 @@ $(function() {
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
 		usersView: new UsersView({ el: $main }),
-		gameView: new GameView({el: $main}),
-		matchmakingView: new MatchmakingView({el: $main}),
-		selectModeView: new SelectModeView({el: $main}),
-		loginView:	new LoginView({ el: $main }),
+		userDisplay: new UserDisplay({ el: $main }),
+		gameView: new GameView({ el: $main }),
+		matchmakingView: new MatchmakingView({ el: $main }),
+		selectModeView: new SelectModeView({ el: $main }),
+		loginView: new LoginView({ el: $main }),
 		userView: new UserView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
@@ -45,6 +47,7 @@ $(function() {
 			"guilds/:id": "displayguild",
 			"game": "game",
 			"users": "users",
+			"users/:id": "displayuser",
 			"user": "user",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
@@ -82,23 +85,27 @@ $(function() {
 			$('#rank_link').addClass('selected');
 			this.usersView.render();
 		},
+		displayuser: function (id) {
+			$('#rank_link').addClass('selected');
+			this.userDisplay.render(parseInt(id));
+		},
 		selectMode: function () {
 			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
-		matchmaking: function() {
+		matchmaking: function () {
 			$('#game_link').addClass('selected');
 			this.matchmakingView.render();
 		},
 		game: function (id) {
 			$('#game_link').addClass('selected');
 			if (id == null) {
-				this.navigate('game/matchmaking', {trigger: true});
-				return ;
+				this.navigate('game/matchmaking', { trigger: true });
+				return;
 			}
 			this.gameView.render(id);
 		},
-		login: function() {
+		login: function () {
 			if (initCurrentUserId == null) {
 				console.log("> Login - Page");
 				this.loginView.render();
@@ -108,17 +115,17 @@ $(function() {
 			}
 		},
 
-		user: function() {
+		user: function () {
 			console.log("> User - Page")
 			this.userView.render();
 		},
 
-		updateUser: function(id) {
+		updateUser: function (id) {
 			console.log("> Update User - Page - " + id)
 			this.userUpdateView.render(id);
 		},
 
-		createUser: function(id) {
+		createUser: function (id) {
 			console.log("> Create User - Page - " + id)
 			this.userCreateView.render(id);
 		}

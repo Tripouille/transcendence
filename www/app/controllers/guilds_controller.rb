@@ -3,16 +3,18 @@ class GuildsController < ApplicationController
 
   # GET /guilds or /guilds.json
   def index
-    @guilds = Guild.all.sort_by{ |guild| -guild.score }
+    @guilds = Guild.all
     @users = User.all.where.not(:guild_id => nil)
 
     @result = @guilds.map { |i| i.attributes.merge({
       owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
-      rank: @guilds.find_index{ |guild| guild.id == i.id } + 1,
+      score: self.guild_score(i),
       route: '#guilds/' + i.id.to_s,
       my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
       })
     }
+    @result.sort_by! { |res| -res[:score] }
+    @result = @result.map { |i| i.merge({ rank: @result.find_index{ |guild| guild["id"] == i["id"] }.to_i + 1 }) }
     respond_to do |format|
       format.html { }
       format.json { render json: @result.as_json }
@@ -24,13 +26,17 @@ class GuildsController < ApplicationController
     if (user_exists?)
       @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
       @users = User.all.where(:guild_id => @guild[:id])
-      @guilds = Guild.all.sort_by{ |guild| -guild.score }
+      @guilds = Guild.all
       @matches = Match.all # to remove after
       # @matches = Match.all.where(:left_guild => @guild[:id]).or(Match.all.where(:right_guild => @guild[:id]))
+      @guilds = @guilds.map { |i| i.attributes.merge({
+        score: self.guild_score(i)
+        })
+      }
+      @guilds.sort_by! { |res| -res[:score] }
 
-      puts "RENDERING================================"
       render json: @guild.as_json.merge({
-        "rank" => @guilds.find_index{ |guild| guild.id == @guild[:id]} + 1,
+        "rank" => @guilds.find_index{ |guild| guild["id"] == @guild[:id]}.to_i + 1,
         "active_members" => @users.length,
         "owner_name" => @users.find{ |user| user.id == @guild[:owner_id]}[:username],
         "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
@@ -58,7 +64,7 @@ class GuildsController < ApplicationController
   # POST /guilds or /guilds.json
   def create
     if self.admin?
-      @guild = Guild.new(params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id]))
+      @guild = Guild.new(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
     else
       @guild = Guild.new(params.require(:guild).permit(:name, :anagram)) # Filter name and anagram parameters on creation
     end
@@ -81,12 +87,7 @@ class GuildsController < ApplicationController
   def update
     respond_to do |format|
       if (self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.in_current_guild?))
-
-        if self.admin?
-          @guild.update(params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id]))
-        else
-          @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
-        end
+        @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
         format.html { redirect_to @guild, notice: "Guild was successfully updated." }
         format.json { render :show, status: :ok, location: @guild }
       else
@@ -114,7 +115,7 @@ class GuildsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def guild_params
-      params.require(:guild).permit(:name, :anagram, :score, [:id, :owner_id])
+      params.require(:guild).permit(:name, :anagram, [:id, :owner_id])
     end
 
 
@@ -163,6 +164,12 @@ class GuildsController < ApplicationController
 
     def in_current_guild?
       return (User.find(params[:owner_id]) && User.find(params[:owner_id])[:guild_id] == @guild[:id]) ? true : false
+    end
+
+    def guild_score(guild)
+      # @matches = Match.all.where(:left_guild => guild.id).or(Match.all.where(:right_guild => guild.id))
+      # return @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild == guild.id) || (match.winner == match.right_player && match.right_guild == guild.id)) }.length()
+      return 10 # a enlever
     end
 
 end

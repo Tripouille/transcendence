@@ -3,15 +3,16 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 @import "variables";
 
-// A SUPPRIMER CSS POUR LES /GUILDS /INVITES /USERS
-html body {
-  & table {
-    margin-top: 80px;
-  }
-  & form {
-    margin-top: 80px;
-  }
-}
+/* ------------------ A SUPPRIMER CSS POUR LES /GUILDS /INVITES /USERS --------------------------- */
+/* -- */ html body {
+/* -- */   & > table {
+/* -- */     margin-top: 80px;
+/* -- */   }
+/* -- */   & > form {
+/* -- */     margin-top: 80px;
+/* -- */   }
+/* -- */ }
+/* ----------------------------------------------------------------------- */
 
 #guilds {
   overflow: auto;
@@ -63,6 +64,9 @@ html body {
     font-size: 16px;
     box-sizing: border-box;
     width: calc(100% - 20px);
+  }
+  .Loser {
+    color: red;
   }
   .button {
     background-color: $verydarkgreen;
@@ -149,7 +153,7 @@ html body {
   .kickButton {
     padding: 0 25px;
   }
-  .guildRow, .myGuildRow, .userRow, .myUserRow, .guildFigures, .guildInvitesRow, .guildMemberRow {
+  .guildRow, .myGuildRow, .userRow, .myUserRow, .guildFigures, .guildInvitesRow, .guildMemberRow, .userMatchRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -159,6 +163,17 @@ html body {
     font-size: 25px;
     text-align: center;
 
+  }
+  .userMatchRow {
+    & div {
+      width: 200px;
+    }
+    & div:first-child {
+      width: 400px;
+    }
+    & div:last-child {
+      width: 400px;
+    }
   }
   .guildMemberRow {
     & div {
@@ -220,9 +235,8 @@ html body {
     border: 2px solid rgba(0, 128, 0, 0.75);
     border-style: solid;
     margin: 20px 10px;
-    order: -1;
   }
-  .guildRow, .guildMemberRow, .userRow {
+  .guildRow, .guildMemberRow, .userRow, .userMatchRow {
     &:nth-of-type(odd) {
       background-color: $verydarkgreen;
     }
@@ -230,7 +244,7 @@ html body {
       background-color: green;
     }
   }
-  .guildRow, .guildMemberRow, .userRow {
+  .guildRow, .guildMemberRow, .userRow, .userMatchRow {
     border-left: 2px solid rgba(0, 128, 0, 0.75);
     border-right: 2px solid rgba(0, 128, 0, 0.75);
     &:first-of-type {

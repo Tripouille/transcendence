@@ -1,5 +1,6 @@
+<!-- Template for rows in the user table -->
 <script id="userRow" type="text/template">
-	<div class="<%% if (my_user == true) { %>myUserRow<%% } else { %>userRow<%% } %>">
+	<div class="<%% if (my_user == true) { %>myUserRow<%% } else { %>userRow<%% } %> cursorButton" data-href="<%%= route %>">
 		<div>
 			<p class="uppercase">Rank</p>
 			<div class="rankTrophy" id="rank<%%= rank %>">
@@ -14,6 +15,30 @@
 		<div>
 			<p class="uppercase">Score<p>
 			<p><%%= score %></p>
+		</div>
+	</div>
+</script>
+
+
+<!-- Template for listing guild members -->
+<script id="userMatchesTemplate" type="text/template">
+	<p class="bandeau">Matches history</p>
+	<div id="userMatchesBody">
+	</div>
+</script>
+
+<script id="userMatchRowTemplate" type="text/template">
+	<div class="userMatchRow">
+		<div class="<%%= winner_left %>">
+			<p class="uppercase"><%%= winner_left %></p>
+			<p><%%= username_left %></p>
+		</div>
+		<div>
+			<img src="assets/versus.svg" width=50px alt="versus">
+		</div class="<%%= winner_right %>">
+		<div>
+			<p class="uppercase"><%%= winner_right %></p>
+			<p><%%= username_right %></p>
 		</div>
 	</div>
 </script>

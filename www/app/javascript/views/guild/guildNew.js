@@ -19,15 +19,9 @@ export const GuildNewView = Backbone.View.extend({
 		var self = this;
 		model.save({ name: $('#name').val(), anagram: $('#anagram').val() }, {
 			success: function (model, response, options) {
-				console.log("Success");
-				console.log(model);
-				console.log(response);
 				Backbone.history.navigate("guilds/" + model.get('id'), { trigger: true });
 			},
 			error: function (model, response, options) {
-				console.log("Error");
-				console.log(response);
-				console.log(response.responseText);
 				if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_name\"\n'))
 					self.showPopUpError("Guild name already exist.");
 				else if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_guilds_on_anagram\"\n'))
@@ -36,10 +30,6 @@ export const GuildNewView = Backbone.View.extend({
 					self.showPopUpError("Guild name must be 2 to 20 characters long.");
 				else if (response.responseText.includes('"{"anagram":["is too long') || response.responseText.includes('{"anagram":["is too short'))
 					self.showPopUpError("Anagram must be 1 to 5 characters long.");
-				// else if (response.status == 422) {
-				// 	Backbone.history.history.back;
-				// 	Backbone.history.navigate("guilds/new", { trigger: true });
-				// }
 				else
 					self.showPopUpError("Server error.");
 			}
