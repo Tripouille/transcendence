@@ -123,8 +123,8 @@ $(function() {
 function connectUserChannel() {
 	window.userSubscription = consumer.subscriptions.create({channel: "UserChannel"},
 	{
-		connected() { console.log('connected to user channel');},
-		disconnected() { console.log('disconnected from user channel'); },
+		connected() { /*console.log('connected to user channel');*/ },
+		disconnected() { /*console.log('disconnected from user channel');*/ },
 		received(data) {
 			console.log('Received data for user :', data.content);
 			if (data.content.room) {

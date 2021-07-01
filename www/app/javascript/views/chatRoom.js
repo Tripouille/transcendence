@@ -36,16 +36,20 @@ let ChatRoomView = Backbone.View.extend({
 			room_id: _this.model.id
 		},
 		{
-			connected() { /*console.log('connected to chatroom', _this.model.id);*/ },
+			connected() { /*console.log('connected to chatroom', _this.model.get('name'));*/ },
 			disconnected() { /*console.log('disconnected from chatroom', _this.model.id);*/ },
 			received(data) {
-				//console.log('Received data from chat room', _this.model.id, ' : ', data.content);
+				//console.log('Received data from chat room', _this.model.get('name'), ' : ', data.content);
 				if (data.content.message)
 					messages.add(data.content.message, {merge: true});
 				else if (data.content.newMember) {
 					const memberInArray = _this.model.get('users').find(user => user.id == data.content.newMember.id);
-					if (!memberInArray || memberInArray.status == 'offline') {
+					if (!memberInArray) {
 						_this.model.get('users').push(data.content.newMember);
+						_this.render();
+					}
+					else if (memberInArray.status == 'offline') {
+						memberInArray.status = data.content.newMember.status;
 						_this.render();
 					}
 				}
@@ -61,7 +65,7 @@ let ChatRoomView = Backbone.View.extend({
 		});
 	},
 	render: function() {
-		//console.log('rendering chatRoom view');
+		//console.log('rendering chatRoom view', this.model.get('name'));
 		this.$el.html(this.template(this.model.toJSONDecorated()));
 		return this;
 	},
