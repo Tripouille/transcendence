@@ -70,8 +70,14 @@ const ChatRoomsView = Backbone.View.extend({
 
 	submitMessage: function(e) {
 		if (e.keyCode == 13 && this.value) {
-			e.data.chatRoomViews[e.data.activeRoomId].trigger('sendMessage', this.value);
-			this.value = '';
+			const chatRoomView = e.data.chatRoomViews[e.data.activeRoomId];
+			const me = chatRoomView.model.get('users').find(user => user.id == window.user_id);
+			if (!me.muted) {
+				chatRoomView.trigger('sendMessage', this.value);
+				this.value = '';
+			}
+			else
+				e.data.animateInvalidInput($(this));
 		}
 	},
 	addMessage: function(message) {

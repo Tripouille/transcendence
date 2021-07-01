@@ -18,6 +18,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
+		"click li.mute, li.unmute": "changeMutedStatus"
 	},
 
 	initialize: function() {
@@ -68,11 +69,18 @@ let ChatRoomView = Backbone.View.extend({
 						_this.render();
 					}
 				}
+				else if (data.content.changeMutedStatus) {
+					const memberInArray = _this.model.get('users').find(user => user.id == data.content.changeMutedStatus.id);
+					if (memberInArray) {
+						memberInArray.muted = (data.content.changeMutedStatus.muted == 'true');
+						_this.render();
+					}
+				}
 			}
 		});
 	},
 	render: function() {
-		//console.log('rendering chatRoom view', this.model.get('name'));
+		//console.log('rendering chatRoom view', this.model.get('name'), ', model = ', this.model.attributes);
 		this.$el.html(this.template(this.model.toJSONDecorated()));
 		return this;
 	},
@@ -148,6 +156,20 @@ let ChatRoomView = Backbone.View.extend({
 				room_id: this.model.id,
 				user_id: user_id,
 				admin: admin
+			}
+		});
+	},
+	changeMutedStatus: function(e) {
+		const user_id = $(e.target).parent().parent().data('id');
+		const muted = e.target.classList[0] == 'mute';
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/change_muted_status',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {
+				room_id: this.model.id,
+				user_id: user_id,
+				muted: muted
 			}
 		});
 	}

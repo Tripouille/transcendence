@@ -6,7 +6,6 @@ class ChatRoomChannel < ApplicationCable::Channel
 			@user = User.find_by_id(connection.session[:user_id])
 			stream_for @chatRoom
 
-			puts 'broadcasting to room ' + @chatRoom.name.to_s + ' the connection of ' + @user.login.to_s
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
 				newMember: {
 					id: @user.id,
@@ -27,6 +26,8 @@ class ChatRoomChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
+		if @user.chat_memberships.find_by_chat_room_id(@roomId).muted then return end
+
 		message = ActionController::Base.helpers.strip_tags(data['content'])
 		message_record = Message.new(user_id: @user.id, content: message)
 		@chatRoom.messages << message_record

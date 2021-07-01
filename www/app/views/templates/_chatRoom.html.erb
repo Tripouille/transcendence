@@ -17,7 +17,11 @@
 								<%% } %>
 							<%% } %>
 							<%% if (admin && room_type != 'direct_message' && user.id != owner_id) { %>
-								<li>Mute</li>
+								<%% if (user.muted) { %>
+									<li class="unmute">Unmute</li>
+								<%% } else { %>
+									<li class="mute">Mute</li>
+								<%% } %>
 								<li>Ban</li>
 							<%% } %>
 						</ul>

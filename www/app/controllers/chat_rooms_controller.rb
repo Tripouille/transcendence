@@ -120,6 +120,17 @@ class ChatRoomsController < ApplicationController
 		end
 	end
 
+	def change_muted_status
+		chatroom = current_user.chat_rooms.find_by_id(params[:room_id])
+		iamadmin = current_user.chat_memberships.find_by_chat_room_id(params[:room_id]).admin
+		if iamadmin and params[:user_id] != chatroom.owner_id
+			chatroom.chat_memberships.find_by_user_id(params[:user_id]).update_attribute(:muted, params[:muted])
+			ChatRoomChannel.broadcast_to chatroom, content: {
+				changeMutedStatus: {id: params[:user_id], muted: params[:muted]}
+			}
+		end
+	end
+
 	private
     def chat_room_params
 		params.permit(:name, :room_type, :password)
@@ -129,7 +140,7 @@ class ChatRoomsController < ApplicationController
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
 				.order(:login)
-				.select(:id, :login, :status, :admin))
+				.select(:id, :login, :status, :admin, :muted))
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
 					.map{|message| message.as_json().merge(login: message.user.login)})
