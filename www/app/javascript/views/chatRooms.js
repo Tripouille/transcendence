@@ -34,7 +34,7 @@ const ChatRoomsView = Backbone.View.extend({
 			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
 		}
 		else
-			$chatBody.empty();
+			$('#chatBody').empty();
 	},
 	addRoom: function(room) {
 		let chatRoomView = new ChatRoomView({model: room});

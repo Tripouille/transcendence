@@ -76,4 +76,5 @@ Rails.application.configure do
 
   config.log_level = :info
   config.hosts << /[a-z0-9]+\.42lyon\.fr/
+  config.web_console.whiny_requests = false
 end

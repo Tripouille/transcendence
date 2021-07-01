@@ -10,6 +10,7 @@ import * as GC from 'views/garbage_collector';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
+import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
 import { UserView } from './views/user/user';

@@ -85,6 +85,8 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    down (5.2.2)
+      addressable (~> 2.5)
     erubi (1.10.0)
     et-orbi (1.2.4)
       tzinfo
@@ -276,6 +278,7 @@ DEPENDENCIES
   byebug
   capybara (>= 3.26)
   devise
+  down
   jbuilder (~> 2.7)
   listen (~> 3.3)
   omniauth-marvin (~> 1.2.0)
