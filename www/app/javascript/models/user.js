@@ -7,6 +7,8 @@ export const User = Backbone.Model.extend({
 		email: "",
 		login: "",
 		guild_id: null,
+		otp_required_for_login: false,
+		otp_secret: ""
 	},
 
 	idAttribute: "id",

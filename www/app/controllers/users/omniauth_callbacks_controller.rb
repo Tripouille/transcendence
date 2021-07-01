@@ -5,7 +5,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   skip_before_action :require_login
 
   def login
-
   end
 
   def marvin
@@ -21,11 +20,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_sign_in_path_for(user)
-    if user.username === user.login
-      @root = 'user/' + @user.id.to_s + '/create'
-      root_path(:anchor => @root)
+    if user.otp_required_for_login?
+      root_path(:anchor => 'otp')
     else
-      root_path
+      if user.username === user.login
+        @root = 'user/' + @user.id.to_s + '/create'
+        root_path(:anchor => @root)
+      else
+        root_path
+      end
     end
   end
 

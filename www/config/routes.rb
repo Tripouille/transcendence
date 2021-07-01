@@ -3,12 +3,17 @@ Rails.application.routes.draw do
   get '/login', to: 'login#index'
 
   # === Root for devise connect account ===
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks"
+  }
+
   devise_scope :user do
     delete '/users/sign_out', to: 'devise/sessions#destroy'
   end
 
-  resource :two_factor_settings, except: [:index, :show]
+  resource :two_factor_settings, except: [:index, :show] do
+    post :check_otp
+  end
 
   # === Avatar ===
   resources :users do

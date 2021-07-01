@@ -3,7 +3,9 @@ import { User } from "../../models/user";
 export const UserView = Backbone.View.extend({
 
 	events: {
-		'click .edit-btn' : 'clickHandler'
+		'click .edit-btn' : 'clickHandler',
+		'click .tfa-disable-btn' : 'disableTfa',
+		'click .tfa-enable-btn' : 'activeTfa'
 	},
 
 	tagName: "li",
@@ -41,9 +43,19 @@ export const UserView = Backbone.View.extend({
 		return _thisView;
 	},
 
-	clickHandler: function(e){
+	clickHandler: function(e) {
 		e.preventDefault()
 		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true })
 	},
+
+	activeTfa: function(e) {
+		e.preventDefault()
+		Backbone.history.navigate("user/" + initCurrentUserId + "/tfa", { trigger: true })
+	},
+
+	disableTfa: function(e) {
+		e.preventDefault()
+		Backbone.history.navigate("user/" + initCurrentUserId + "/tfa", { trigger: true })
+	}
 
 });
