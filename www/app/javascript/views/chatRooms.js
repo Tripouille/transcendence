@@ -34,7 +34,7 @@ const ChatRoomsView = Backbone.View.extend({
 			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
 		}
 		else
-			$('#chatBody').empty();
+			$('#chat_body').empty();
 	},
 	addRoom: function(room) {
 		let chatRoomView = new ChatRoomView({model: room});
@@ -123,7 +123,10 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	displayForm: function($form) {
 		$form.addClass('visible');
-		$form.find('input').first().focus();
+		if ($form.attr('id') == 'room_creation_form')
+			$form.find('input.room_name').focus();
+		else
+			$form.find('input').first().focus();
 	},
 	submitCreationForm: function(e) {
 		e.preventDefault();

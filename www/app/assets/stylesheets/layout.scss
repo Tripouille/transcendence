@@ -586,6 +586,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 		}
 		input[type="text"], input[type="password"] {
 			height: calc(0.08 * #{$chat-height});
+			font-size: $messages-font-size;
 			&:focus {
 				border-color: white;
 			}
@@ -642,7 +643,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 			button {
 				border: 1px gray solid;
 				border-radius: 3px;
-				padding: 0 5px;
+				padding: 1% 2%;;
 				font-size: calc(1.5 * #{$aside-font-size});
 				transition: height 0.4s;
 				&:hover {

@@ -83,9 +83,9 @@ let ChatRoomView = Backbone.View.extend({
 			data: {id: this.model.id}
 		});
 		consumer.subscriptions.remove(this.subscription);
+		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 		if (window.chatRoomsView.activeRoomId == this.model.id)
 			window.chatRoomsView.selectFirstRoom();
-		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 		if (!$('#chat_rooms span.new_message:visible').length)
 			$('#chat_banner span.new_message').removeClass('visible');
 	},
