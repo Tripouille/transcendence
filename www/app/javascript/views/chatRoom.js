@@ -61,6 +61,13 @@ let ChatRoomView = Backbone.View.extend({
 						_this.render();
 					}
 				}
+				else if (data.content.changeAdminStatus) {
+					const memberInArray = _this.model.get('users').find(user => user.id == data.content.changeAdminStatus.id);
+					if (memberInArray) {
+						memberInArray.admin = (data.content.changeAdminStatus.admin == 'true');
+						_this.render();
+					}
+				}
 			}
 		});
 	},
@@ -143,8 +150,6 @@ let ChatRoomView = Backbone.View.extend({
 				admin: admin
 			}
 		});
-		this.model.get('users').find(user => user.id == user_id).admin = admin;
-		this.render();
 	}
 });
 

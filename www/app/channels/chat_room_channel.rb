@@ -6,7 +6,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 			@user = User.find_by_id(connection.session[:user_id])
 			stream_for @chatRoom
 
-			puts 'broadcasting to room ' + @chatRoom.name + ' the connection of ' + @user.login
+			puts 'broadcasting to room ' + @chatRoom.name.to_s + ' the connection of ' + @user.login.to_s
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
 				newMember: {
 					id: @user.id,

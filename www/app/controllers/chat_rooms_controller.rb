@@ -114,6 +114,9 @@ class ChatRoomsController < ApplicationController
 		chatroom = current_user.chat_rooms.find_by_id(params[:room_id])
 		if chatroom.owner == current_user and params[:user_id] != current_user.id
 			chatroom.chat_memberships.find_by_user_id(params[:user_id]).update_attribute(:admin, params[:admin])
+			ChatRoomChannel.broadcast_to chatroom, content: {
+				changeAdminStatus: {id: params[:user_id], admin: params[:admin]}
+			}
 		end
 	end
 

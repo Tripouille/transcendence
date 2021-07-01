@@ -16,7 +16,7 @@
 									<li class="promote_admin">Promote admin</li>
 								<%% } %>
 							<%% } %>
-							<%% if (admin && room_type != 'direct_message') { %>
+							<%% if (admin && room_type != 'direct_message' && user.id != owner_id) { %>
 								<li>Mute</li>
 								<li>Ban</li>
 							<%% } %>
@@ -45,11 +45,9 @@
 </script>
 
 <script type="template" id="messagesIntroTemplate">
-	<%% if (room_type == 'public') { %>
-		<p>Welcome to the public room <%%= name %> !</p>
-	<%% } else if (room_type == 'password_protected') { %>
-		<p>Welcome to the password protected room <%%= name %> !</p>
-	<%% } else if (room_type == 'direct_message') { %>
-		<p>Here is your dm room with <%%= name %> !</p>
+	<%% if (room_type == 'direct_message') { %>
+		<p>Here is your dm room with <%%= name %>!</p>
+	<%% } else { %>
+		<p>Welcome to the room <%%= name %>!</p>
 	<%% } %>
 </script>
