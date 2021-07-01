@@ -29,6 +29,9 @@ gem 'devise'
 # Use for download image safety
 gem "down"
 
+gem 'devise-two-factor'
+gem 'rqrcode'
+gem 'devise-token_authenticatable'
 # Jobs
 gem 'rufus-scheduler', '~> 3.2'
 # Praduction

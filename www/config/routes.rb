@@ -2,16 +2,18 @@ Rails.application.routes.draw do
   root to:'application#index'
   get '/login', to: 'login#index'
 
+  # === Root for devise connect account ===
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_scope :user do
+    delete '/users/sign_out', to: 'devise/sessions#destroy'
+  end
+
+  resource :two_factor_settings, except: [:index, :show]
+
   # === Avatar ===
   resources :users do
     get :avatar, on: :member
     post :avatar_update, on: :member
-  end
-
-  # === Root for evise connect account ===
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
-  devise_scope :user do
-    delete 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
   # === Users ===
