@@ -1,11 +1,11 @@
-version: '3'
+version: "3"
 services:
   www:
     user: "root:root"
     build: .
     env_file:
       - .environment/default.env
-      #- .environment/production.env #Uncomment for production mode
+      - .environment/production.env #Uncomment for production mode
     volumes:
       - ./www:/www
       #- ./data:/var/lib/postgresql/11/main #Uncomment to bind database

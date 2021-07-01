@@ -8,18 +8,21 @@
 
 		<script type="text/javascript">
 			window.user_id = <%= session[:user_id] %>;
+			var initCurrentUserId = <%= session[:user_id].to_json %>;
 		</script>
-		<script type="template" id="userTemplate">
-			<%%= name %>
-		</script>
+		<%= render 'templates/guilds' %>
 		<%= render 'templates/friend' %>
 		<%= render 'templates/chatRoom' %>
 		<%= render 'templates/selectMode' %>
 		<%= render 'templates/matchmaking' %>
 		<%= render 'templates/game' %>
+		<%= render 'templates/login' %>
+		<%= render 'templates/user' %>
+		<%= render 'templates/users' %>
 
 		<%= stylesheet_link_tag 'application', media: 'all' %>
 		<%= javascript_pack_tag 'application' %>
+
 	</head>
 
 	<body>

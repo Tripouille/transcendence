@@ -1,0 +1,19 @@
+<script id="userRow" type="text/template">
+	<div class="<%% if (my_user == true) { %>myUserRow<%% } else { %>userRow<%% } %>">
+		<div>
+			<p class="uppercase">Rank</p>
+			<div class="rankTrophy" id="rank<%%= rank %>">
+				<div><%%= rank %></div>
+			</div>
+		</div>
+		<div class="uppercase"><%%= username %></div>
+		<div>
+			<p class="uppercase">Guild</p>
+			<p><%%= guild_name %></p>
+		</div>
+		<div>
+			<p class="uppercase">Score<p>
+			<p><%%= score %></p>
+		</div>
+	</div>
+</script>

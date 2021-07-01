@@ -178,7 +178,7 @@ function releaseKey(dir) {
 }
 
 function sendNextMessage() {
-	if (paddleMessages.length > 0) {
+	if (paddleMessages.length > 0 && window.pongSubscription) {
 		sendingMessage = true;
 		window.pongSubscription.send(paddleMessages.pop());
 	}

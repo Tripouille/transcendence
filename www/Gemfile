@@ -26,6 +26,8 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'omniauth-marvin', '~> 1.2.0'
 # Use for communique quickly with API
 gem 'devise'
+# Use for download image safety
+gem "down"
 
 # Jobs
 gem 'rufus-scheduler', '~> 3.2'

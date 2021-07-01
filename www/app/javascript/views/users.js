@@ -1,29 +1,48 @@
 import { Users } from '../collections/users';
-import { UserView } from '../views/user';
 
-const UsersView = Backbone.View.extend({
-	tagName: "ul",
-	collection: new Users(),
+export const UsersView = Backbone.View.extend({
+    dynamicTemplate: _.template($('#userRow').html()),
+    users: new Users(),
+    allRendered: false,
+    page: 1,
 
-	initialize: function() {
-		//console.log('Users view has been initialized');
-		//this.listenTo(this.collection, "add", this.render);
-		//this.listenTo(this.collection, "remove", this.render);
-		//this.listenTo(this.collection, "change", this.render);
-	},
+    render: function () {
+        this.$el.empty();
+        this.$el.attr({id: 'guilds'});
+        this.allRendered = false;
+        this.page = 1;
+        let self = this;
+        self.$el.append('<div class="usersTable"></div>')
+        $.when(window.currentUser.fetch(), this.users.fetch()).done(function () {
+			let myUserModel = self.users.findWhere({ id: window.currentUser.id });
+			self.$el.prepend(self.dynamicTemplate(myUserModel.toJSON()));
 
-	render: function($parent) {
-		const $ul = this.$el;
-		$ul.empty();
-		this.collection.fetch({success: function(collection, response, options) {
-			for (let i = 0; i < collection.length; ++i) {
-				let userView = new UserView({model: collection.at(i)});
-				$ul.append(userView.$el);
-			}
-			$parent.append($ul);
-		}});
-		return this;
-	}
+            while (($(window).height() >= $(document).height()) && !self.allRendered)
+                self.renderPage();
+            $(window).scroll(function () {
+                if (($(window).scrollTop() + $(window).height() == $(document).height()) && !self.allRendered) {
+                    self.renderPage();
+                }
+            });
+        });
+        return this;
+    },
+    renderPage: function () {
+        let usersPage = this.users.slice((this.page - 1) * 10, this.page * 10);
+
+        if (!usersPage.length)
+            this.allRendered = true;
+        else {
+            let $usersTable = $('.usersTable');
+            const myUserId = window.currentUser.id;
+            usersPage.forEach(function (user, i) {
+                if (user.id != myUserId)
+                    $usersTable.append(this.dynamicTemplate(user.toJSON()));
+            }, this);
+            $('#rank1').prepend('<img src="assets/gemstone-gold.svg" width="50" alt="gemstone gold">');
+            $('#rank2').prepend('<img src="assets/gemstone-silver.svg" width="50" alt="gemstone silver">');
+            $('#rank3').prepend('<img src="assets/gemstone-copper.svg" width="50" alt="gemstone copper">');
+            this.page++;
+        }
+    }
 });
-
-export default UsersView;
