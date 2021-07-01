@@ -29,24 +29,39 @@ let ChatRoomView = Backbone.View.extend({
 		this.model.on('remove', this.remove, this);
 		this.on('sendMessage', this.sendMessage, this);
 
-		const room = this.model;
+		const _this = this;
 		const messages = this.messages;
 		this.subscription = consumer.subscriptions.create({
 			channel: "ChatRoomChannel",
-			room_id: room.id
+			room_id: _this.model.id
 		},
 		{
-			connected() { /*console.log('connected to chatroom', room.id);*/ },
-			disconnected() { /*console.log('disconnected from chatroom', room.id);*/ },
+			connected() { /*console.log('connected to chatroom', _this.model.id);*/ },
+			disconnected() { /*console.log('disconnected from chatroom', _this.model.id);*/ },
 			received(data) {
-				//console.log('Received data from chat room', room.id, ' : ', data.content);
-				if (data.content.message) {
+				//console.log('Received data from chat room', _this.model.id, ' : ', data.content);
+				if (data.content.message)
 					messages.add(data.content.message, {merge: true});
+				else if (data.content.newMember) {
+					const memberInArray = _this.model.get('users').find(user => user.id == data.content.newMember.id);
+					if (!memberInArray || memberInArray.status == 'offline') {
+						_this.model.get('users').push(data.content.newMember);
+						_this.render();
+					}
+				}
+				else if (data.content.memberLeaving) {
+					const memberInArray = _this.model.get('users').find(user => user.id == data.content.memberLeaving);
+					if (memberInArray && memberInArray.status != 'offline') {
+						const index = _this.model.get('users').indexOf(memberInArray);
+						_this.model.get('users').splice(index, 1);
+						_this.render();
+					}
 				}
 			}
 		});
 	},
 	render: function() {
+		//console.log('rendering chatRoom view');
 		this.$el.html(this.template(this.model.toJSONDecorated()));
 		return this;
 	},

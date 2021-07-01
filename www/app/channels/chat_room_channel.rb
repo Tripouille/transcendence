@@ -5,12 +5,25 @@ class ChatRoomChannel < ApplicationCable::Channel
 		if @chatRoom and connection.session[:user_id]
 			@user = User.find_by_id(connection.session[:user_id])
 			stream_for @chatRoom
+
+			ChatRoomChannel.broadcast_to @chatRoom, content: {
+				newMember: {
+					id: @user.id,
+					login: @user.login,
+					status: @user.status,
+					admin: @chatRoom.chat_memberships.find_by_user_id(@user.id).admin
+				}
+			}
 		else
 			reject
 		end
 	end
 
 	def unsubscribed
+		ChatRoomChannel.broadcast_to @chatRoom, content: {
+			memberLeaving: @user.id
+		}
+
 		stop_stream_for @chatRoom
 	end
 
