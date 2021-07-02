@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   post '/chat_rooms/leave', to: 'chat_rooms#leave'
   post '/chat_rooms/remove_password', to: 'chat_rooms#remove_password'
   post '/chat_rooms/add_password', to: 'chat_rooms#add_password'
+  post '/chat_rooms/change_blocked_status', to: 'chat_rooms#change_blocked_status'
   post '/chat_rooms/change_admin_status', to: 'chat_rooms#change_admin_status'
   post '/chat_rooms/change_muted_status', to: 'chat_rooms#change_muted_status'
   post '/chat_rooms/mark_as_read', to: 'chat_rooms#mark_as_read'

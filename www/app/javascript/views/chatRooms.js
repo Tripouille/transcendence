@@ -71,7 +71,7 @@ const ChatRoomsView = Backbone.View.extend({
 	submitMessage: function(e) {
 		if (e.keyCode == 13 && this.value) {
 			const chatRoomView = e.data.chatRoomViews[e.data.activeRoomId];
-			const me = chatRoomView.model.get('users').find(user => user.id == window.user_id);
+			const me = chatRoomView.getUser(window.user_id);
 			if (!me.muted) {
 				chatRoomView.trigger('sendMessage', this.value);
 				this.value = '';
@@ -82,10 +82,12 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	addMessage: function(message) {
 		if (message.get('chat_room_id') == this.activeRoomId) {
-			const messageView = new MessageView({model: message});
-			$('#chat_body').append(messageView.$el);
-			this.scrollBottom();
-			this.chatRoomViews[message.get('chat_room_id')].markAsRead();
+			if (!this.chatRoomViews[message.get('chat_room_id')].getUser(message.get('user_id')).blocked) {
+				const messageView = new MessageView({model: message});
+				$('#chat_body').append(messageView.$el);
+				this.scrollBottom();
+				this.chatRoomViews[message.get('chat_room_id')].markAsRead();
+			}
 		}
 		else {
 			this.chatRoomViews[message.get('chat_room_id')].$el.find('span.new_message').addClass('visible');
@@ -263,6 +265,13 @@ const ChatRoomsView = Backbone.View.extend({
 		this.chatRoomViews[this.activeRoomId].$el.find('span.new_message').removeClass('visible');
 		if (!this.$el.find('span.new_message:visible').length)
 			$('#chat_banner span.new_message').removeClass('visible');
+	},
+
+	changeBlockedStatus: function(blocked_user_id, blocked) {
+		Object.values(this.chatRoomViews).forEach(function(chatRoomView) {
+			chatRoomView.getUser(blocked_user_id).blocked = blocked;
+			chatRoomView.render();
+		});
 	}
 });
 

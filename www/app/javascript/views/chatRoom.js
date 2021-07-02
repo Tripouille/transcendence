@@ -17,6 +17,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.add_password": 'addPasswordForm',
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
+		"click li.block, li.unblock": "changeBlockedStatus",
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
 		"click li.mute, li.unmute": "changeMutedStatus",
 		"click li.ban": "ban"
@@ -45,35 +46,35 @@ let ChatRoomView = Backbone.View.extend({
 				if (data.content.message)
 					messages.add(data.content.message, {merge: true});
 				else if (data.content.newMember) {
-					const memberInArray = _this.model.get('users').find(user => user.id == data.content.newMember.id);
-					if (!memberInArray) {
+					const newMember = _this.getUser(data.content.newMember.id);
+					if (!newMember) {
 						_this.model.get('users').push(data.content.newMember);
 						_this.render();
 					}
-					else if (memberInArray.status == 'offline') {
-						memberInArray.status = data.content.newMember.status;
+					else if (newMember.status == 'offline') {
+						newMember.status = data.content.newMember.status;
 						_this.render();
 					}
 				}
 				else if (data.content.memberLeaving) {
-					const memberInArray = _this.model.get('users').find(user => user.id == data.content.memberLeaving);
-					if (memberInArray && memberInArray.status != 'offline') {
-						const index = _this.model.get('users').indexOf(memberInArray);
+					const memberLeaving = _this.getUser(data.content.memberLeaving);
+					if (memberLeaving && memberLeaving.status != 'offline') {
+						const index = _this.model.get('users').indexOf(memberLeaving);
 						_this.model.get('users').splice(index, 1);
 						_this.render();
 					}
 				}
 				else if (data.content.changeAdminStatus) {
-					const memberInArray = _this.model.get('users').find(user => user.id == data.content.changeAdminStatus.id);
-					if (memberInArray) {
-						memberInArray.admin = (data.content.changeAdminStatus.admin == 'true');
+					const user = _this.getUser(data.content.changeAdminStatus.id);
+					if (user) {
+						user.admin = (data.content.changeAdminStatus.admin == 'true');
 						_this.render();
 					}
 				}
 				else if (data.content.changeMutedStatus) {
-					const memberInArray = _this.model.get('users').find(user => user.id == data.content.changeMutedStatus.id);
-					if (memberInArray) {
-						memberInArray.muted = (data.content.changeMutedStatus.muted == 'true');
+					const user = _this.getUser(data.content.changeMutedStatus.id);
+					if (user) {
+						user.muted = (data.content.changeMutedStatus.muted == 'true');
 						_this.render();
 					}
 				}
@@ -85,13 +86,18 @@ let ChatRoomView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.toJSONDecorated()));
 		return this;
 	},
+	getUser(user_id) {
+		return (this.model.get('users').find(user => user.id == user_id));
+	},
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
 		$chatBody.empty();
 		$chatBody.append(this.messagesIntroTemplate(this.model.toJSONDecorated()));
 		this.messages.each(function(message) {
-			const messageView = new MessageView({model: message});
-			$chatBody.append(messageView.$el);
+			if (!this.getUser(message.get('user_id')).blocked) {
+				const messageView = new MessageView({model: message});
+				$chatBody.append(messageView.$el);
+			}
 		}, this);
 		this.trigger('selectRoom', this.model.id);
 		this.$el.addClass('active');
@@ -151,6 +157,20 @@ let ChatRoomView = Backbone.View.extend({
 		}
 		else
 			this.$el.find('ul.user_menu').hide();
+	},
+	changeBlockedStatus: function(e) {
+		const user_id = $(e.target).parent().parent().data('id');
+		const blocked = e.target.classList[0] == 'block';
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms/change_blocked_status',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {
+				blocked_user_id: user_id,
+				blocked: blocked
+			}
+		});
+		window.chatRoomsView.changeBlockedStatus(user_id, blocked);
 	},
 	changeAdminStatus: function(e) {
 		const user_id = $(e.target).parent().parent().data('id');

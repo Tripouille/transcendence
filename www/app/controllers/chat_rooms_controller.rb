@@ -16,7 +16,7 @@ class ChatRoomsController < ApplicationController
 				render json: {error: "Invalid username"} and return
 			end
 			chatroom = ChatRoom.where(room_type: "direct_message")
-								.where(id: ChatMembership.where(user_id: current_user.id).select(:chat_room_id)) #where(id: current_user.chat_memberships.select(:chat_room_id)) ?
+								.where(id: ChatMembership.where(user_id: current_user.id).select(:chat_room_id))
 								.where(id: ChatMembership.where(user_id: user_to_dm.id).select(:chat_room_id))
 								.first
 			if chatroom
@@ -114,6 +114,19 @@ class ChatRoomsController < ApplicationController
 		end
 	end
 
+	def change_blocked_status
+		chatroom = current_user.chat_rooms.find_by_id(params[:room_id])
+		user_to_block = User.find_by_id(params[:blocked_user_id])
+		if user_to_block and user_to_block != current_user
+			blocking = BlockedUser.where(user_id: current_user.id, blocked_user_id: user_to_block.id)
+			if params[:blocked] == 'true' and blocking.empty?
+				BlockedUser.create(user_id: current_user.id, blocked_user_id: user_to_block.id)
+			elsif params[:blocked] == 'false' and not blocking.empty?
+				blocking.first.destroy
+			end
+		end
+	end
+
 	def change_admin_status
 		chatroom = current_user.chat_rooms.find_by_id(params[:room_id])
 		if chatroom.owner == current_user and params[:user_id] != current_user.id
@@ -141,14 +154,16 @@ class ChatRoomsController < ApplicationController
 	end
 
 	def complete_room_infos(room)
+		last_message = room.messages.order(:created_at).last
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
 					.order(:login)
-					.select(:id, :login, :status, :admin, :muted))
+					.select(:id, :login, :status, :admin, :muted)
+					.map{|user| user.as_json().merge(blocked: BlockedUser.exists?(user_id: current_user.id, blocked_user_id: user.id))})
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
 					.map{|message| message.as_json().merge(login: message.user.login)})
 			.merge(newMessages: current_user.chat_memberships.find_by_chat_room_id(room.id).updated_at.to_f \
-						< room.messages.order(:created_at).last.created_at.to_f)
+						< (last_message ? last_message.created_at.to_f : 0.0))
 	end
 end
