@@ -12,7 +12,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       session[:user_id] = @user.id
-	    session[:user] = @user
+      session[:user] = @user
     else
       session["devise.marvin_data"] = request.env["omniauth.auth"]
       redirect_to(root_path(:anchor => 'login'))
@@ -21,8 +21,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def after_sign_in_path_for(user)
     if user.otp_required_for_login?
-      root_path(:anchor => 'otp')
+      controll_otp_two_factor_settings_path
     else
+      session[:otp] = 'true'
       if user.username === user.login
         @root = 'user/' + @user.id.to_s + '/create'
         root_path(:anchor => @root)

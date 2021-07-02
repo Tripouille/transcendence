@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   resource :two_factor_settings, except: [:index, :show] do
     post :check_otp
+    get :controll_otp
   end
 
   # === Avatar ===

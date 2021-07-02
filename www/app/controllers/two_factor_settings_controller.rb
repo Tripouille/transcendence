@@ -1,5 +1,5 @@
 class TwoFactorSettingsController < ApplicationController
-	before_action :authenticate_user!
+	skip_before_action :require_login
 
 	def new
 		if current_user.otp_required_for_login
@@ -11,10 +11,6 @@ class TwoFactorSettingsController < ApplicationController
 	end
 
 	def create
-		#unless current_user.valid_password?(enable_2fa_params[:password])
-		#  flash.now[:alert] = 'Incorrect password'
-		#  return render :new
-		#end
 		if current_user.validate_and_consume_otp!(params[:code])
 			current_user.enable_two_factor!
 
@@ -55,8 +51,18 @@ class TwoFactorSettingsController < ApplicationController
 		end
 	end
 
+	def controll_otp
+		render :layout => 'otp'
+	end
+
 	def check_otp
-		if current_user.validate_and_consume_otp!(params[:code])
+		print '-------------'
+		print params.inspect
+		print '-------------'
+		print params[:otp_attempt]
+		print '-------------'
+		if current_user.validate_and_consume_otp!(enable_2fa_params[:otp_attempt])
+			session[:otp] = 'true'
 			if current_user.username === current_user.login
 				@root = 'user/' + current_user.id.to_s + '/create'
 				redirect_to root_path(:anchor => @root)
@@ -64,8 +70,14 @@ class TwoFactorSettingsController < ApplicationController
 				redirect_to(root_path)
 			end
 		else
-			head :unauthorized
+			redirect_to(destroy_user_session_path)
 		end
+	end
+
+	private
+
+	def enable_2fa_params
+		params.require(:two_fa).permit(:otp_attempt)
 	end
 
 end

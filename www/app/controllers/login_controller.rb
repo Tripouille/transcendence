@@ -11,8 +11,13 @@ class LoginController < ApplicationController
 
 	def forbiden_login
 		@session = session[:user_id]
+		@otp = session[:otp]
 		if @session
-			redirect_to root_path
+			unless @otp
+				reset_session
+			else
+				redirect_to root_path
+			end
 		end
 	end
 
