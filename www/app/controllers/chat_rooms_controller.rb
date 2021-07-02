@@ -46,6 +46,8 @@ class ChatRoomsController < ApplicationController
 			render json: {error: "Invalid room name"}
 		elsif chatroom.users.include?(current_user)
 			render json: {error: "Already in room"}
+		elsif chatroom.chat_bans.exists?(user_id: current_user.id)
+			render json: {error: "Banned"}
 		elsif chatroom.room_type == 'password_protected' and chatroom.owner != current_user
 			render json: {password_needed: true, room_id: chatroom.id}
 		else
@@ -64,6 +66,8 @@ class ChatRoomsController < ApplicationController
 			render json: {error: "Invalid room"}
 		elsif chatroom.users.include?(current_user)
 			render json: {error: "Already in room"}
+		elsif chatroom.chat_bans.exists?(user_id: current_user.id)
+			render json: {error: "Banned"}
 		elsif not chatroom.authenticate(params[:password])
 			render json: {error: "Invalid password"}
 		else

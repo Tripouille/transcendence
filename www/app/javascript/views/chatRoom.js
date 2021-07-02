@@ -117,7 +117,10 @@ let ChatRoomView = Backbone.View.extend({
 			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 			data: {id: this.model.id}
 		});
-		consumer.subscriptions.remove(this.subscription);
+		this.removeRoom();
+	},
+	removeRoom: function() {
+		this.subscription.unsubscribe();
 		window.chatRoomsView.chatRoomsCollection.remove(this.model.id);
 		if (window.chatRoomsView.activeRoomId == this.model.id)
 			window.chatRoomsView.selectFirstRoom();

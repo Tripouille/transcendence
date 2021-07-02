@@ -26,7 +26,8 @@ class ChatRoomChannel < ApplicationCable::Channel
 	end
 
 	def receive(data)
-		if current_user.chat_memberships.find_by_chat_room_id(@roomId).muted then return end
+		membership = current_user.chat_memberships.find_by_chat_room_id(@roomId)
+		if not membership or membership.muted then return end
 
 		message = ActionController::Base.helpers.strip_tags(data['content'])
 		message_record = Message.new(user_id: current_user.id, content: message)

@@ -8,5 +8,7 @@ class ChatRoom < ApplicationRecord
 
 	has_many :messages
 
+	has_many :chat_bans
+
 	validates_uniqueness_of :name
 end

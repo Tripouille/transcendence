@@ -126,10 +126,13 @@ function connectUserChannel() {
 		connected() { /*console.log('connected to user channel');*/ },
 		disconnected() { /*console.log('disconnected from user channel');*/ },
 		received(data) {
-			console.log('Received data for user :', data.content);
+			//console.log('Received data for user :', data.content);
 			if (data.content.room) {
 				data.content.room.silent = true;
 				window.chatRoomsView.chatRoomsCollection.add(data.content.room);
+			}
+			else if (data.content.chat_ban) {
+				window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
 			}
 		}
 	});
