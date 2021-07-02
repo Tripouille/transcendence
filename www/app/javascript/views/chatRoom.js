@@ -96,10 +96,13 @@ let ChatRoomView = Backbone.View.extend({
 		this.trigger('selectRoom', this.model.id);
 		this.$el.addClass('active');
 		$('#chat_body_container input').focus();
-
+		this.markAsRead();
+	},
+	markAsRead: function() {
 		this.$el.find('span.new_message').removeClass('visible');
 		if (!$('#chat_rooms span.new_message:visible').length)
 			$('#chat_banner span.new_message').removeClass('visible');
+		this.subscription.send({mark_as_read: true});
 	},
 	sendMessage: function(content) {
 		this.subscription.send({content: content});

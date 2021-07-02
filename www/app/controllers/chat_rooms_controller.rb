@@ -143,10 +143,12 @@ class ChatRoomsController < ApplicationController
 	def complete_room_infos(room)
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
-				.order(:login)
-				.select(:id, :login, :status, :admin, :muted))
+					.order(:login)
+					.select(:id, :login, :status, :admin, :muted))
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
 					.map{|message| message.as_json().merge(login: message.user.login)})
+			.merge(newMessages: current_user.chat_memberships.find_by_chat_room_id(room.id).updated_at.to_f \
+						< room.messages.order(:created_at).last.created_at.to_f)
 	end
 end

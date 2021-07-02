@@ -85,11 +85,13 @@ const ChatRoomsView = Backbone.View.extend({
 			const messageView = new MessageView({model: message});
 			$('#chat_body').append(messageView.$el);
 			this.scrollBottom();
+			this.chatRoomViews[message.get('chat_room_id')].markAsRead();
 		}
-		else
+		else {
 			this.chatRoomViews[message.get('chat_room_id')].$el.find('span.new_message').addClass('visible');
-		if (message.get('chat_room_id') != this.activeRoomId || !window.chat_out) {
-			$('#chat_banner span.new_message').addClass('visible');
+			if (message.get('chat_room_id') != this.activeRoomId || !window.chat_out) {
+				$('#chat_banner span.new_message').addClass('visible');
+			}
 		}
 	},
 	scrollBottom: function() {

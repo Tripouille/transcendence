@@ -53,6 +53,7 @@ Rails.application.routes.draw do
   post '/chat_rooms/add_password', to: 'chat_rooms#add_password'
   post '/chat_rooms/change_admin_status', to: 'chat_rooms#change_admin_status'
   post '/chat_rooms/change_muted_status', to: 'chat_rooms#change_muted_status'
+  post '/chat_rooms/mark_as_read', to: 'chat_rooms#mark_as_read'
   resources :chat_bans, only: [:create]
 
 end
