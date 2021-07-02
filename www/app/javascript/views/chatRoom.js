@@ -18,7 +18,8 @@ let ChatRoomView = Backbone.View.extend({
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
-		"click li.mute, li.unmute": "changeMutedStatus"
+		"click li.mute, li.unmute": "changeMutedStatus",
+		"click li.ban": "ban"
 	},
 
 	initialize: function() {
@@ -170,6 +171,18 @@ let ChatRoomView = Backbone.View.extend({
 				room_id: this.model.id,
 				user_id: user_id,
 				muted: muted
+			}
+		});
+	},
+	ban: function(e) {
+		const user_id = $(e.target).parent().parent().data('id');
+		$.ajax({
+			type: 'POST',
+			url: '/chat_bans',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {
+				chat_room_id: this.model.id,
+				user_id: user_id
 			}
 		});
 	}

@@ -2,16 +2,15 @@ class ChatRoomChannel < ApplicationCable::Channel
 	def subscribed
 		@roomId = params["room_id"]
 		@chatRoom = ChatRoom.find_by_id(@roomId)
-		if @chatRoom and connection.session[:user_id]
-			@user = User.find_by_id(connection.session[:user_id])
+		if @chatRoom and current_user
 			stream_for @chatRoom
 
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
 				newMember: {
-					id: @user.id,
-					login: @user.login,
-					status: @user.status == 'offline' ? 'online' : @user.status,
-					admin: @chatRoom.chat_memberships.find_by_user_id(@user.id).admin
+					id: current_user.id,
+					login: current_user.login,
+					status: current_user.status == 'offline' ? 'online' : current_user.status,
+					admin: @chatRoom.chat_memberships.find_by_user_id(current_user.id).admin
 				}
 			}
 		else
@@ -21,22 +20,23 @@ class ChatRoomChannel < ApplicationCable::Channel
 
 	def unsubscribed
 		ChatRoomChannel.broadcast_to @chatRoom, content: {
-			memberLeaving: @user.id
+			memberLeaving: current_user.id
 		}
+		stop_stream_for @chatRoom
 	end
 
 	def receive(data)
-		if @user.chat_memberships.find_by_chat_room_id(@roomId).muted then return end
+		if current_user.chat_memberships.find_by_chat_room_id(@roomId).muted then return end
 
 		message = ActionController::Base.helpers.strip_tags(data['content'])
-		message_record = Message.new(user_id: @user.id, content: message)
+		message_record = Message.new(user_id: current_user.id, content: message)
 		@chatRoom.messages << message_record
 		@chatRoom.save
 		ChatRoomChannel.broadcast_to @chatRoom, content: {
 			message: message_record.as_json().merge(login: message_record.user.login)
 		}
 		if @chatRoom.room_type == 'direct_message'
-			membership = @chatRoom.chat_memberships.where.not(user_id: @user.id).first
+			membership = @chatRoom.chat_memberships.where.not(user_id: current_user.id).first
 			if membership.hidden
 				membership.update_attribute(:hidden, false)
 				UserChannel.broadcast_to membership.user, content: {

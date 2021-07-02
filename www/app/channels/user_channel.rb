@@ -1,20 +1,19 @@
 class UserChannel < ApplicationCable::Channel
 	def subscribed
-		@user = User.find_by_id(connection.session[:user_id])
-		if @user
-			@user.update(status: 'online')
-			stream_for @user
+		if current_user
+			current_user.update(status: 'online')
+			stream_for current_user
 		else
 			reject
 		end
 	end
 
 	def unsubscribed
-		@user.update(status: 'offline') if @user
-		stop_stream_for @user
+		current_user.update(status: 'offline') if current_user
+		stop_stream_for current_user
 	end
 
 	def receive(data)
-		puts 'data received in channel from ' + @user.id + ' : ' + data.inspect
+		puts 'data received in channel from ' + current_user.id + ' : ' + data.inspect
 	end
 end
