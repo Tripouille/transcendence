@@ -22,6 +22,22 @@ export const UserTfaView = Backbone.View.extend({
 			this.$el.attr({id: 'user'});
 			this.$el.append('<div class="loading">Loading...</div>');
 			this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
+
+			this.model.fetch().done(function() {
+				if (!_thisView.model.get('otp_required_for_login')) {
+					$.ajax({
+						type: "GET",
+						url: "/two_factor_settings/new"
+					}).done(function(data) {
+						$(".otp_secret").text(_thisView.model.get('otp_secret'))
+						_thisView.chargePage(_thisView)
+					});
+				} else {
+					_thisView.template = _.template($('#user-tfa-disable').html())
+					_thisView.chargePage(_thisView)
+				}
+			});
+
 			if (!_thisView.model.get('otp_required_for_login')) {
 				$.ajax({
 					type: "GET",
@@ -86,9 +102,7 @@ export const UserTfaView = Backbone.View.extend({
 				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
 			}
 		}).done(function(response) {
-			if(response != 0){
-				console.log(response);
-			}
+			Backbone.history.navigate("user", { trigger: true })
 		});
 	},
 

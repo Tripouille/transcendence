@@ -38,16 +38,14 @@ class TwoFactorSettingsController < ApplicationController
 	end
 
 	def destroy
-		respond_to do |format|
-			if current_user.disable_two_factor!
-				flash[:notice] = 'Successfully disabled two factor authentication.'
-      			redirect_to root_path
+		if current_user.disable_two_factor!
+			flash[:notice] = 'Successfully disabled two factor authentication.'
+			head :ok
 				#redirect_to edit_user_registration_path
-			else
-				flash[:alert] = 'Could not disable two factor authentication.'
-      			redirect_back fallback_location: root_path
+		else
+			flash[:alert] = 'Could not disable two factor authentication.'
+			head :not_acceptable
 				#redirect_back fallback_location: root_path
-			end
 		end
 	end
 
@@ -56,11 +54,6 @@ class TwoFactorSettingsController < ApplicationController
 	end
 
 	def check_otp
-		print '-------------'
-		print params.inspect
-		print '-------------'
-		print params[:otp_attempt]
-		print '-------------'
 		if current_user.validate_and_consume_otp!(enable_2fa_params[:otp_attempt])
 			session[:otp] = 'true'
 			if current_user.username === current_user.login
