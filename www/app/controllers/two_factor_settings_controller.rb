@@ -18,7 +18,7 @@ class TwoFactorSettingsController < ApplicationController
       		redirect_to root_path(:anchor => 'user')
 		else
 			flash.now[:alert] = 'Incorrect Code'
-			redirect_to root_path(:anchor => 'user')
+			head :not_acceptable
 		end
 	end
 

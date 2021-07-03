@@ -28,12 +28,12 @@ export const UserTfaView = Backbone.View.extend({
 					url: "/two_factor_settings/new"
 				}).done(function() {
 					_thisView.model.fetch().done(function() {
-						_thisView.template = _.template($('#user-tfa-disable').html());
 						_thisView.chargePage(_thisView);
 					});
 				});
 			} else {
 				this.model.fetch().done(function() {
+					_thisView.template = _.template($('#user-tfa-disable').html());
 					_thisView.chargePage(_thisView)
 				});
 			}
@@ -49,6 +49,7 @@ export const UserTfaView = Backbone.View.extend({
 
 	onOtpFormSubmit: function(e) {
 		e.preventDefault();
+		let _thisView = this;
 		var fd = new FormData();
 		const code = $('#code').val().trim();
 		fd.append('code',code);
@@ -61,10 +62,13 @@ export const UserTfaView = Backbone.View.extend({
 			headers: {
 				'X-Transaction': 'POST Example',
 				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+			},
+			error: function(model, response, options){
+				_thisView.showPopUpError("Code is not valide")
 			}
 		}).done(function(response) {
 			if(response != 0){
-				console.log(response);
+				Backbone.history.navigate("user", { trigger: true })
 			}
 		});
 
@@ -99,18 +103,6 @@ export const UserTfaView = Backbone.View.extend({
 				$erroPopUp.css("display", "none");
 			});
 		}, 4000);
-	},
-
-	qrcode: function(value){
-		let that = this;
-		 let qrcode = new QRCode('qrcode', {// qrcode is the container ID
-		 width: 210, // width
-		 height: 210, // height
-		 text: value, // QR code content is URL
-		 // render:'canvas', // set the rendering method (there are two methods table and canvas, the default is canvas)
-		 // background:'#f0f', // background color
-		 // foreground:'#ff0' // foreground color
-		})
 	}
 
 });
