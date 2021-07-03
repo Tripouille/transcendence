@@ -1,7 +1,7 @@
 class FriendshipsController < ApplicationController
 
 	def create
-		friend = User.find_by_login(params[:friend_name])
+		friend = User.find_by("username = ? OR login = ?", params[:friend_name], params[:friend_name])
 		if friend
 			current_user.friendships.create(:friend_id => friend.id)
 			render json: {status: 'success'}
@@ -11,7 +11,7 @@ class FriendshipsController < ApplicationController
 	end
 
 	def all
-		render json: current_user.friends.order(Arel.sql("status = 'offline', login")).select(:id, :login, :status)
+		render json: current_user.friends.order(Arel.sql("status = 'offline', username")).select(:id, :username, :status)
 	end
 
 	def remove

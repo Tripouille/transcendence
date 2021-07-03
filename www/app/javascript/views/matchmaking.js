@@ -22,11 +22,11 @@ const MatchmakingView = Backbone.View.extend({
 	displayPlayers: function(data) {
 		if (data.left_player) {
 			$('#left_player .player_name').removeClass('loading');
-			$('#left_player .player_name').text(data.left_player.login);
+			$('#left_player .player_name').text(data.left_player.username);
 		}
 		if (data.right_player) {
 			$('#right_player .player_name').removeClass('loading');
-			$('#right_player .player_name').text(data.right_player.login);
+			$('#right_player .player_name').text(data.right_player.username);
 		}
 	},
 

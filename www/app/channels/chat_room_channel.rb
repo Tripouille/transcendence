@@ -8,7 +8,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
 				newMember: {
 					id: current_user.id,
-					login: current_user.login,
+					username: current_user.username,
 					status: current_user.status == 'offline' ? 'online' : current_user.status,
 					admin: @chatRoom.chat_memberships.find_by_user_id(current_user.id).admin
 				}
@@ -35,7 +35,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 			@chatRoom.messages << message_record
 			@chatRoom.save
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
-				message: message_record.as_json().merge(login: message_record.user.login)
+				message: message_record.as_json().merge(username: message_record.user.username)
 			}
 			if @chatRoom.room_type == 'direct_message'
 				membership = @chatRoom.chat_memberships.where.not(user_id: current_user.id).first
@@ -55,10 +55,10 @@ class ChatRoomChannel < ApplicationCable::Channel
 	def complete_room_infos(room)
 		room.as_json(:only => [:id, :owner_id, :name, :room_type])
 			.merge(users: room.users
-				.order(:login)
-				.select(:id, :login, :status, :admin))
+				.order(:username)
+				.select(:id, :username, :status, :admin))
 			.merge(messages: room.messages.includes(:user)
 					.order(:created_at)
-					.map{|message| message.as_json().merge(login: message.user.login)})
+					.map{|message| message.as_json().merge(username: message.user.username)})
 	end
 end

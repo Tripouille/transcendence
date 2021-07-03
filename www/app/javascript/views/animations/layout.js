@@ -120,7 +120,7 @@ $(function() {
 	});
 
 	$(document).on('click', function(e) {
-		if (e.target !== $account_button[0])
+		if (!$account_button.is(e.target) && !$account_button.has(e.target).length)
 			$account_menu.hide();
 		if (window.active_friend) {
 			const $friend_divs = $friends.find('div.friend');

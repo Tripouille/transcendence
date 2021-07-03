@@ -4,10 +4,10 @@
 		<%% _.each(users, function(user) { %>
 			<%% if (user.status != 'offline') { %>
 				<div data-id="<%%= user.id %>" class="room_member">
-					<p class="member_name"><%%= user.login %></p>
+					<p class="member_name"><%%= user.username %></p>
 					<%% if (user.id != window.user_id) { %>
 						<ul class="user_menu">
-							<li>See profile</li>
+							<li><a href="#">See profile</a></li>
 							<li>Challenge</li>
 							<%% if (user.blocked) { %>
 								<li class="unblock">Unblock</li>
@@ -49,7 +49,7 @@
 </script>
 
 <script type="template" id="messageTemplate">
-	<span><%%= login %></span>
+	<span><%%= username %></span>
 	<span><%%= content %></span>
 </script>
 

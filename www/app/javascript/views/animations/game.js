@@ -102,8 +102,8 @@ function initializeFromServer(data) {
 	if (BH.ball) return ;
 
 	// Initialize players infos
-	$('#player_infos_left .name').text(data.players.left.login);
-	$('#player_infos_right .name').text(data.players.right.login);
+	$('#player_infos_left .name').text(data.players.left.username);
+	$('#player_infos_right .name').text(data.players.right.username);
 	$('.player_infos p, .player_infos img').css('visibility', 'visible');
 
 	// Initialize paddle infos
