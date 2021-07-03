@@ -5,6 +5,7 @@ const FriendsListView = Backbone.View.extend({
 	friendsCollection: new Friends(),
 
 	events: {
+		"click #friends_menu li.send_dm": "sendDm",
 		"click #friends_menu #remove_friend": "removeFriend"
 	},
 
@@ -39,6 +40,9 @@ const FriendsListView = Backbone.View.extend({
 		this.friendsCollection.get(window.active_friend).destroy();
 		if (!this.friendsCollection.length)
 			this.$el.hide();
+	},
+	sendDm: function() {
+		window.chatRoomsView.sendDm(window.active_friend);
 	},
 	actualize: function() {
 		setInterval(() => {this.friendsCollection.fetch();}, 5000);

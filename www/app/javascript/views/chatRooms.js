@@ -167,12 +167,14 @@ const ChatRoomsView = Backbone.View.extend({
 				},
 				success: function(response) {
 					if (response.error) {
-						chatRoomsView.animateInvalidInput($room_name_input);
+						window.chatRoomsView.animateInvalidInput($room_name_input);
 						console.log('Error when trying to create chat room : ' + response.error);
 					}
 					else {
-						chatRoomsView.chatRoomsCollection.add(response.room);
-						chatRoomsView.cancelForm($form);
+						window.chatRoomsView.chatRoomsCollection.add(response.room);
+						window.chatRoomsView.cancelForm($form);
+						window.chatRoomsView.activeRoomId = response.room.id;
+						window.chatRoomsView.chatRoomViews[response.room.id].selectRoomAndRenderMessages();
 					}
 				}
 			});
@@ -252,6 +254,24 @@ const ChatRoomsView = Backbone.View.extend({
 			success: function() {
 				chatRoomsView.chatRoomsCollection.get($form.data('room-id')).set('room_type', 'password_protected');
 				chatRoomsView.cancelForm($form);
+			}
+		});
+	},
+	sendDm: function(user_id) {
+		$.ajax({
+			type: 'POST',
+			url: '/chat_rooms',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {
+				user_id: user_id,
+				room_type: 'direct_message'
+			},
+			success: function(response) {
+				if (!response.error) {
+					window.chatRoomsView.chatRoomsCollection.add(response.room);
+					window.chatRoomsView.activeRoomId = response.room.id;
+					window.chatRoomsView.chatRoomViews[response.room.id].selectRoomAndRenderMessages();
+				}
 			}
 		});
 	},

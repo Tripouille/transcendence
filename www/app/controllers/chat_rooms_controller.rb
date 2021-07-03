@@ -11,7 +11,11 @@ class ChatRoomsController < ApplicationController
 			head :bad_request and return
 		end
 		if params[:room_type] == "direct_message"
-			user_to_dm = User.find_by("username = ? OR login = ?", params[:name], params[:name])
+			if params[:name].present?
+				user_to_dm = User.find_by("username = ? OR login = ?", params[:name], params[:name])
+			elsif params[:user_id].present?
+				user_to_dm = User.find_by_id(params[:user_id])
+			end
 			if not user_to_dm
 				render json: {error: "Invalid username"} and return
 			end
@@ -24,7 +28,7 @@ class ChatRoomsController < ApplicationController
 			else
 				chatroom = ChatRoom.new(room_type: "direct_message", owner: current_user)
 				chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
-				chatroom.chat_memberships.build(user_id: user_to_dm.id, admin: false)
+				chatroom.chat_memberships.build(user_id: user_to_dm.id, admin: false, hidden: true)
 				chatroom.save
 			end
 			render json: {room: complete_room_infos(chatroom)}
