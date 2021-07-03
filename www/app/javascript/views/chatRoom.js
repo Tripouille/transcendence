@@ -89,12 +89,16 @@ let ChatRoomView = Backbone.View.extend({
 	getUser(user_id) {
 		return (this.model.get('users').find(user => user.id == user_id));
 	},
+	isUserBlocked(user_id) {
+		const user = this.getUser(user_id);
+		return (user ? user.blocked : false);
+	},
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
 		$chatBody.empty();
 		$chatBody.append(this.messagesIntroTemplate(this.model.toJSONDecorated()));
 		this.messages.each(function(message) {
-			if (!this.getUser(message.get('user_id')).blocked) {
+			if (!this.isUserBlocked(message.get('user_id'))) {
 				const messageView = new MessageView({model: message});
 				$chatBody.append(messageView.$el);
 			}

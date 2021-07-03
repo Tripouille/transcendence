@@ -82,7 +82,7 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	addMessage: function(message) {
 		if (message.get('chat_room_id') == this.activeRoomId) {
-			if (!this.chatRoomViews[message.get('chat_room_id')].getUser(message.get('user_id')).blocked) {
+			if (!this.chatRoomViews[message.get('chat_room_id')].isUserBlocked(message.get('user_id'))) {
 				const messageView = new MessageView({model: message});
 				$('#chat_body').append(messageView.$el);
 				this.scrollBottom();
@@ -145,7 +145,7 @@ const ChatRoomsView = Backbone.View.extend({
 		const $room_password_input = $form.find('input.room_password');
 		const $room_type_inputs = $form.find('input[name=room_type]:checked');
 		if ($room_type_inputs.val() == 'password_protected'
-		&& !$room_password_input.val().trim()) {
+		&& !$room_password_input.val()) {
 			window.chatRoomsView.animateInvalidInput($room_password_input);
 			valid_form = false;
 		}
@@ -289,8 +289,11 @@ const ChatRoomsView = Backbone.View.extend({
 
 	changeBlockedStatus: function(blocked_user_id, blocked) {
 		Object.values(this.chatRoomViews).forEach(function(chatRoomView) {
-			chatRoomView.getUser(blocked_user_id).blocked = blocked;
-			chatRoomView.render();
+			const user = chatRoomView.getUser(blocked_user_id);
+			if (user) {
+				user.blocked = blocked;
+				chatRoomView.render();
+			}
 		});
 	}
 });
