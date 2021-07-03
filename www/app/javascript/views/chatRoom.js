@@ -17,6 +17,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.add_password": 'addPasswordForm',
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
+		"click li.challenge": "challenge",
 		"click li.block, li.unblock": "changeBlockedStatus",
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
 		"click li.mute, li.unmute": "changeMutedStatus",
@@ -108,6 +109,7 @@ let ChatRoomView = Backbone.View.extend({
 		this.$el.find('span.new_message').removeClass('visible');
 		if (!$('#chat_rooms span.new_message:visible').length)
 			$('#chat_banner span.new_message').removeClass('visible');
+		this.model.set('newMessages', false);
 		this.subscription.send({mark_as_read: true});
 	},
 	sendMessage: function(content) {
@@ -157,6 +159,10 @@ let ChatRoomView = Backbone.View.extend({
 		}
 		else
 			this.$el.find('ul.user_menu').hide();
+	},
+	challenge: function(e) {
+		const user_id = $(e.target).parent().parent().data('id');
+		window.userSubscription.send({challenge: user_id});
 	},
 	changeBlockedStatus: function(e) {
 		const user_id = $(e.target).parent().parent().data('id');

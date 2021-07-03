@@ -260,7 +260,7 @@ $pellet-size: calc(0.4 * #{$aside-font-size});
 			cursor: pointer;
 		}
 		&.active {
-			background-color: $veryverydarkgreen;
+			font-weight: bold;
 		}
 
 		span {

@@ -57,6 +57,7 @@ const ChatRoomsView = Backbone.View.extend({
 			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
 		}
 		else {
+			chatRoomView.model.set('newMessages', true);
 			chatRoomView.$el.find('span.new_message').addClass('visible');
 			$('#chat_banner span.new_message').addClass('visible');
 		}
@@ -81,19 +82,20 @@ const ChatRoomsView = Backbone.View.extend({
 		}
 	},
 	addMessage: function(message) {
+		const chatRoomView = this.chatRoomViews[message.get('chat_room_id')];
 		if (message.get('chat_room_id') == this.activeRoomId) {
-			if (!this.chatRoomViews[message.get('chat_room_id')].isUserBlocked(message.get('user_id'))) {
+			if (!chatRoomView.isUserBlocked(message.get('user_id'))) {
 				const messageView = new MessageView({model: message});
 				$('#chat_body').append(messageView.$el);
 				this.scrollBottom();
-				this.chatRoomViews[message.get('chat_room_id')].markAsRead();
+				chatRoomView.markAsRead();
 			}
 		}
 		else {
-			this.chatRoomViews[message.get('chat_room_id')].$el.find('span.new_message').addClass('visible');
-			if (message.get('chat_room_id') != this.activeRoomId || !window.chat_out) {
+			chatRoomView.model.set('newMessages', true);
+			chatRoomView.$el.find('span.new_message').addClass('visible');
+			if (message.get('chat_room_id') != this.activeRoomId || !window.chat_out)
 				$('#chat_banner span.new_message').addClass('visible');
-			}
 		}
 	},
 	scrollBottom: function() {
@@ -282,7 +284,9 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 
 	unfoldTchat: function() {
-		this.chatRoomViews[this.activeRoomId].$el.find('span.new_message').removeClass('visible');
+		const activeChatRoomView = this.chatRoomViews[this.activeRoomId];
+		activeChatRoomView.$el.find('span.new_message').removeClass('visible');
+		activeChatRoomView.model.set('newMessages', false);
 		if (!this.$el.find('span.new_message:visible').length)
 			$('#chat_banner span.new_message').removeClass('visible');
 	},
