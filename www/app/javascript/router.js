@@ -18,7 +18,6 @@ import { UsersView } from 'views/users';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
 import { UserTfaView } from './views/user/userTfa';
-import { UserOtpView } from './views/user/userOtp';
 
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
@@ -41,7 +40,6 @@ $(function() {
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
 		userTfaView: new UserTfaView({ el: $main }),
-		userOtpView: new UserOtpView({ el: $main }),
 
 		routes: {
 			"": "selectMode",
@@ -56,7 +54,6 @@ $(function() {
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
 			"user/:id/tfa": "tfa",
-			"otp": "checkOtp"
 		},
 
 		execute: function (callback, args, name) {
@@ -120,11 +117,6 @@ $(function() {
 		createUser: function(id) {
 			console.log("> Create User - Page - " + id)
 			this.userCreateView.render(id);
-		},
-
-		checkOtp: function(id) {
-			console.log("> Check Otp - Page - " + id)
-			this.userOtpView.render();
 		},
 
 		tfa: function(id) {
