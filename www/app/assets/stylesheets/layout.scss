@@ -180,6 +180,10 @@ $friends-width: 15vw;
 		height: $banners-font-size;
 		width: $banners-font-size;
 		color: lightgray;
+		&:hover {
+			color: white;
+			border-color: white;
+		}
 	}
 
 	#add_friend {
@@ -204,7 +208,7 @@ $friends-width: 15vw;
 			color: red;
 			position: absolute;
 			top: 100%;
-			left: calc(0.02 * #{$friends-width});
+			left: 0;
 			height: 100%;
 			width: 100%;
 			background-color: black;
@@ -464,6 +468,9 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 						font-size: calc(0.9 * #{$chat-room-font-size});
 						li {
 							padding: 2px;
+							a {
+								text-decoration: none;
+							}
 							&:hover {
 								background-color: $veryverydarkgreen;
 								cursor: pointer;

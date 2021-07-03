@@ -2,6 +2,8 @@
 $link-width: calc(0.5 * #{$main-width});
 $link-height: calc(0.4 * #{$main-height});
 $link-font-size: calc(16 * #{$responsive-ratio});
+$link-border-width: calc(1 * #{$responsive-ratio});
+$link-hover-border-width: calc(2 * #{$link-border-width});
 
 #selectMode {
 	display: flex;
@@ -12,19 +14,19 @@ $link-font-size: calc(16 * #{$responsive-ratio});
 	& > a {
 		width: $link-width;
 		text-align: center;
-		border-width: 5px;
+		border-width: $link-border-width;
 		border-color: lightgreen;
 		border-style: ridge groove groove ridge;
 		background-color: $verydarkgreen;
 		text-decoration: none;
 		border-radius: calc(0.1 * Min(#{$link-height}, #{$link-width}));
 		height: $link-height;
-		line-height: calc(#{$link-height} - 10px);
+		line-height: calc(#{$link-height} - calc(2 * #{$link-border-width}));
 		font-size: $link-font-size;
 		text-transform: uppercase;
 		&:hover {
-			border-width: 10px;
-			line-height: calc(#{$link-height} - 20px);
+			border-width: $link-hover-border-width;
+			line-height: calc(#{$link-height} - calc(2 * #{$link-hover-border-width}));
 		}
 	}
 }

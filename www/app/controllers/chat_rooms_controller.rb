@@ -93,6 +93,9 @@ class ChatRoomsController < ApplicationController
 				if best_membership
 					best_membership.update_attribute(:admin, true)
 					chatroom.update_attribute(:owner, best_membership.user)
+					ChatRoomChannel.broadcast_to chatroom, content: {
+						changeOwner: best_membership.user_id
+					}
 				end
 			end
 		end

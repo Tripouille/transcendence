@@ -51,6 +51,10 @@ function addFriend(name) {
 $(function() {
 	let timer = null;
 	$(window).on('resize', function() {
+		const $friend_divs = $friends.find('div.friend');
+		$friend_divs.removeClass('active');
+		$friends_menu.hide();
+		window.active_friend = null;
 		if (timer) {
 			clearTimeout(timer);
 			timer = null;

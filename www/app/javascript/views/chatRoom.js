@@ -43,41 +43,37 @@ let ChatRoomView = Backbone.View.extend({
 			disconnected() { /*console.log('disconnected from chatroom', _this.model.id);*/ },
 			received(data) {
 				//console.log('Received data from chat room', _this.model.get('name'), ' : ', data.content);
-				if (data.content.message)
+				if (data.content.message) {
 					messages.add(data.content.message, {merge: true});
-				else if (data.content.newMember) {
+					return ;
+				}
+				if (data.content.newMember) {
 					const newMember = _this.getUser(data.content.newMember.id);
-					if (!newMember) {
+					if (!newMember)
 						_this.model.get('users').push(data.content.newMember);
-						_this.render();
-					}
-					else if (newMember.status == 'offline') {
+					else if (newMember.status == 'offline')
 						newMember.status = data.content.newMember.status;
-						_this.render();
-					}
 				}
 				else if (data.content.memberLeaving) {
 					const memberLeaving = _this.getUser(data.content.memberLeaving);
 					if (memberLeaving && memberLeaving.status != 'offline') {
 						const index = _this.model.get('users').indexOf(memberLeaving);
 						_this.model.get('users').splice(index, 1);
-						_this.render();
 					}
 				}
 				else if (data.content.changeAdminStatus) {
 					const user = _this.getUser(data.content.changeAdminStatus.id);
-					if (user) {
+					if (user)
 						user.admin = (data.content.changeAdminStatus.admin == 'true');
-						_this.render();
-					}
 				}
 				else if (data.content.changeMutedStatus) {
 					const user = _this.getUser(data.content.changeMutedStatus.id);
-					if (user) {
+					if (user)
 						user.muted = (data.content.changeMutedStatus.muted == 'true');
-						_this.render();
-					}
 				}
+				else if (data.content.changeOwner)
+					_this.model.set('owner_id', data.content.changeOwner);
+				_this.render();
 			}
 		});
 	},
