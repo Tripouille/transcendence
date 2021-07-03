@@ -14,6 +14,7 @@ import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
 import { UserView } from './views/user/user';
+import { UserShowView } from './views/user/userShow';
 import { UsersView } from 'views/users';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
@@ -37,6 +38,7 @@ $(function() {
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
 		userView: new UserView({ el: $main }),
+		userShowView: new UserShowView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
 		userTfaView: new UserTfaView({ el: $main }),
@@ -51,6 +53,7 @@ $(function() {
 			"guilds/:id": "displayguild",
 			"users": "users",
 			"user": "user",
+			"user/:id/show": "userShow",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
 			"user/:id/tfa": "tfa",
@@ -107,6 +110,11 @@ $(function() {
 		user: function() {
 			console.log("> User - Page")
 			this.userView.render();
+		},
+
+		userShow: function(id) {
+			console.log("> User - Page")
+			this.userShowView.render(id);
 		},
 
 		updateUser: function(id) {

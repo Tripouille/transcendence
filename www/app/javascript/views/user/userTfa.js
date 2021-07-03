@@ -22,20 +22,21 @@ export const UserTfaView = Backbone.View.extend({
 			this.$el.attr({id: 'user'});
 			this.$el.append('<div class="loading">Loading...</div>');
 			this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
-			this.model.fetch().done(function() {
-				console.log(_thisView.model);
-				if (!_thisView.model.get('otp_required_for_login')) {
-					$.ajax({
-						type: "GET",
-						url: "/two_factor_settings/new"
-					}).done(function(data) {
-						_thisView.chargePage(_thisView)
+			if (!_thisView.model.get('otp_required_for_login')) {
+				$.ajax({
+					type: "GET",
+					url: "/two_factor_settings/new"
+				}).done(function() {
+					_thisView.model.fetch().done(function() {
+						_thisView.template = _.template($('#user-tfa-disable').html());
+						_thisView.chargePage(_thisView);
 					});
-				} else {
-					_thisView.template = _.template($('#user-tfa-disable').html())
+				});
+			} else {
+				this.model.fetch().done(function() {
 					_thisView.chargePage(_thisView)
-				}
-			});
+				});
+			}
 		};
 	},
 
