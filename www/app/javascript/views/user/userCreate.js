@@ -47,7 +47,7 @@ export const UserCreateView = Backbone.View.extend({
 						_thisView.showPopUpError("Server error.");
 				}
 			}).done(function() {
-				Backbone.history.navigate("user", { trigger: true })
+				Backbone.history.navigate("game", { trigger: true })
 			});
 		}
 	},
