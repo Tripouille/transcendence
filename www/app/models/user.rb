@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :chat_rooms, :through => :chat_memberships
   has_many :messages
   has_many :chat_bans
+  has_many :duel_requests
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

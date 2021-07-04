@@ -28,19 +28,19 @@ let ChatRoomView = Backbone.View.extend({
 		this.$el.attr({id: this.model.id});
 		this.messages = new Messages();
 		this.messages.set(this.model.get('messages'));
-		this.render();
 		this.model.on('change', this.render, this);
 		this.model.on('remove', this.remove, this);
 		this.on('sendMessage', this.sendMessage, this);
 
 		const _this = this;
 		const messages = this.messages;
+		this.connected = false;
 		this.subscription = consumer.subscriptions.create({
 			channel: "ChatRoomChannel",
 			room_id: _this.model.id
 		},
 		{
-			connected() { /*console.log('connected to chatroom', _this.model.get('name'));*/ },
+			connected() { _this.connected = true; /*console.log('connected to chatroom', _this.model.get('name'));*/ },
 			disconnected() { /*console.log('disconnected from chatroom', _this.model.id);*/ },
 			received(data) {
 				//console.log('Received data from chat room', _this.model.get('name'), ' : ', data.content);
@@ -77,6 +77,7 @@ let ChatRoomView = Backbone.View.extend({
 				_this.render();
 			}
 		});
+		this.render();
 	},
 	render: function() {
 		//console.log('rendering chatRoom view', this.model.get('name'), ', model = ', this.model.attributes);
@@ -89,6 +90,12 @@ let ChatRoomView = Backbone.View.extend({
 	isUserBlocked(user_id) {
 		const user = this.getUser(user_id);
 		return (user ? user.blocked : false);
+	},
+	waitForConnection: function() {
+		if (this.connected)
+			this.markAsRead();
+		else
+			setTimeout(this.waitForConnection.bind(this), 50);
 	},
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
@@ -103,7 +110,7 @@ let ChatRoomView = Backbone.View.extend({
 		this.trigger('selectRoom', this.model.id);
 		this.$el.addClass('active');
 		$('#chat_body_container input').focus();
-		this.markAsRead();
+		setTimeout(this.waitForConnection.bind(this), 50);
 	},
 	markAsRead: function() {
 		this.$el.find('span.new_message').removeClass('visible');

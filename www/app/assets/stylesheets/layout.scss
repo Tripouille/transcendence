@@ -549,12 +549,52 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				&.mine {
 					text-align: right;
 				}
-				span:first-child { //the author's name
+				> span:first-child { //the author's name
 					width: min-content;
 				}
-				span:last-child { //the message content
+				> span:last-child { //the message content
 					display: block;
 					font-family: sans-serif;
+
+					.challenge {
+						//border: 1px red solid;
+						@extend %bordered;
+						text-transform: uppercase;
+						margin-top: calc(0.5 * #{$responsive-ratio});
+						text-align: center;
+						font-family: 'screen';
+						.challenge_intro {
+							padding: calc(0.5 * #{$responsive-ratio}) 0;
+							.time_left:before {
+								content: "50";
+								animation-name: countdown;
+								animation-duration: 50s;
+								animation-timing-function: steps(50, jump-none);
+								animation-fill-mode: forwards;
+							}
+							@keyframes countdown {
+								0% {content: "50";}	2% {content: "49";}	4% {content: "48";}	6% {content: "47";}	8% {content: "46";}	10% {content: "45";} 12% {content: "44";} 14% {content: "43";} 16% {content: "42";} 18% {content: "41";} 20% {content: "40";} 22% {content: "39";} 23% {content: "38";} 26% {content: "37";} 28% {content: "36";} 30% {content: "35";} 32% {content: "34";} 34% {content: "33";} 36% {content: "32";} 38% {content: "31";} 40% {content: "30";} 42% {content: "29";} 43% {content: "28";} 46% {content: "27";} 48% {content: "26";} 50% {content: "25";} 52% {content: "24";} 54% {content: "23";} 56% {content: "22";} 58% {content: "21";} 60% {content: "20";} 62% {content: "19";} 63% {content: "18";} 66% {content: "17";} 68% {content: "16";} 70% {content: "15";} 72% {content: "14";} 74% {content: "13";} 76% {content: "12";} 78% {content: "11";} 80% {content: "10";} 82% {content: "9";} 83% {content: "8";} 86% {content: "7";} 88% {content: "6";} 90% {content: "5";} 92% {content: "4";} 94% {content: "3";} 96% {content: "2";} 98% {content: "1";} 100% {content: "0";}
+							}
+						}
+						.challenge_answers {
+							display: flex;
+							justify-content: stretch;
+							.challenge_answer {
+								flex: 1;
+								padding: calc(0.5 * #{$responsive-ratio}) 0;
+								&.accept {
+									background-color: green;
+								}
+								&.decline {
+									background-color: red;
+								}
+								&:hover {
+									cursor: pointer;
+									opacity: 0.8;
+								}
+							}
+						}
+					}
 				}
 			}
 			&::-webkit-scrollbar {
