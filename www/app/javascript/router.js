@@ -24,7 +24,7 @@ import { UserTfaView } from './views/user/userTfa';
 window.currentUser = new User({ id: initCurrentUserId });
 
 $(function() {
-	//connectUserChannel();
+	connectUserChannel();
 	window.friendsListView = new FriendsListView();
 	window.chatRoomsView = new ChatRoomsView();
 
