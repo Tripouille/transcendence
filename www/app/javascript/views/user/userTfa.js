@@ -23,8 +23,9 @@ export const UserTfaView = Backbone.View.extend({
 			this.$el.append('<div class="loading">Loading...</div>');
 			this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
 
-			this.model.fetch().done(function() {
+			this.model.fetch().done(function() {;
 				if (!_thisView.model.get('otp_required_for_login')) {
+					_thisView.template = _.template($('#user-tfa').html())
 					$.ajax({
 						type: "GET",
 						url: "/two_factor_settings/new"
