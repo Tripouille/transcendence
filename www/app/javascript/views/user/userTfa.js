@@ -29,35 +29,27 @@ export const UserTfaView = Backbone.View.extend({
 						type: "GET",
 						url: "/two_factor_settings/new"
 					}).done(function(data) {
-						$(".otp_secret").text(_thisView.model.get('otp_secret'))
-						_thisView.chargePage(_thisView)
+						$.ajax({
+							type: "GET",
+							url: "/two_factor_settings/qr_code_image"
+						}).done(function(value) {
+							let blob = new Blob([value], {type: 'image/svg+xml'});
+							let url = URL.createObjectURL(blob);
+							$(".otp_secret").text(_thisView.model.get('otp_secret'))
+							_thisView.chargePage(_thisView, url);
+						})
 					});
 				} else {
 					_thisView.template = _.template($('#user-tfa-disable').html())
 					_thisView.chargePage(_thisView)
 				}
 			});
-
-			if (!_thisView.model.get('otp_required_for_login')) {
-				$.ajax({
-					type: "GET",
-					url: "/two_factor_settings/new"
-				}).done(function() {
-					_thisView.model.fetch().done(function() {
-						_thisView.chargePage(_thisView);
-					});
-				});
-			} else {
-				this.model.fetch().done(function() {
-					_thisView.template = _.template($('#user-tfa-disable').html());
-					_thisView.chargePage(_thisView)
-				});
-			}
 		};
 	},
 
-	chargePage: function(_thisView) {
+	chargePage: function(_thisView, url) {
 		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('#my-svg').attr('src', url);
 		_thisView.$el.removeClass('loading');
 		_thisView.$el.removeClass('lds-ripple');
 		return _thisView;

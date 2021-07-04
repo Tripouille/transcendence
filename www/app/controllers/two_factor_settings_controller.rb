@@ -67,6 +67,13 @@ class TwoFactorSettingsController < ApplicationController
 		end
 	end
 
+	def qr_code_image
+		send_data(helpers.qr_code_as_svg(current_user.two_factor_qr_code_uri),
+			type: 'image/svg',
+			disposition: 'inline',
+			filename: 'qrcode.svg')
+	end
+
 	private
 
 	def enable_2fa_params
