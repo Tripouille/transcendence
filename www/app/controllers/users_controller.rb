@@ -83,11 +83,8 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
-    print '-------------'
-    print params[:avatar]
-    print '-------------'
     respond_to do |format|
-      if @user.update(user_params)
+      if self.user_owner? && @user.update(user_params)
         format.html { redirect_to @user, notice: "User was successfully updated." }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -101,8 +98,13 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
     respond_to do |format|
-      format.html { redirect_to users_url, notice: "User was successfully destroyed." }
-      format.json { head :no_content }
+      if self.user_owner?
+        format.html { redirect_to users_url, notice: "User was successfully destroyed." }
+        format.json { head :no_content }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -147,7 +149,7 @@ class UsersController < ApplicationController
     user = User.find_by(id: params[:id])
 
     @type = params[:file].content_type.at(0..5)
-    if @type == 'image/'
+    if self.user_owner? && @type == 'image/'
       user&.avatar&.purge
       user&.avatar&.attach(params[:file])
     else
@@ -170,6 +172,10 @@ class UsersController < ApplicationController
     # A function to check if user is authenticated and if the user doesn't have a guild yet
     def user_exists?
       return (session[:user_id] && User.find(session[:user_id])) ? true : false
+    end
+
+    def user_owner?
+      return (@user[:id] == session[:user_id]) ? true : false
     end
 
     # A function to check if user is authenticated as the guild owner

@@ -14,15 +14,17 @@ import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
 import { UserView } from './views/user/user';
+import { UserShowView } from './views/user/userShow';
 import { UsersView } from 'views/users';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
+import { UserTfaView } from './views/user/userTfa';
 
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
 
 $(function() {
-	connectUserChannel();
+	//connectUserChannel();
 	window.friendsListView = new FriendsListView();
 	window.chatRoomsView = new ChatRoomsView();
 
@@ -36,8 +38,10 @@ $(function() {
 		matchmakingView: new MatchmakingView({el: $main}),
 		selectModeView: new SelectModeView({el: $main}),
 		userView: new UserView({ el: $main }),
+		userShowView: new UserShowView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
+		userTfaView: new UserTfaView({ el: $main }),
 
 		routes: {
 			"": "selectMode",
@@ -49,8 +53,10 @@ $(function() {
 			"guilds/:id": "displayguild",
 			"users": "users",
 			"user": "user",
+			"user/:id/show": "userShow",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
+			"user/:id/tfa": "tfa",
 		},
 
 		execute: function (callback, args, name) {
@@ -106,6 +112,11 @@ $(function() {
 			this.userView.render();
 		},
 
+		userShow: function(id) {
+			console.log("> User - Page")
+			this.userShowView.render(id);
+		},
+
 		updateUser: function(id) {
 			console.log("> Update User - Page - " + id)
 			this.userUpdateView.render(id);
@@ -114,7 +125,13 @@ $(function() {
 		createUser: function(id) {
 			console.log("> Create User - Page - " + id)
 			this.userCreateView.render(id);
-		}
+		},
+
+		tfa: function(id) {
+			console.log("> Tfa User - Page - " + id)
+			this.userTfaView.render(id);
+		},
+
 	});
 	window.router = new myRouter();
 	Backbone.history.start();

@@ -5,7 +5,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   skip_before_action :require_login
 
   def login
-
   end
 
   def marvin
@@ -13,7 +12,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       session[:user_id] = @user.id
-	    session[:user] = @user
+      session[:user] = @user
     else
       session["devise.marvin_data"] = request.env["omniauth.auth"]
       redirect_to(root_path(:anchor => 'login'))
@@ -21,11 +20,16 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_sign_in_path_for(user)
-    if user.username === user.login
-      @root = 'user/' + @user.id.to_s + '/create'
-      root_path(:anchor => @root)
+    if user.otp_required_for_login?
+      controll_otp_two_factor_settings_path
     else
-      root_path
+      session[:otp] = 'true'
+      if user.username === user.login
+        @root = 'user/' + @user.id.to_s + '/create'
+        root_path(:anchor => @root)
+      else
+        root_path
+      end
     end
   end
 

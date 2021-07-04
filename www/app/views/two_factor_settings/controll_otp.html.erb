@@ -1,0 +1,20 @@
+<main_nav id="login">
+	<div id="errorPopUp"></div>
+	<div class="screen">
+
+		<div id="login">
+			<label>Two Factor Authentification:</label>
+		</div>
+
+		<%= simple_form_for(:two_fa, url: check_otp_two_factor_settings_path, method: :post) do |f| %>
+			<div id="name" class="field" style="padding: 1em;">
+				<%= f.input :otp_attempt, label: 'OTP: ' %>
+			</div>
+			<div class="actions" id="boutton_show" style="padding: 1em;">
+				<div id="boutton_show">
+					<%= f.submit 'Confirm Code', class: 'btn btn-primary mt-2' %>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</main>

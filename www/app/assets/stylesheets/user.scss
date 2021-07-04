@@ -109,7 +109,15 @@ $link-border-width: calc(0.5 * #{$border-width});
 		border-style: ridge groove groove ridge;
 		background-color: $verydarkgreen;
 		text-decoration: none;
-		height: $link-height;
+		//height: $link-height;
+
+		#my-svg {
+			background: white;
+			max-width: 200px;
+			max-height: 200px;
+			width: auto;
+			height: auto;
+		}
 
 		#boutton_show {
 			margin-top: auto;
@@ -182,6 +190,15 @@ $link-border-width: calc(0.5 * #{$border-width});
 			#email_text {
 				font-size: 1.5em;
 				padding-left: 1em;
+			}
+		}
+		#otp {
+			display: flex;
+			flex-direction:row;
+			margin-right: auto;
+			padding-top: 0.5em;
+			#otp_text {
+				font-size: 1.5em;
 			}
 		}
 

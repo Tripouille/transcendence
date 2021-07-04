@@ -1,23 +1,18 @@
 import { User } from "../../models/user";
 
-export const UserView = Backbone.View.extend({
-
-	events: {
-		'click .edit-btn' : 'clickHandler',
-		'click .tfa-disable-btn' : 'disableTfa',
-		'click .tfa-enable-btn' : 'activeTfa'
-	},
+export const UserShowView = Backbone.View.extend({
 
 	tagName: "li",
-	template: _.template($('#user-display').html()),
-	model: new User({ id: initCurrentUserId }),
+	template: _.template($('#user-show-display').html()),
+	model: new User(),
 
 	initialize: function() {
 		console.log('User view has been initialized');
 	},
 
-	render: function() {
+	render: function(id) {
 		let _thisView = this;
+		this.model = new User({id: id});
 
 		this.$el.attr({id: 'user'});
 		this.$el.append('<div class="loading">Loading...</div>');
@@ -43,19 +38,5 @@ export const UserView = Backbone.View.extend({
 		return _thisView;
 	},
 
-	clickHandler: function(e) {
-		e.preventDefault()
-		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true })
-	},
-
-	activeTfa: function(e) {
-		e.preventDefault()
-		Backbone.history.navigate("user/" + initCurrentUserId + "/tfa", { trigger: true })
-	},
-
-	disableTfa: function(e) {
-		e.preventDefault()
-		Backbone.history.navigate("user/" + initCurrentUserId + "/tfa", { trigger: true })
-	}
 
 });
