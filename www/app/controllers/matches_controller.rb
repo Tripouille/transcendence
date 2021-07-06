@@ -42,4 +42,21 @@ class MatchesController < ApplicationController
 		end
 		render json: answer
 	end
+
+	def accept_challenge
+		duel_request = DuelRequest.find_by_message_id(params['message_id'])
+		if duel_request.opponent == current_user
+			match = Match.create(
+				left_player: duel_request.user_id,
+				right_player: duel_request.opponent_id
+			)
+			UserChannel.broadcast_to duel_request.user, content: {
+				challenge_accepted: match.id,
+				message_id: params['message_id']
+			}
+			render json: {match_id: match.id}
+		else
+			render json: {error: "Bad request"}
+		end
+	end
 end

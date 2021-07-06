@@ -35,7 +35,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 			@chatRoom.messages << message_record
 			@chatRoom.save
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
-				message: message_record.as_json().merge(username: message_record.user.username)
+				message: message_record.complete_infos
 			}
 			if @chatRoom.room_type == 'direct_message'
 				membership = @chatRoom.chat_memberships.where.not(user_id: current_user.id).first

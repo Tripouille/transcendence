@@ -9,9 +9,7 @@ const ChatRoomsView = Backbone.View.extend({
 
 	events: {
 		"click #create_room": function() {this.displayForm($('#room_creation_form'))},
-		"click #join_room": function() {this.displayForm($('#room_joining_form'))},
-		"click .challenge .accept": 'acceptChallenge',
-		"click .challenge .decline": 'declineChallenge'
+		"click #join_room": function() {this.displayForm($('#room_joining_form'))}
 	},
 
 	initialize: function() {
@@ -23,6 +21,7 @@ const ChatRoomsView = Backbone.View.extend({
 		}});
 		$('#chat #chat_body_container input').on('keypress', this, this.submitMessage);
 		this.prepareForms();
+		$('#chat_body').on('click', '.challenge .accept', this.acceptChallenge);
 	},
 
 	render: function() {
@@ -280,15 +279,19 @@ const ChatRoomsView = Backbone.View.extend({
 		});
 	},
 	acceptChallenge: function(e) {
-		console.log(e.target);
+		const $challenge_message = $(e.target).parent().parent();
+		const message_id = $challenge_message.data('messageId');
 		$.ajax({
 			type: 'POST',
 			url: '/accept_challenge',
 			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
-			data: {user_id: 1}, //a remplir
+			data: {message_id: message_id},
 			success: function(response) {
 				if (!response.error) {
-					Backbone.history.navigate("matchmaking/" + match_id, {trigger: true});
+					clearInterval($challenge_message.data('timeLeftInterval'));
+					$challenge_message.find('span.time_left').text('accepted');
+					$challenge_message.find('.challenge_answers').remove();
+					Backbone.history.navigate("game/matchmaking/" + response.match_id, {trigger: true});
 				}
 			}
 		});

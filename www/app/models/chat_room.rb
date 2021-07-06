@@ -23,7 +23,7 @@ class ChatRoom < ApplicationRecord
 						)})
 				.merge(messages: self.messages.includes(:user)
 						.order(:created_at)
-						.map{|message| message.as_json().merge(username: message.user.username)})
+						.map{|message| message.complete_infos})
 				.merge(newMessages: current_user.chat_memberships.find_by_chat_room_id(self.id).updated_at.to_f \
 							< (last_message ? last_message.created_at.to_f : 0.0))
 	end

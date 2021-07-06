@@ -47,6 +47,7 @@ $(function() {
 			"": "selectMode",
 			"game": "selectMode",
 			"game/matchmaking": "matchmaking",
+			"game/matchmaking/:id": "matchmaking",
 			"game/:id": "game",
 			"guilds": "guilds",
 			"guilds/new": "newguild",
@@ -94,9 +95,9 @@ $(function() {
 			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
-		matchmaking: function() {
+		matchmaking: function(match_id) {
 			$('#game_link').addClass('selected');
-			this.matchmakingView.render();
+			this.matchmakingView.render(match_id);
 		},
 		game: function (id) {
 			$('#game_link').addClass('selected');
@@ -148,9 +149,15 @@ function connectUserChannel() {
 				data.content.room.silent = true;
 				window.chatRoomsView.chatRoomsCollection.add(data.content.room);
 			}
-			else if (data.content.chat_ban) {
-				window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
+			else if (data.content.challenge_accepted) {
+				const $message = $('#chat_body .challenge[data-message-id="' + data.content.message_id + ']');
+				clearInterval($message.data('timeLeftInterval'));
+				$message.find('span.time_left').text('accepted');
+				$message.find('.challenge_answers').remove();
+				Backbone.history.navigate("game/matchmaking/" + data.content.challenge_accepted, {trigger: true});
 			}
+			else if (data.content.chat_ban)
+				window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
 		}
 	});
 }

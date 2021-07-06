@@ -3,19 +3,28 @@ import * as GC from './garbage_collector';
 const MatchmakingView = Backbone.View.extend({
 	template: _.template($('#matchmakingTemplate').html()),
 
-    render: function() {
+    render: function(match_id) {
         this.$el.html(this.template({}));
         this.$el.attr({id: 'matchmaking'});
-        const matchmakingView = this;
-        $.ajax('matchmaking', {
-            success: function(data) {
-				matchmakingView.displayPlayers(data);
-                if (data.left_player != null && data.right_player != null)
-                    matchmakingView.timer(data.match_id);
-                else
-                    matchmakingView.wait(data);
-            }
-        });
+		if (match_id) {
+            $.ajax('matches/' + match_id, {
+                success: function(data) {
+					this.displayPlayers(data);
+					this.timer(data.match_id);
+                }.bind(this)
+            });
+		}
+		else {
+			$.ajax('matchmaking', {
+				success: function(data) {
+					this.displayPlayers(data);
+					if (data.left_player != null && data.right_player != null)
+						this.timer(data.match_id);
+					else
+						this.wait(data);
+				}.bind(this)
+			});
+		}
         return this;
     },
 
@@ -44,18 +53,17 @@ const MatchmakingView = Backbone.View.extend({
     },
 
     wait: function(data) {
-        const matchmakingView = this;
         const waitInterval = GC.addInterval(function() {
             $.ajax('matches/' + data.match_id, {
                 success: function(data) {
                     if (data.left_player != null && data.right_player != null) {
-						matchmakingView.displayPlayers(data);
-                        matchmakingView.timer(data.match_id);
+						this.displayPlayers(data);
+                        this.timer(data.match_id);
                         GC.cleanInterval(waitInterval);
                     }
-                }
+                }.bind(this)
             });
-        }, 500);
+        }.bind(this), 500);
     }
 });
 

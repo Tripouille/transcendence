@@ -26,28 +26,33 @@ class UserChannel < ApplicationCable::Channel
 		duelrequest = DuelRequest.find_by(user_id: current_user.id, opponent_id: user_id)
 		if duelrequest then return end
 
-		message_id = sendChallengeMessage(user_id)
-		duelrequest = DuelRequest.create(user_id: current_user.id, opponent_id: user_id, message_id: message_id)
+		message = saveChallengeMessage(user_id)
+		duelrequest = DuelRequest.create(user_id: current_user.id, opponent_id: user_id, message_id: message.id)
+		ChatRoomChannel.broadcast_to message.chat_room, content: {
+			message: message.complete_infos
+		}
+		UserChannel.broadcast_to current_user, content: {
+			chatroom: message.chat_room.complete_infos(current_user)
+		}
+		UserChannel.broadcast_to User.find_by_id(user_id), content: {
+			chatroom: message.chat_room.complete_infos(current_user)
+		}
 
-		@schedulers[:challenge] = Rufus::Scheduler.new.schedule_in '5s' do
+		@schedulers[:challenge] = Rufus::Scheduler.new.schedule_in '60s' do
 			duelrequest.destroy
 		end
 	end
 
 	def generateChallengeMessage
-		message_content = '
-		<div class="challenge" data-user-id="' + current_user.id.to_s + '">
-			<div class="challenge_intro">Duel request (<span class="time_left"></span>)</div>
-			<div class="challenge_answers">
-				<div class="challenge_answer accept">Accept</div>
-				<div class="challenge_answer decline">Decline</div>
-			</div>
+		message_content = \
+		'<div class="challenge">
+			<div class="challenge_intro">Duel request (Expired)</div>
 		</div>'
 		message_record = Message.new(user_id: current_user.id, content: message_content)
 		return message_record
 	end
 
-	def sendChallengeMessage(user_id)
+	def saveChallengeMessage(user_id)
 		message = generateChallengeMessage()
 		chatroom = ChatRoom.where(room_type: "direct_message")
 							.where(id: ChatMembership.where(user_id: current_user.id).select(:chat_room_id))
@@ -58,9 +63,6 @@ class UserChannel < ApplicationCable::Channel
 			ChatMembership.where(chat_room_id: chatroom.id, user_id: user_id).update(hidden: false)
 			chatroom.messages << message
 			chatroom.save
-			ChatRoomChannel.broadcast_to chatroom, content: {
-				message: message.as_json().merge(username: message.user.username)
-			}
 		else
 			chatroom = ChatRoom.new(room_type: "direct_message", owner: current_user)
 			chatroom.chat_memberships.build(user_id: current_user.id, admin: false)
@@ -68,12 +70,6 @@ class UserChannel < ApplicationCable::Channel
 			chatroom.messages << message
 			chatroom.save
 		end
-		UserChannel.broadcast_to current_user, content: {
-			chatroom: chatroom.complete_infos(current_user)
-		}
-		UserChannel.broadcast_to User.find_by_id(user_id), content: {
-			chatroom: chatroom.complete_infos(current_user)
-		}
-		return message.id
+		return message
 	end
 end
