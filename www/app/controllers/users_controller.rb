@@ -3,9 +3,9 @@ class UsersController < ApplicationController
 
   # GET /users or /users.json
   def index
-    @users = User.all
+    @users = User.all.select(:id, :username, :guild_id)
     @guilds = Guild.all
-    @matches = Match.all
+    @matches = Match.all.select(:id, :winner)
     @result = @users.map { |i| i.attributes.merge({
       guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : nil,
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
@@ -23,9 +23,9 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
-    @users = User.all
+    @users = User.all.select(:id, :username, :guild_id)
     @guilds = Guild.all
-    @matches = Match.all
+    @matches = Match.all.select(:id, :left_player, :right_player, :winner)
     @users = @users.map { |i| i.attributes.merge({
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
       })
