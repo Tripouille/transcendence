@@ -31,6 +31,8 @@ class User < ApplicationRecord
     presence: true,
     length: { in: 2..20 }
 
+  scope :with_otp, -> { select(:encrypted_otp_secret, :encrypted_otp_secret_iv, :encrypted_otp_secret_salt) }
+
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email

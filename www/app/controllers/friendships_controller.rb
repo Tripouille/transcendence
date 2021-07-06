@@ -11,7 +11,7 @@ class FriendshipsController < ApplicationController
 	end
 
 	def all
-		render json: current_user.friends.order(Arel.sql("status = 'offline', username")).select(:id, :username, :status)
+		render json: current_user.friends.order(Arel.sql("status = 'offline', username")).select(:id, :username, :status).with_otp
 	end
 
 	def remove

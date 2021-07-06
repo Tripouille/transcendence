@@ -2,7 +2,6 @@ import consumer from "../channels/consumer";
 import Messages from "../collections/messages";
 import MessageView from "./message";
 
-// TODO : plus de actualize, passer entierement par le channel ?
 let ChatRoomView = Backbone.View.extend({
 	tagName: 'div',
 	template: _.template($('#chatRoomTemplate').html()),

@@ -36,7 +36,7 @@ class UserChannel < ApplicationCable::Channel
 
 	def generateChallengeMessage
 		message_content = '
-		<div class="challenge">
+		<div class="challenge" data-user-id="' + current_user.id.to_s + '">
 			<div class="challenge_intro">Duel request (<span class="time_left"></span>)</div>
 			<div class="challenge_answers">
 				<div class="challenge_answer accept">Accept</div>
@@ -69,26 +69,11 @@ class UserChannel < ApplicationCable::Channel
 			chatroom.save
 		end
 		UserChannel.broadcast_to current_user, content: {
-			chatroom: complete_room_infos(chatroom)
+			chatroom: chatroom.complete_infos(current_user)
 		}
 		UserChannel.broadcast_to User.find_by_id(user_id), content: {
-			chatroom: complete_room_infos(chatroom)
+			chatroom: chatroom.complete_infos(current_user)
 		}
 		return message.id
-	end
-
-	private
-	def complete_room_infos(room)
-		last_message = room.messages.order(:created_at).last
-		room.as_json(:only => [:id, :owner_id, :name, :room_type])
-			.merge(users: room.users
-				.order(:username)
-				.select(:id, :username, :status, :admin, :muted)
-				.map{|user| user.as_json().merge(blocked: BlockedUser.exists?(user_id: current_user.id, blocked_user_id: user.id))})
-			.merge(messages: room.messages.includes(:user)
-				.order(:created_at)
-				.map{|message| message.as_json().merge(username: message.user.username)})
-			.merge(newMessages: current_user.chat_memberships.find_by_chat_room_id(room.id).updated_at.to_f \
-				< (last_message ? last_message.created_at.to_f : 0.0))
 	end
 end

@@ -48,6 +48,7 @@ export const UserCreateView = Backbone.View.extend({
 				}
 			}).done(function() {
 				Backbone.history.navigate("game", { trigger: true })
+				$('nav #account_div p.username').text(_thisView.model.get('username'));
 			});
 		}
 	},

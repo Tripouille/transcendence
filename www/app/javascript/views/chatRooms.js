@@ -9,7 +9,9 @@ const ChatRoomsView = Backbone.View.extend({
 
 	events: {
 		"click #create_room": function() {this.displayForm($('#room_creation_form'))},
-		"click #join_room": function() {this.displayForm($('#room_joining_form'))}
+		"click #join_room": function() {this.displayForm($('#room_joining_form'))},
+		"click .challenge .accept": 'acceptChallenge',
+		"click .challenge .decline": 'declineChallenge'
 	},
 
 	initialize: function() {
@@ -277,12 +279,30 @@ const ChatRoomsView = Backbone.View.extend({
 			}
 		});
 	},
+	acceptChallenge: function(e) {
+		console.log(e.target);
+		$.ajax({
+			type: 'POST',
+			url: '/accept_challenge',
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {user_id: 1}, //a remplir
+			success: function(response) {
+				if (!response.error) {
+					Backbone.history.navigate("matchmaking/" + match_id, {trigger: true});
+				}
+			}
+		});
+
+	},
+	declineChallenge: function() {
+
+	},
+
 	animateInvalidInput: function($input) {
 		$input.css('border-color', 'red');
 		setTimeout(function() {$input.css('border-color', '');}, 1000);
 		$input.focus();
 	},
-
 	unfoldTchat: function() {
 		const activeChatRoomView = this.chatRoomViews[this.activeRoomId];
 		activeChatRoomView.$el.find('span.new_message').removeClass('visible');
