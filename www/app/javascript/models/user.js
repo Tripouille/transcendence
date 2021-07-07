@@ -50,8 +50,20 @@ export const User = Backbone.Model.extend({
 			$('#kick' + evt.data.model.id).one("click", evt.data, evt.data.model.kick);
 	},
 	leave: function (model, thisView) {
-		Backbone.sync("patch", model, { url: 'users/' + this.id + '/leave' }).done(function () {
-			thisView.render(thisView.guild.id);
-		});
+		Backbone.sync("patch", model, {
+			url: 'users/' + this.id + '/leave',
+			success: function () {
+				thisView.render(thisView.guild.id);
+			},
+			error: function () {
+				thisView.render(thisView.guild.id);
+			}
+		})
 	},
+	// leave: function (model, thisView) {
+	// 	Backbone.sync("patch", model, { url: 'users/' + this.id + '/leave' }).done(function () {
+	// 		thisView.render(thisView.guild.id);
+	// 	});
+	// },
+
 });

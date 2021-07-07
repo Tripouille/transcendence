@@ -2,6 +2,7 @@ class Guild < ApplicationRecord
 	after_validation :sanitize_fields
 
 	has_one :user
+	has_many :matches
 
 	validates :name,
 		presence: true,

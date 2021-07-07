@@ -74,7 +74,6 @@
 			<p><%%= username %></p>
 		</div>
 		<div>
-			<!-- mmr name to adapt -->
 			<p class="uppercase">Score</p>
 			<p><%%= score %></p>
 		</div>
@@ -124,7 +123,10 @@
 <script id="guildInviteRow" type="text/template">
 	<div class="guildInvitesRow">
 		<div><%%= username %></div>
-		<div><%%= mmr %></div>
+		<div>
+			<p class="uppercase">Score</p>
+			<p><%%= score %></p>
+		</div>
 		<div><%%= created_at %></div>
 		<div id="inviteButtons">
 			<div id="<%%= accept %>" class="cursorButton validation">

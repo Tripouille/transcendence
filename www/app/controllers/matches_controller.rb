@@ -4,7 +4,7 @@ class MatchesController < ApplicationController
 		cancel_all_challenges()
 		matches = Match.order(:created_at).where('left_player is null or right_player is null')
 		if matches.blank?
-			match = Match.new(left_player: current_user.id, left_guild: current_user.guild)
+			match = Match.new(left_player: current_user.id, left_guild_id: current_user.guild_id)
 		else
 			match = matches.first
 			if match["left_player"].nil? and match["right_player"] != current_user.id
@@ -63,7 +63,7 @@ class MatchesController < ApplicationController
 			duel_request.destroy
 		end
 	end
-	
+
 	def answer_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
 		if duel_request
@@ -85,9 +85,9 @@ class MatchesController < ApplicationController
 			cancel_all_challenges
 			match = Match.create(
 				left_player: duel_request.user_id,
-				left_guild: duel_request.user.guild,
+				left_guild_id: duel_request.user.guild_id,
 				right_player: duel_request.opponent_id,
-				right_guild: duel_request.opponent.guild,
+				right_guild_id: duel_request.opponent.guild_id,
 				challenged: true
 			)
 			UserChannel.broadcast_to duel_request.user, content: {

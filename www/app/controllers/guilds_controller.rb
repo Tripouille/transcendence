@@ -9,7 +9,7 @@ class GuildsController < ApplicationController
 
     @result = @guilds.map { |i| i.attributes.merge({
       owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
-      score: @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id)) }.length(),
+      score: @matches.find_all{ |match| (match.left_guild_id != match.right_guild_id && ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id))) }.length(),
       route: '#guilds/' + i.id.to_s,
       my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
       })
@@ -31,7 +31,7 @@ class GuildsController < ApplicationController
       @allmatches = Match.all.where(status: "finished").select(:id, :winner) # to remove after
       @matches = Match.all.where(status: "finished").where(left_guild_id: @guild[:id]).or(Match.all.where(right_guild_id: @guild[:id]))
       @guilds = @guilds.map { |i| i.attributes.merge({
-        score: @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id)) }.length()
+        score: @matches.find_all{ |match| (match.left_guild_id != match.right_guild_id && ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id))) }.length()
         })
       }
       @guilds.sort_by! { |res| -res[:score] }
@@ -42,7 +42,8 @@ class GuildsController < ApplicationController
         "owner_name" => @users.find{ |user| user.id == @guild[:owner_id]}[:username],
         "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
         "invites" => @invites.map { |i| i.attributes.merge({
-          username: User.find(i.user_id)[:username]
+          username: User.find(i.user_id)[:username],
+          score: (@allmatches.find_all{ |match| match.winner == i.user_id}) ? @allmatches.find_all{ |match| match.winner == i.user_id}.length() : 0
           }) }.as_json,
         "users" => @users.map { |i| i.attributes.merge({
           rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),

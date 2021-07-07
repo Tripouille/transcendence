@@ -268,11 +268,11 @@
     justify-content:space-around;
     align-items: center;
   }
-  .myGuildRow:hover, .guildRow:nth-of-type(even):hover {
+  .userRow:nth-of-type(even):hover, .myUserRow:hover, .myGuildRow:hover, .guildRow:nth-of-type(even):hover {
     background: $verydarkgreen url(pixel_darkgreen.svg);
     background-size: auto 640px;
   }
-  .guildRow:nth-of-type(odd):hover {
+  .userRow:nth-of-type(odd):hover , .guildRow:nth-of-type(odd):hover {
     background: green url(pixel_green.svg);
     background-size: auto 640px;
   }

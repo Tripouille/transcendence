@@ -8,14 +8,12 @@ export const InvitesView = Backbone.View.extend({
         this.$el.empty();
 
         let filteredInvites = new Invites(guildView.guild.get('invites'));
-        
-        if (filteredInvites.length != 0)
-        {            
+
+        if (filteredInvites.length != 0) {
             let dynamicTemplate = _.template($('#guildInviteRow').html());
             this.$el.html(this.staticTemplate).ready(function () {
                 filteredInvites.forEach(function (invite) {
                     invite.set({
-                        mmr: 1200, /* to code */
                         created_at: $.timeago(new Date(invite.get("created_at"))),
                         accept: "accept" + invite.id,
                         refuse: "refuse" + invite.id,
