@@ -20,7 +20,7 @@ export const UserShowView = Backbone.View.extend({
 		this.model.fetch().done(function() {
 			$.ajax({
 				type: "GET",
-				url: "users/" + initCurrentUserId + "/avatar",
+				url: "users/" + id + "/avatar",
 				xhrFields: {
 					responseType: 'blob'
 				}
