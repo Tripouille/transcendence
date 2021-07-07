@@ -33,7 +33,7 @@ class UserChannel < ApplicationCable::Channel
 	def challenge(user_id)
 		duelrequest = DuelRequest.find_by(user_id: current_user.id, opponent_id: user_id)
 		duelrequest2 = DuelRequest.find_by(user_id: user_id, opponent_id: current_user.id)
-		if duelrequest or duelrequest then return end
+		if duelrequest or duelrequest2 then return end
 
 		message = saveChallengeMessage(user_id)
 		@duelrequest = DuelRequest.create(user_id: current_user.id, opponent_id: user_id, message_id: message.id)

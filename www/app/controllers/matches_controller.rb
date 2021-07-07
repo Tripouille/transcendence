@@ -1,7 +1,7 @@
 class MatchesController < ApplicationController
 
 	def matchmaking
-		if session[:user_id].blank? then return render json: nil, status: :unauthorized end
+		cancel_all_challenges()
 		matches = Match.order(:created_at).where('left_player is null or right_player is null')
 		if matches.blank?
 			match = Match.new(left_player: session[:user_id])
@@ -42,6 +42,25 @@ class MatchesController < ApplicationController
 		end
 		render json: answer
 	end
+
+	def cancel_all_challenges
+		DuelRequest.where(user: current_user).each do |duel_request|
+			puts duel_request.inspect
+			UserChannel.broadcast_to current_user, content: {
+				remove_challenge: true,
+				reason: 'canceled',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+			UserChannel.broadcast_to duel_request.opponent, content: {
+				remove_challenge: true,
+				reason: 'canceled',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+			duel_request.destroy
+		end
+	end
 	
 	def answer_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
@@ -61,6 +80,7 @@ class MatchesController < ApplicationController
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
 		if duel_request.opponent == current_user
 			duel_request.destroy
+			cancel_all_challenges
 			match = Match.create(
 				left_player: duel_request.user_id,
 				right_player: duel_request.opponent_id,
