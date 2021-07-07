@@ -8,24 +8,26 @@ export const GuildsView = Backbone.View.extend({
 
     render: function () {
         this.$el.empty();
-        this.$el.attr({id: 'guilds'});
+        this.$el.attr({ id: 'guildsAll' });
         this.allRendered = false;
         this.page = 1;
         let self = this;
-        self.$el.append('<div class="guildsTable"></div>')
+        $('main#guildsAll').append('<div class="guildsTable"></div>')
+        // window.guild_fetch = this.guilds.fetch();
+        // $.when(window.currentUser.fetch(), window.guild_fetch).done(function () {
         $.when(window.currentUser.fetch(), this.guilds.fetch()).done(function () {
             if (!window.currentUser.has('guild_id'))
-                self.$el.prepend(_.template($('#guildNewButton').html()));
+                $('main#guildsAll').prepend(_.template($('#guildNewButton').html()));
             else {
                 let myGuildModel = self.guilds.findWhere({ id: window.currentUser.get('guild_id') });
-                self.$el.prepend(self.dynamicTemplate(myGuildModel.toJSON()));
+                $('main#guildsAll').prepend(self.dynamicTemplate(myGuildModel.toJSON()));
 
                 $('div[data-href="#guilds/' + myGuildModel.id + '"]').one("click", function () {
                     Backbone.history.navigate('#guilds/' + myGuildModel.id, { trigger: true })
                 });
             }
             // while (!self.allRendered)
-                // self.renderPage();
+            // self.renderPage();
             while (($(window).height() >= $(document).height()) && !self.allRendered)
                 self.renderPage();
             $(window).scroll(function () {
@@ -42,11 +44,10 @@ export const GuildsView = Backbone.View.extend({
         if (!guildsPage.length)
             this.allRendered = true;
         else {
-            let $guildsTable = $('.guildsTable');
             const myGuildId = window.currentUser.get('guild_id');
             guildsPage.forEach(function (guild, i) {
                 if (guild.id != myGuildId)
-                    $guildsTable.append(this.dynamicTemplate(guild.toJSON()));
+                    $('main#guildsAll .guildsTable').append(this.dynamicTemplate(guild.toJSON()));
 
                 $('div[data-href="#guilds/' + guild.id + '"]').one("click", function () {
                     Backbone.history.navigate('#guilds/' + guild.id, { trigger: true })

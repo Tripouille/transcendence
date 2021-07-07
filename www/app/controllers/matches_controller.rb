@@ -16,8 +16,8 @@ class MatchesController < ApplicationController
 		match.save
 		render json: {
 			match_id: match.id,
-			left_player: User.select(:login).find_by_id(match.left_player),
-			right_player: User.select(:login).find_by_id(match.right_player)
+			left_player: User.select(:username).with_otp.find_by_id(match.left_player),
+			right_player: User.select(:username).with_otp.find_by_id(match.right_player)
 		}
 	end
 
@@ -25,8 +25,8 @@ class MatchesController < ApplicationController
 		match = Match.find(params[:id])
 		render json: {
 			match_id: match.id,
-			left_player: User.select(:login).find_by_id(match.left_player),
-			right_player: User.select(:login).find_by_id(match.right_player)
+			left_player: User.select(:username).with_otp.find_by_id(match.left_player),
+			right_player: User.select(:username).with_otp.find_by_id(match.right_player)
 		}
 	end
 
@@ -41,5 +41,22 @@ class MatchesController < ApplicationController
 			answer[:side] = "unknown"
 		end
 		render json: answer
+	end
+
+	def accept_challenge
+		duel_request = DuelRequest.find_by_message_id(params['message_id'])
+		if duel_request.opponent == current_user
+			match = Match.create(
+				left_player: duel_request.user_id,
+				right_player: duel_request.opponent_id
+			)
+			UserChannel.broadcast_to duel_request.user, content: {
+				challenge_accepted: match.id,
+				message_id: params['message_id']
+			}
+			render json: {match_id: match.id}
+		else
+			render json: {error: "Bad request"}
+		end
 	end
 end

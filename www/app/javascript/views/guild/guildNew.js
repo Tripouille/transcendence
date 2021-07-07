@@ -41,9 +41,8 @@ export const GuildNewView = Backbone.View.extend({
 	/* render the form page */
 	render: function () {
 		this.$el.empty();
-		this.$el.attr({ id: 'guilds' });
+		this.$el.attr({ id: 'guildNew' });
 
-		let that = this;
 		window.currentUser.fetch().done(function () {
 			let guildId = window.currentUser.get('guild_id');
 			if (guildId != null) {
@@ -51,7 +50,7 @@ export const GuildNewView = Backbone.View.extend({
 			}
 			else {
 				let template = _.template($('#guildNewStatic').html());
-				that.$el.html(template);
+				$('main#guildNew').html(template);
 			}
 			return this;
 		});

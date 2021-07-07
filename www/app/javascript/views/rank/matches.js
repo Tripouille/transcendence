@@ -1,4 +1,4 @@
-import { Matches } from 'collections/matches';
+import { Matches } from '../../collections/matches';
 
 export const MatchesView = Backbone.View.extend({
 	className: "userMatches",
@@ -14,6 +14,9 @@ export const MatchesView = Backbone.View.extend({
 		if (filteredCollection) {
 			this.$el.html(this.template).ready(function () {
 				filteredCollection.forEach(function (match) {
+					match.set({ "date": (new Date(match.get("updated_at"))).toDateString() });
+					match.set({ "time": (new Date(match.get("updated_at"))).toLocaleTimeString() });
+					// match.set({ "time": (new Date(guildView.guild.get("updated_at"))).toDateString() });
 					$("#userMatchesBody").append(self.rowTemplate(match.toJSON()));
 				});
 			});

@@ -29,16 +29,21 @@
 
 <script id="userMatchRowTemplate" type="text/template">
 	<div class="userMatchRow">
-		<div class="<%%= winner_left %>">
-			<p class="uppercase"><%%= winner_left %></p>
+		<div>
+			<p><%%= date %></p>
+			<p><%%= time %></p>
+		</div>
+		<div>
 			<p><%%= username_left %></p>
 		</div>
 		<div>
 			<img src="assets/versus.svg" width=50px alt="versus">
-		</div class="<%%= winner_right %>">
+		</div>
 		<div>
-			<p class="uppercase"><%%= winner_right %></p>
 			<p><%%= username_right %></p>
+		</div>
+		<div>
+			<p class="uppercase <%%= result %>"><%%= result %></p>
 		</div>
 	</div>
 </script>

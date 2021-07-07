@@ -7,26 +7,28 @@ export const User = Backbone.Model.extend({
 		email: "",
 		login: "",
 		guild_id: null,
+		otp_required_for_login: false,
+		otp_secret: ""
 	},
 
 	idAttribute: "id",
 
-	initialize: function() {
+	initialize: function () {
 		// console.log('User has been initialized');
 	},
 
-	constructor: function() {
+	constructor: function () {
 		// console.log("Constructor User has been called")
 		Backbone.Model.apply(this, arguments);
 	},
 
 	// validate: function (attr) {
-		/* verifier si le user a deja une guilde dans le guild_id */
-		/* autre verifications de format */
-		// if (attr.username.length < 2 || attr.username.length > 20) {
-		// 	console.log("problem name lenght")
-		// 	return "Invalid name length."
-		// }
+	/* verifier si le user a deja une guilde dans le guild_id */
+	/* autre verifications de format */
+	// if (attr.username.length < 2 || attr.username.length > 20) {
+	// 	console.log("problem name lenght")
+	// 	return "Invalid name length."
+	// }
 	// },
 	// save: function(attributes, options) {
 	// 	var model = this;

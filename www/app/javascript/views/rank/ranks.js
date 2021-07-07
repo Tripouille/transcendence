@@ -1,6 +1,6 @@
-import { Users } from '../collections/users';
+import { Users } from '../../collections/users';
 
-export const UsersView = Backbone.View.extend({
+export const RanksView = Backbone.View.extend({
     dynamicTemplate: _.template($('#userRow').html()),
     users: new Users(),
     allRendered: false,
@@ -8,14 +8,14 @@ export const UsersView = Backbone.View.extend({
 
     render: function () {
         this.$el.empty();
-        this.$el.attr({ id: 'guilds' });
+        this.$el.attr({ id: 'ranksAll' });
         this.allRendered = false;
         this.page = 1;
         let self = this;
-        self.$el.append('<div class="usersTable"></div>')
+        $('main#ranksAll').append('<div class="usersTable"></div>')
         $.when(window.currentUser.fetch(), this.users.fetch()).done(function () {
             let myUserModel = self.users.findWhere({ id: window.currentUser.id });
-            self.$el.prepend(self.dynamicTemplate(myUserModel.toJSON()));
+            $('main#ranksAll').prepend(self.dynamicTemplate(myUserModel.toJSON()));
 
             $('div[data-href="#users/' + myUserModel.id + '"]').one("click", function () {
                 Backbone.history.navigate('#users/' + myUserModel.id, { trigger: true })

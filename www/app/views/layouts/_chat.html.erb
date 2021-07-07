@@ -1,0 +1,67 @@
+<aside id="chat">
+	<div id="chat_banner">Chat <span class="new_message">&#9679;</span></div>
+	<div id="chat_rooms">
+		<nav>
+			<button id="join_room">Join</button>
+			<button id="create_room">Create</button>
+		</nav>
+	</div>
+	<div id="chat_body_container">
+		<input type="text" placeholder="Write here">
+		<div id="chat_body">
+		</div>
+	</div>
+	<form id="room_creation_form">
+		<label for="public_choice">
+			<input type="radio" id="public_choice" name="room_type" value="public" checked>
+			Public
+		</label>
+		<label for="password_protected_choice">
+			<input type="radio" id="password_protected_choice" name="room_type" value="password_protected">
+			Password protected
+		</label>
+		<input type="password" class="room_password" autocomplete="off">
+		<label for="direct_message_choice">
+			<input type="radio" id="direct_message_choice" name="room_type" value="direct_message">
+			Direct message
+		</label>
+		<label for="room_name">
+			<span>Room name</span>
+			<input type="text" class="room_name" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">Create</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+	<form id="room_joining_form">
+		<label for="room_name">
+			Room name
+			<input type="text" class="room_name" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">Join</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+	<form id="room_password_form">
+		<label for="room_password">
+			Room password
+			<input type="password" class="room_password" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">Join</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+	<form id="add_room_password_form">
+		<label for="room_password">
+			Room password
+			<input type="password" class="room_password" autocomplete="off">
+		</label>
+		<div>
+			<button type="submit">OK</button>
+			<button type="button" class="cancel">Cancel</button>
+		</div>
+	</form>
+</aside>

@@ -3,11 +3,11 @@ class UsersController < ApplicationController
 
   # GET /users or /users.json
   def index
-    @users = User.all.select(:id, :username, :guild_id)
+    @users = User.all.select(:id, :username, :guild_id).with_otp
     @guilds = Guild.all
     @matches = Match.all.select(:id, :winner)
     @result = @users.map { |i| i.attributes.merge({
-      guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : nil,
+      guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : "Not in a guild",
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
       route: '#users/' + i.id.to_s,
       my_user: (i.id == session[:user_id]) ? true : false,
@@ -23,9 +23,9 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
-    @users = User.all.select(:id, :username, :guild_id)
+    @users = User.all.select(:id, :username, :guild_id).with_otp
     @guilds = Guild.all
-    @matches = Match.all.select(:id, :left_player, :right_player, :winner)
+    @matches = Match.all.select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc)
     @users = @users.map { |i| i.attributes.merge({
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
       })
@@ -34,8 +34,7 @@ class UsersController < ApplicationController
     @allmatches = @matches.map { |i| i.attributes.merge({
       username_left: (@users.find{ |user| user["id"] == i.left_player}) ? @users.find{ |user| user["id"] == i.left_player}["username"] : "Deleted acount",
       username_right: (@users.find{ |user| user["id"] == i.right_player}) ? @users.find{ |user| user["id"] == i.right_player}["username"] : "Deleted acount",
-      winner_left: (i.left_player == i.winner) ? "Winner" : "Loser",
-      winner_right: (i.right_player == i.winner) ? "Winner" : "Loser",
+      result: (@user[:id] == i.winner) ? "Win" : "Loss",
       })
     }
 
@@ -73,11 +72,8 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
-    print '-------------'
-    print params[:avatar]
-    print '-------------'
     respond_to do |format|
-      if @user.update(user_params)
+      if self.user_owner? && @user.update(user_params)
         format.html { redirect_to @user, notice: "User was successfully updated." }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -91,8 +87,13 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
     respond_to do |format|
-      format.html { redirect_to users_url, notice: "User was successfully destroyed." }
-      format.json { head :no_content }
+      if self.user_owner?
+        format.html { redirect_to users_url, notice: "User was successfully destroyed." }
+        format.json { head :no_content }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -137,7 +138,7 @@ class UsersController < ApplicationController
     user = User.find_by(id: params[:id])
 
     @type = params[:file].content_type.at(0..5)
-    if @type == 'image/'
+    if self.user_owner? && @type == 'image/'
       user&.avatar&.purge
       user&.avatar&.attach(params[:file])
     else
@@ -160,6 +161,10 @@ class UsersController < ApplicationController
     # A function to check if user is authenticated and if the user doesn't have a guild yet
     def user_exists?
       return (session[:user_id] && User.find(session[:user_id])) ? true : false
+    end
+
+    def user_owner?
+      return (@user[:id] == session[:user_id]) ? true : false
     end
 
     # A function to check if user is authenticated as the guild owner

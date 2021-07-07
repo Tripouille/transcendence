@@ -4,7 +4,7 @@ class GuildsController < ApplicationController
   # GET /guilds or /guilds.json
   def index
     @guilds = Guild.all
-    @users = User.all.where.not(:guild_id => nil).select(:id, :username, :guild_id)
+    @users = User.all.where.not(:guild_id => nil).select(:id, :username, :guild_id).with_otp
 
     @result = @guilds.map { |i| i.attributes.merge({
       owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
@@ -25,9 +25,9 @@ class GuildsController < ApplicationController
   def show
     if (user_exists?)
       @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
-      @users = User.all.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id)
+      @users = User.all.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp
       @guilds = Guild.all
-      @matches = Match.all # to remove after
+      @allmatches = Match.all.select(:id, :winner) # to remove after
       # @matches = Match.all.where(:left_guild => @guild[:id]).or(Match.all.where(:right_guild => @guild[:id]))
       @guilds = @guilds.map { |i| i.attributes.merge({
         score: self.guild_score(i)
@@ -45,7 +45,8 @@ class GuildsController < ApplicationController
           }) }.as_json,
         "users" => @users.map { |i| i.attributes.merge({
           rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),
-          contribution: @matches.find_all{ |match| match.winner == i.id }.length()
+          score: (@allmatches.find_all{ |match| match.winner == i.id}) ? @allmatches.find_all{ |match| match.winner == i.id}.length() : 0,
+          contribution: @allmatches.find_all{ |match| match.winner == i.id }.length()
           # contribution: @matches.find_all{ |match| (match.winner == i.id && match.left_guild != match.right_guild) }.length()
           }) }.as_json
       })
@@ -126,7 +127,7 @@ class GuildsController < ApplicationController
 
     # A function to check if user is alone in the guild
     def user_is_alone?
-      return (User.all.where(:guild_id => @guild[:id]).length == 1) ? true : false
+      return (User.all.where(:guild_id => @guild[:id]).with_otp.length == 1) ? true : false
     end
 
     # A function to check if user doesn't have a guild

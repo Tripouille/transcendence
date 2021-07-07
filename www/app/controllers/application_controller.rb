@@ -1,8 +1,9 @@
 class ApplicationController < ActionController::Base
 
 	before_action :require_login
+	before_action :set_online
 
-	def index # A voir pour supprimer
+	def index
 		@session = session[:user_id]
 	end
 
@@ -10,12 +11,16 @@ class ApplicationController < ActionController::Base
 
 	def require_login
 		@session = session[:user_id]
-		unless @session
-			unless flash[:redirect] == "Redirect login"
-				flash[:redirect] = "Redirect login"
-				flash[:error] = "You must be logged in to access this section"
-				redirect_to root_path(:anchor => 'login')
-			end
+		@otp = session[:otp]
+		unless @session && @otp
+			redirect_to login_path(:anchor => "")
 		end
 	end
+
+	def set_online
+		if current_user and current_user.status == 'offline'
+			current_user.update(status: 'online')
+		end
+	end
+
 end

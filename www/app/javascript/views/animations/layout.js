@@ -1,5 +1,5 @@
 let $friends, $chat, $add_friend;
-let friends_out = true, chat_out = true;
+let friends_out = true;
 let animating = false;
 
 export function foldFriends() {
@@ -14,15 +14,16 @@ function unfoldFriends() {
 
 export function foldTchat() {
 	$chat.addClass('folded');
-	chat_out = false;
+	window.chat_out = false;
 }
 function unfoldTchat() {
 	$chat.removeClass('folded');
-	chat_out = true;
+	window.chat_out = true;
+	window.chatRoomsView.unfoldTchat();
 }
 
 function addFriend(name) {
-	if (!name) return ;
+	if (!name.trim()) return ;
 	$.ajax({
 		type: 'POST',
 		url: '/friendships',
@@ -44,13 +45,16 @@ function addFriend(name) {
 				}, 1000);
 			}
 		}
-	})
-
+	});
 }
 
 $(function() {
 	let timer = null;
 	$(window).on('resize', function() {
+		const $friend_divs = $friends.find('div.friend');
+		$friend_divs.removeClass('active');
+		$friends_menu.hide();
+		window.active_friend = null;
 		if (timer) {
 			clearTimeout(timer);
 			timer = null;
@@ -94,7 +98,7 @@ $(function() {
 
 	const $friends_menu = $friends.find('#friends_menu');
 	window.active_friend = null;
-	$friends.on('click', 'div.friend', function(e) {
+	$friends.on('click', 'div.friend', function() {
 		$friends.find('div.friend').removeClass('active');
 		const $this = $(this);
 		if (window.active_friend == this.id) {
@@ -107,19 +111,20 @@ $(function() {
 			$friends_menu.show();
 			window.active_friend = this.id;
 		}
-	});
+	}).on('mousedown', function(e) {e.preventDefault();});
 
+	window.chat_out = true;
 	const $chat_banner = $('#chat_banner');
 	$chat = $('#chat');
 	$chat_banner.on('click', function() {
-		if (chat_out)
+		if (window.chat_out)
 			foldTchat();
 		else
 			unfoldTchat();
 	});
 
 	$(document).on('click', function(e) {
-		if (e.target !== $account_button[0])
+		if (!$account_button.is(e.target) && !$account_button.has(e.target).length)
 			$account_menu.hide();
 		if (window.active_friend) {
 			const $friend_divs = $friends.find('div.friend');
@@ -128,6 +133,11 @@ $(function() {
 				$friends_menu.hide();
 				window.active_friend = null;
 			}
+		}
+		$('#chat_rooms ul.room_menu').hide();
+		const $chat_members_lists = $('#chat div.room_members');
+		if (!$chat_members_lists.is(e.target) && !$chat_members_lists.has(e.target).length) {
+			$chat_members_lists.find('ul.user_menu').hide();
 		}
 	});
 });

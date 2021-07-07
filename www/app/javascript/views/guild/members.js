@@ -11,19 +11,15 @@ export const MembersView = Backbone.View.extend({
         let self = this;
 
         let filteredCollection = new Users(guildView.guild.get('users'));
-        
-        if (filteredCollection)
-        {
+
+        if (filteredCollection) {
             this.$el.html(this.template).ready(function () {
                 filteredCollection.forEach(function (user) {
-                    user.set({ mmr: 1200 }); /* to remove */
-
                     $("#guildMembersBody").append(self.rowTemplate(user.toJSON()));
 
-                    if (window.currentUser.id == guildView.guild.get('owner_id') && user.id != window.currentUser.id)
-                    {
+                    if (window.currentUser.id == guildView.guild.get('owner_id') && user.id != window.currentUser.id) {
                         user.set({ kick: "kick" + user.id });
-    
+
                         $('#guildMembersBody div[class="guildMemberRow"]:last-child').append(self.kickTemplate(user.toJSON()));
                         let data = {
                             model: user,

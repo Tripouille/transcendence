@@ -1,0 +1,79 @@
+<script type="template" id="chatRoomTemplate">
+	<p><span class="new_message<%%= newMessages ? ' visible' : '' %>">&#9679;</span><%%= name %></p>
+	<div class="room_members">
+		<%% _.each(users, function(user) { %>
+			<%% if (user.status != 'offline') { %>
+				<div data-id="<%%= user.id %>" class="room_member">
+					<p class="member_name"><%%= user.username %></p>
+					<%% if (user.id != window.user_id) { %>
+						<ul class="user_menu">
+							<li><a href="#">See profile</a></li>
+							<li class="challenge">Challenge</li>
+							<%% if (user.blocked) { %>
+								<li class="unblock">Unblock</li>
+							<%% } else { %>
+								<li class="block">Block</li>
+							<%% } %>
+							<%% if (owner_id == window.user_id && room_type != 'direct_message') { %>
+								<%% if (user.admin) { %>
+									<li class="demote_admin">Demote admin</li>
+								<%% } else { %>
+									<li class="promote_admin">Promote admin</li>
+								<%% } %>
+							<%% } %>
+							<%% if (admin && room_type != 'direct_message' && user.id != owner_id) { %>
+								<%% if (user.muted) { %>
+									<li class="unmute">Unmute</li>
+								<%% } else { %>
+									<li class="mute">Mute</li>
+								<%% } %>
+								<li class="ban">Ban</li>
+							<%% } %>
+						</ul>
+					<%% } %>
+				</div>
+			<%% } %>
+		<%% }); %>
+	</div>
+	<ul class="room_menu">
+		<%% if (owner_id == window.user_id) { %>
+			<%% if (room_type == 'password_protected') { %>
+				<li class="add_password">Change password</li>
+				<li class="remove_password">Remove password</li>
+			<%% } else if (room_type == 'public') { %>
+				<li class="add_password">Add password</li>
+			<%% } %>
+		<%% } %>
+		<li class="leave">Leave room</li>
+	</ul>
+</script>
+
+<script type="template" id="messageTemplate">
+	<span><%%= username %></span>
+
+	<span>
+		<%% if (challenge) { %>
+			<div class="challenge" data-message-id=" <%%= id %>">
+				<div class="challenge_intro">Duel request (<span class="time_left"></span>)</div>
+				<div class="challenge_answers">
+					<%% if (challenge.user_id == window.user_id) { %>
+						<span class="loading">Waiting</span>
+					<%% } else { %>
+						<div class="challenge_answer accept">Accept</div>
+						<div class="challenge_answer decline">Decline</div>
+					<%% } %>
+				</div>
+			</div>
+		<%% } else { %>
+			<%%= content %>
+		<%% } %>
+	</span>
+</script>
+
+<script type="template" id="messagesIntroTemplate">
+	<%% if (room_type == 'direct_message') { %>
+		<p>Here is your dm room with <%%= name %>!</p>
+	<%% } else { %>
+		<p>Welcome to the room <%%= name %>!</p>
+	<%% } %>
+</script>

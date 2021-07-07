@@ -18,6 +18,13 @@
 			<label>Email:</label>
 			<div id="email_text"><%%= email %></div>
 		</div>
+		<div id="otp">
+			<div id="boutton_show"><%%= otp_required_for_login?
+				'<button type="button" class="tfa-enable-btn">Disable TFA</button>'
+				: '<button type="button" class="tfa-disable-btn">Enable TFA</button>'
+			  %>
+			</div>
+		</div>
 
 		<br />
 
@@ -29,6 +36,8 @@
 </script>
 
 <script id="user-modify" type="text/template">
+
+	<div id="errorPopUp"></div>
 	<div class="screen-top header-user">
 		<h1>Modification utilisateur</h1>
 	</div>
@@ -59,6 +68,9 @@
 </script>
 
 <script id="user-create" type="text/template">
+
+	<div id="errorPopUp"></div>
+
 	<div class="screen-top header-user">
 		<h1>Création utilisateur</h1>
 	</div>
@@ -81,6 +93,65 @@
 				</div>
 			</div>
 		</form>
+	</div>
+
+</script>
+
+<script id="user-tfa" type="text/template">
+	<div id="errorPopUp"></div>
+	<div class="screen">
+
+		<div id="login">
+			<label>Code OTP:</label>
+			<div id="login_text" class="otp_secret" ><%%= otp_secret %></div>
+		</div>
+		<img id="my-svg" alt="<%%= login %> qr_code Picture" /></br>
+		<form id="newOtpForm" name="two_fa">
+			<div id="name" class="field" style="padding: 1em;">
+				<label id="text-username" for="code">Code:</label>
+				<input type="text" id="code" name="code" placeholder="Code" required>
+			</div>
+			<div id="formSubmitEnableOtp" class="actions" style="padding: 1em;">
+				<div id="boutton_show">
+					<input type="submit" value="Confirm and Enable OTP" />
+				</div>
+			</div>
+		</form>
+	</div>
+
+</script>
+
+<script id="user-tfa-disable" type="text/template">
+	<div class="screen">
+		<div id="boutton_show">
+			<button type="button" class="disable-btn">Confirm and disable OTP</button>
+		</div>
+	</div>
+
+</script>
+
+
+<script id="user-show-display" type="text/template">
+	<div class="screen">
+		<div id="avatar">
+			<img id="avatar_profile" alt="<%%= login %> Profile Picture" />
+		</div>
+
+		<br />
+
+		<div id="login">
+			<label>login:</label>
+			<div id="login_text"><%%= login %></div>
+		</div>
+		<div id="username">
+			<label>Username:</label>
+			<div id="username_text"><%%= username %></div>
+		</div>
+		<div id="email">
+			<label>Email:</label>
+			<div id="email_text"><%%= email %></div>
+		</div>
+
 	</div>
 
 </script>

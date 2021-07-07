@@ -105,14 +105,11 @@ export const GuildView = Backbone.View.extend({
         let joinButtonTemplate = _.template($('#mainGuildButtonTemplate').html());
         let buttonText;
 
-        if (window.currentUser.has("guild_id"))
-        {
+        if (window.currentUser.has("guild_id")) {
             if (window.currentUser.get("guild_id") != this.guild.id)
-                return ;
-            else if (window.currentUser.get("guild_id") == this.guild.id)
-            {
-                if (this.guild.get("owner_id") == window.currentUser.id)
-                {
+                return;
+            else if (window.currentUser.get("guild_id") == this.guild.id) {
+                if (this.guild.get("owner_id") == window.currentUser.id) {
                     if (this.guild.get('active_members') == 1)
                         buttonText = "Destroy";
                     else
@@ -140,18 +137,18 @@ export const GuildView = Backbone.View.extend({
 
     render: function (guildId) {
         this.$el.empty();
-        this.$el.attr({id: 'guilds'});
+        this.$el.attr({ id: 'guildPage' });
         this.guild.set({ id: guildId });
         let self = this;
 
         $.when(this.guild.fetch(), window.currentUser.fetch()).then(
             function success() {
-                self.$el.prepend('<div id="guildNavbar"><a class="button Cancel" href="#guilds">Back</a></div>');
+                $('main#guildPage').prepend('<div id="guildNavbar"><a class="button Cancel" href="#guilds">Back</a></div>');
                 self.addMainButton();
                 if (window.currentUser.get('guild_id') == self.guild.id)
-                    self.$el.append(self.invitesView.render(self).el);
-                self.$el.append(self.figuresView.render(self).el);
-                self.$el.append(self.membersView.render(self).el);
+                    $('main#guildPage').append(self.invitesView.render(self).el);
+                $('main#guildPage').append(self.figuresView.render(self).el);
+                $('main#guildPage').append(self.membersView.render(self).el);
             },
             function error() {
                 Backbone.history.navigate("guilds", { trigger: true });
