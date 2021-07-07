@@ -20,7 +20,6 @@ const FriendsListView = Backbone.View.extend({
 			this.friendsCollection.on('add', this.addFriend, this);
 			this.friendsCollection.on('change', this.reload, this);
 		}});
-		//this.actualize();
 	},
 
 	render: function() {
@@ -51,9 +50,6 @@ const FriendsListView = Backbone.View.extend({
 	},
 	challenge: function() {
 		window.userSubscription.send({challenge: window.active_friend});
-	},
-	actualize: function() {
-		setInterval(() => {this.friendsCollection.fetch();}, 5000);
 	}
 });
 

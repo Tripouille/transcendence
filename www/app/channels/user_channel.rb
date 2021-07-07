@@ -2,8 +2,14 @@ class UserChannel < ApplicationCable::Channel
 	def subscribed
 		@schedulers = {}
 		if current_user
-			current_user.update(status: 'online')
 			stream_for current_user
+			current_user.update(status: 'online')
+			Friendship.where(friend: current_user).each do |friendship|
+				UserChannel.broadcast_to friendship.user, content: {
+					friend_id: current_user.id,
+					friend_status: 'online'
+				}
+			end
 		else
 			reject
 		end
@@ -19,6 +25,12 @@ class UserChannel < ApplicationCable::Channel
 				message_id: duel_request.message.id
 			}
 			duel_request.destroy
+		end
+		Friendship.where(friend: current_user).each do |friendship|
+			UserChannel.broadcast_to friendship.user, content: {
+				friend_id: current_user.id,
+				friend_status: 'offline'
+			}
 		end
 		stop_stream_for current_user
 	end
