@@ -273,11 +273,14 @@ const ChatRoomsView = Backbone.View.extend({
 			},
 			success: function(response) {
 				if (!response.error) {
-					window.chatRoomsView.chatRoomsCollection.add(response.room);
-					window.chatRoomsView.activeRoomId = response.room.id;
-					window.chatRoomsView.chatRoomViews[response.room.id].selectRoomAndRenderMessages();
+					$('#chat').removeClass('folded');
+					window.chat_out = true;
+					this.unfoldTchat();
+					this.chatRoomsCollection.add(response.room);
+					this.activeRoomId = response.room.id;
+					this.chatRoomViews[response.room.id].selectRoomAndRenderMessages();
 				}
-			}
+			}.bind(this)
 		});
 	},
 	answerChallenge: function(e, answer) {
