@@ -98,6 +98,9 @@ let ChatRoomView = Backbone.View.extend({
 	},
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
+		$chatBody.find('.challenge').each(function() {
+			clearInterval($(this).data('timeLeftInterval'));
+		});
 		$chatBody.empty();
 		$chatBody.append(this.messagesIntroTemplate(this.model.toJSONDecorated()));
 		this.messages.each(function(message) {
@@ -223,6 +226,9 @@ let ChatRoomView = Backbone.View.extend({
 				user_id: user_id
 			}
 		});
+	},
+	removeChallenge: function(message_id) {
+		this.messages.get(message_id).set('challenge', null);
 	}
 });
 

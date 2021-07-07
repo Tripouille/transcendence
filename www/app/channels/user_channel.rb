@@ -10,24 +10,33 @@ class UserChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		current_user.update(status: 'offline') if current_user
-		current_user.duel_requests.destroy_all
+		current_user.update(status: 'offline')
+		DuelRequest.where(user: current_user).each do |duel_request|
+			UserChannel.broadcast_to duel_request.opponent, content: {
+				remove_challenge: true,
+				reason: 'canceled',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+			duel_request.destroy
+		end
 		stop_stream_for current_user
 	end
 
 	def receive(data)
 		#puts 'data received in channel from ' + current_user.id.to_s + ' : ' + data.inspect
-		if data['challenge'].present?
+		if data['challenge'].present? and data['challenge'] != current_user.id.to_s
 			challenge(data['challenge'])
 		end
 	end
 
 	def challenge(user_id)
 		duelrequest = DuelRequest.find_by(user_id: current_user.id, opponent_id: user_id)
-		if duelrequest then return end
+		duelrequest2 = DuelRequest.find_by(user_id: user_id, opponent_id: current_user.id)
+		if duelrequest or duelrequest then return end
 
 		message = saveChallengeMessage(user_id)
-		duelrequest = DuelRequest.create(user_id: current_user.id, opponent_id: user_id, message_id: message.id)
+		@duelrequest = DuelRequest.create(user_id: current_user.id, opponent_id: user_id, message_id: message.id)
 		ChatRoomChannel.broadcast_to message.chat_room, content: {
 			message: message.complete_infos
 		}
@@ -39,7 +48,7 @@ class UserChannel < ApplicationCable::Channel
 		}
 
 		@schedulers[:challenge] = Rufus::Scheduler.new.schedule_in '60s' do
-			duelrequest.destroy
+			@duelrequest.destroy
 		end
 	end
 

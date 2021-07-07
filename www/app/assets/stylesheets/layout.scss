@@ -568,7 +568,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 						.challenge_answers {
 							display: flex;
 							justify-content: center;
-							.challenge_answer {
+							.challenge_answer, .cancel {
 								flex: 1;
 								padding: calc(0.5 * #{$responsive-ratio}) 0;
 								&.accept {
@@ -583,27 +583,15 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 										background-color: rgb(170, 0, 0);
 									}
 								}
+								&.cancel {
+									flex: 0.5;
+									background-color: gray;
+									&:hover {
+										background-color: dimgray;
+									}
+								}
 								&:hover {
 									cursor: pointer;
-								}
-							}
-							.loading:after {
-								overflow: hidden;
-								display: inline-block;
-								vertical-align: bottom;
-								-webkit-animation: challenge_ellipsis steps(4,end) 1200ms infinite;
-								animation: challenge_ellipsis steps(4,end) 1200ms infinite;
-								content: "\2026"; /* ascii code for the ellipsis character */
-								width: 0px;
-							}
-							@keyframes challenge_ellipsis {
-								to {
-									width: $messages-font-size;
-								}
-							}
-							@-webkit-keyframes challenge_ellipsis {
-								to {
-									width: $messages-font-size;
 								}
 							}
 						}

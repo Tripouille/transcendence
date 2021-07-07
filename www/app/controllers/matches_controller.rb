@@ -42,19 +42,80 @@ class MatchesController < ApplicationController
 		end
 		render json: answer
 	end
+	
+	def answer_challenge
+		duel_request = DuelRequest.find_by_message_id(params['message_id'])
+		if duel_request
+			case params[:answer]
+			when 'accepted'
+				accept_challenge()
+			when 'declined'
+				decline_challenge()
+			when 'canceled'
+				cancel_challenge()
+			end
+		end
+	end
 
 	def accept_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
 		if duel_request.opponent == current_user
+			duel_request.destroy
 			match = Match.create(
 				left_player: duel_request.user_id,
-				right_player: duel_request.opponent_id
+				right_player: duel_request.opponent_id,
+				challenged: true
 			)
 			UserChannel.broadcast_to duel_request.user, content: {
-				challenge_accepted: match.id,
-				message_id: params['message_id']
+				remove_challenge: true,
+				match_id: match.id,
+				reason: 'accepted',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
 			}
-			render json: {match_id: match.id}
+			render json: {
+				match_id: match.id,
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+		else
+			render json: {error: "Bad request"}
+		end
+	end
+
+	def decline_challenge
+		duel_request = DuelRequest.find_by_message_id(params['message_id'])
+		if duel_request.opponent == current_user
+			duel_request.destroy
+			UserChannel.broadcast_to duel_request.user, content: {
+				remove_challenge: true,
+				reason: 'declined',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+			render json: {
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+		else
+			render json: {error: "Bad request"}
+		end
+	end
+
+	def cancel_challenge
+		duel_request = DuelRequest.find_by_message_id(params['message_id'])
+		if duel_request.user == current_user
+			duel_request.destroy
+			UserChannel.broadcast_to duel_request.opponent, content: {
+				remove_challenge: true,
+				reason: 'canceled',
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
+			render json: {
+				chatroom_id: duel_request.message.chat_room.id,
+				message_id: duel_request.message.id
+			}
 		else
 			render json: {error: "Bad request"}
 		end
