@@ -7,7 +7,7 @@
 					<p class="member_name"><%%= user.username %></p>
 					<%% if (user.id != window.user_id) { %>
 						<ul class="user_menu">
-							<li><a href="#">See profile</a></li>
+							<li><a href="#user/<%%= user.id %>/show">See profile</a></li>
 							<li class="challenge">Challenge</li>
 							<%% if (user.blocked) { %>
 								<li class="unblock">Unblock</li>
