@@ -87,11 +87,11 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def playerIsLeft
-		@match[:left_player] == current_user
+		@match[:left_player] == current_user.id
 	end
 
 	def playerIsRight
-		@match[:right_player] == current_user
+		@match[:right_player] == current_user.id
 	end
 
 	def registerLeftPlayer
@@ -106,7 +106,7 @@ class PongChannel < ApplicationCable::Channel
 		@SIDE_PADDLE_DIR = :right_paddle_dir
 		@match[:status] = "ready"
 		saveMatchToDB()
-		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '5s' do
+		@schedulers[:waitForOpponentRight] = Rufus::Scheduler.new.schedule_in '5s' do
 			updateMatchFromDB()
 			if @match[:status] == "ready"
 				@match[:status] = "finished"
