@@ -4,13 +4,15 @@ class MatchesController < ApplicationController
 		cancel_all_challenges()
 		matches = Match.order(:created_at).where('left_player is null or right_player is null')
 		if matches.blank?
-			match = Match.new(left_player: session[:user_id])
+			match = Match.new(left_player: current_user.id, left_guild: current_user.guild)
 		else
 			match = matches.first
-			if match["left_player"].nil? and match["right_player"] != session[:user_id]
-				match["left_player"] = session[:user_id]
-			elsif match["right_player"].nil? and match["left_player"] != session[:user_id]
-				match["right_player"] = session[:user_id]
+			if match["left_player"].nil? and match["right_player"] != current_user.id
+				match["left_player"] = current_user.id
+				match["left_guild_id"] = current_user.guild_id
+			elsif match["right_player"].nil? and match["left_player"] != current_user.id
+				match["right_player"] = current_user.id
+				match["right_guild_id"] = current_user.guild_id
 			end
 		end
 		match.save
@@ -33,9 +35,9 @@ class MatchesController < ApplicationController
 	def side
 		match = Match.find(params[:id])
 		answer = {status: match[:status]}
-		if match[:left_player] == session[:user_id]
+		if match[:left_player] == current_user.id
 			answer[:side] = "left"
-		elsif match[:right_player] == session[:user_id]
+		elsif match[:right_player] == current_user.id
 			answer[:side] = "right"
 		else
 			answer[:side] = "unknown"
@@ -83,7 +85,9 @@ class MatchesController < ApplicationController
 			cancel_all_challenges
 			match = Match.create(
 				left_player: duel_request.user_id,
+				left_guild: duel_request.user.guild,
 				right_player: duel_request.opponent_id,
+				right_guild: duel_request.opponent.guild,
 				challenged: true
 			)
 			UserChannel.broadcast_to duel_request.user, content: {
