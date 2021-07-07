@@ -16,6 +16,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.add_password": 'addPasswordForm',
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
+		"click li.send_dm": "sendDirectMessage",
 		"click li.challenge": "challenge",
 		"click li.block, li.unblock": "changeBlockedStatus",
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
@@ -168,6 +169,9 @@ let ChatRoomView = Backbone.View.extend({
 		}
 		else
 			this.$el.find('ul.user_menu').hide();
+	},
+	sendDirectMessage: function(e) {
+		window.chatRoomsView.sendDm($(e.target).parent().parent().data('id'));
 	},
 	challenge: function(e) {
 		const user_id = $(e.target).parent().parent().data('id');
