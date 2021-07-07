@@ -140,9 +140,9 @@ function connectUserChannel() {
 		disconnected() { /*console.log('disconnected from user channel');*/ },
 		received(data) {
 			//console.log('Received data for user :', data.content);
-			if (data.content.room) {
-				data.content.room.silent = true;
-				window.chatRoomsView.chatRoomsCollection.add(data.content.room);
+			if (data.content.chatroom) {
+				data.content.chatroom.silent = true;
+				window.chatRoomsView.chatRoomsCollection.add(data.content.chatroom);
 			}
 			else if (data.content.remove_challenge) {
 				window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);

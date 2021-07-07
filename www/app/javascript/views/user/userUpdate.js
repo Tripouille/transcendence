@@ -12,10 +12,6 @@ export const UserUpdateView = Backbone.View.extend({
 
 	model: new User({ id:initCurrentUserId }),
 
-	initialize: function() {
-		console.log('User Update View has been init')
-	},
-
 	render: function(id) {
 		if (initCurrentUserId == id) {
 			let _thisView = this;

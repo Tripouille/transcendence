@@ -10,10 +10,6 @@ export const UserCreateView = Backbone.View.extend({
 
 	model: new User({ id:initCurrentUserId }),
 
-	initialize: function() {
-		console.log('User Create View has been init');
-	},
-
 	render: function(id) {
 		if (initCurrentUserId == id) {
 			let _thisView = this;
