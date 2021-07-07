@@ -6,7 +6,9 @@ const FriendsListView = Backbone.View.extend({
 
 	events: {
 		"click #friends_menu li.send_dm": "sendDm",
-		"click #friends_menu #remove_friend": "removeFriend"
+		"click #friends_menu li.see_profile": "seeProfile",
+		"click #friends_menu #remove_friend": "removeFriend",
+		"click #friends_menu .challenge": "challenge"
 	},
 
 	initialize: function() {
@@ -41,8 +43,14 @@ const FriendsListView = Backbone.View.extend({
 		if (!this.friendsCollection.length)
 			this.$el.hide();
 	},
+	seeProfile: function() {
+		Backbone.history.navigate('#user/' + window.active_friend + '/show', {trigger: true});
+	},
 	sendDm: function() {
 		window.chatRoomsView.sendDm(window.active_friend);
+	},
+	challenge: function() {
+		window.userSubscription.send({challenge: window.active_friend});
 	},
 	actualize: function() {
 		setInterval(() => {this.friendsCollection.fetch();}, 5000);

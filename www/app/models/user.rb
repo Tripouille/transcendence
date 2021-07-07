@@ -17,7 +17,6 @@ class User < ApplicationRecord
   has_many :chat_rooms, :through => :chat_memberships
   has_many :messages
   has_many :chat_bans
-  has_many :duel_requests
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -30,6 +29,8 @@ class User < ApplicationRecord
   validates :username,
     presence: true,
     length: { in: 2..20 }
+
+  scope :with_otp, -> { select(:encrypted_otp_secret, :encrypted_otp_secret_iv, :encrypted_otp_secret_salt) }
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|

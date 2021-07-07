@@ -47,6 +47,7 @@ $(function() {
 			"": "selectMode",
 			"game": "selectMode",
 			"game/matchmaking": "matchmaking",
+			"game/matchmaking/:id": "matchmaking",
 			"game/:id": "game",
 			"guilds": "guilds",
 			"guilds/new": "newguild",
@@ -94,9 +95,9 @@ $(function() {
 			$('#game_link').addClass('selected');
 			this.selectModeView.render();
 		},
-		matchmaking: function() {
+		matchmaking: function(match_id) {
 			$('#game_link').addClass('selected');
-			this.matchmakingView.render();
+			this.matchmakingView.render(match_id);
 		},
 		game: function (id) {
 			$('#game_link').addClass('selected');
@@ -108,27 +109,22 @@ $(function() {
 		},
 
 		user: function() {
-			console.log("> User - Page")
 			this.userView.render();
 		},
 
 		userShow: function(id) {
-			console.log("> User - Page")
 			this.userShowView.render(id);
 		},
 
 		updateUser: function(id) {
-			console.log("> Update User - Page - " + id)
 			this.userUpdateView.render(id);
 		},
 
 		createUser: function(id) {
-			console.log("> Create User - Page - " + id)
 			this.userCreateView.render(id);
 		},
 
 		tfa: function(id) {
-			console.log("> Tfa User - Page - " + id)
 			this.userTfaView.render(id);
 		},
 
@@ -148,9 +144,21 @@ function connectUserChannel() {
 				data.content.room.silent = true;
 				window.chatRoomsView.chatRoomsCollection.add(data.content.room);
 			}
-			else if (data.content.chat_ban) {
-				window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
+			else if (data.content.remove_challenge) {
+				window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);
+				stopChallengeMessage(data.content.message_id, data.content.reason);
+				if (data.content.reason == 'accepted')
+					Backbone.history.navigate("game/matchmaking/" + data.content.match_id, {trigger: true});
 			}
+			else if (data.content.chat_ban)
+				window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
 		}
 	});
+}
+
+function stopChallengeMessage(message_id, text) {
+	const $message = $('#chat_body .challenge[data-message-id="' + message_id + '"]');
+	clearInterval($message.data('timeLeftInterval'));
+	$message.find('span.time_left').text(text);
+	$message.find('.challenge_answers').remove();
 }

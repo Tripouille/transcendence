@@ -2,7 +2,6 @@ import consumer from "../channels/consumer";
 import Messages from "../collections/messages";
 import MessageView from "./message";
 
-// TODO : plus de actualize, passer entierement par le channel ?
 let ChatRoomView = Backbone.View.extend({
 	tagName: 'div',
 	template: _.template($('#chatRoomTemplate').html()),
@@ -17,6 +16,7 @@ let ChatRoomView = Backbone.View.extend({
 		"click li.add_password": 'addPasswordForm',
 		"click div.room_member": "displayUserMenu",
 		"mousedown div.room_member": function(e) {e.preventDefault();},
+		"click li.send_dm": "sendDirectMessage",
 		"click li.challenge": "challenge",
 		"click li.block, li.unblock": "changeBlockedStatus",
 		"click li.promote_admin, li.demote_admin": "changeAdminStatus",
@@ -99,6 +99,9 @@ let ChatRoomView = Backbone.View.extend({
 	},
 	selectRoomAndRenderMessages: function() {
 		const $chatBody = $('#chat_body');
+		$chatBody.find('.challenge').each(function() {
+			clearInterval($(this).data('timeLeftInterval'));
+		});
 		$chatBody.empty();
 		$chatBody.append(this.messagesIntroTemplate(this.model.toJSONDecorated()));
 		this.messages.each(function(message) {
@@ -167,6 +170,9 @@ let ChatRoomView = Backbone.View.extend({
 		else
 			this.$el.find('ul.user_menu').hide();
 	},
+	sendDirectMessage: function(e) {
+		window.chatRoomsView.sendDm($(e.target).parent().parent().data('id'));
+	},
 	challenge: function(e) {
 		const user_id = $(e.target).parent().parent().data('id');
 		window.userSubscription.send({challenge: user_id});
@@ -224,6 +230,9 @@ let ChatRoomView = Backbone.View.extend({
 				user_id: user_id
 			}
 		});
+	},
+	removeChallenge: function(message_id) {
+		this.messages.get(message_id).set('challenge', null);
 	}
 });
 

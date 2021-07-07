@@ -21,6 +21,9 @@ const ChatRoomsView = Backbone.View.extend({
 		}});
 		$('#chat #chat_body_container input').on('keypress', this, this.submitMessage);
 		this.prepareForms();
+		$('#chat_body').on('click', '.challenge .accept', function(e) {this.answerChallenge(e, 'accepted');}.bind(this));
+		$('#chat_body').on('click', '.challenge .decline', function(e) {this.answerChallenge(e, 'declined');}.bind(this));
+		$('#chat_body').on('click', '.challenge .cancel', function(e) {this.answerChallenge(e, 'canceled');}.bind(this));
 	},
 
 	render: function() {
@@ -277,12 +280,31 @@ const ChatRoomsView = Backbone.View.extend({
 			}
 		});
 	},
+	answerChallenge: function(e, answer) {
+		const $challenge_message = $(e.target).parent().parent();
+		const message_id = $challenge_message.data('messageId');
+		$.ajax({
+			type: 'POST',
+			url: '/answer_challenge/' + answer,
+			headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+			data: {message_id: message_id},
+			success: function(response) {
+				if (!response.error) {
+					this.chatRoomViews[response.chatroom_id].removeChallenge(response.message_id);
+					clearInterval($challenge_message.data('timeLeftInterval'));
+					$challenge_message.find('span.time_left').text(answer);
+					$challenge_message.find('.challenge_answers').remove();
+					if (answer == 'accepted')
+						Backbone.history.navigate("game/matchmaking/" + response.match_id, {trigger: true});
+				}
+			}.bind(this)
+		});
+	},
 	animateInvalidInput: function($input) {
 		$input.css('border-color', 'red');
 		setTimeout(function() {$input.css('border-color', '');}, 1000);
 		$input.focus();
 	},
-
 	unfoldTchat: function() {
 		const activeChatRoomView = this.chatRoomViews[this.activeRoomId];
 		activeChatRoomView.$el.find('span.new_message').removeClass('visible');

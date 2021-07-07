@@ -2,7 +2,7 @@ class ChatRoomsController < ApplicationController
 
 	def index
 		rooms = current_user.chat_rooms.order(:name).joins(:chat_memberships).where('chat_memberships.hidden = false')
-		rooms_completed = rooms.map{|room| complete_room_infos(room)}
+		rooms_completed = rooms.map{|room| room.complete_infos(current_user)}
 		render json: rooms_completed
 	end
 
@@ -31,13 +31,13 @@ class ChatRoomsController < ApplicationController
 				chatroom.chat_memberships.build(user_id: user_to_dm.id, admin: false, hidden: true)
 				chatroom.save
 			end
-			render json: {room: complete_room_infos(chatroom)}
+			render json: {room: chatroom.complete_infos(current_user)}
 		else
 			chatroom = ChatRoom.new(chat_room_params)
 			chatroom.owner_id = current_user.id
 			chatroom.chat_memberships.build(user_id: chatroom.owner.id, admin: true)
 			if chatroom.save
-				render json: {room: complete_room_infos(chatroom)}
+				render json: {room: chatroom.complete_infos(current_user)}
 			else
 				render json: {error: "Room name already taken"}
 			end
@@ -59,7 +59,7 @@ class ChatRoomsController < ApplicationController
 			chatroom.save
 			render json: {
 				password_needed: false,
-				room: complete_room_infos(chatroom)
+				room: chatroom.complete_infos(current_user)
 			}
 		end
 	end
@@ -77,7 +77,7 @@ class ChatRoomsController < ApplicationController
 		else
 			chatroom.chat_memberships.build(user_id: current_user.id, admin: chatroom.owner == current_user)
 			chatroom.save
-			render json: {room: complete_room_infos(chatroom)}
+			render json: {room: chatroom.complete_infos(current_user)}
 		end
 	end
 
@@ -158,21 +158,5 @@ class ChatRoomsController < ApplicationController
 	private
     def chat_room_params
 		params.permit(:name, :room_type, :password)
-	end
-
-	def complete_room_infos(room)
-		last_message = room.messages.order(:created_at).last
-		room.as_json(:only => [:id, :owner_id, :name, :room_type])
-			.merge(users: room.users
-				.order(:username)
-				.select(:id, :username, :status, :admin, :muted)
-				.map{|user| user.as_json().merge(blocked: BlockedUser.exists?(user_id: current_user.id, blocked_user_id: user.id))})
-			.merge(messages: room.messages.includes(:user)
-				.order(:created_at)
-				.map{|message| message.as_json().merge(
-					username: message.user.username
-				)})
-			.merge(newMessages: current_user.chat_memberships.find_by_chat_room_id(room.id).updated_at.to_f \
-				< (last_message ? last_message.created_at.to_f : 0.0))
 	end
 end

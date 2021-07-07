@@ -37,7 +37,7 @@ export const UserUpdateView = Backbone.View.extend({
 				});
 			});
 		} else {
-			Backbone.history.navigate("user", { trigger: true })
+			Backbone.history.navigate("user", { trigger: true });
 		}
 	},
 
@@ -64,7 +64,7 @@ export const UserUpdateView = Backbone.View.extend({
 				}
 			}).done(function() {
 				Backbone.history.navigate("user", { trigger: true });
-				$('nav #account_div p.username').text(_thisView.model.get('username'));
+				$('nav #account_div p.username').text(_thisView.model.get('username'));	
 			});
 		}
 	},
