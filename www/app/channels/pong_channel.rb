@@ -147,9 +147,11 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def killScheduler(key)
-		@schedulers[key].unschedule
-		@schedulers[key].kill
-		@schedulers.delete(key)
+		if key.present?
+			@schedulers[key].unschedule
+			@schedulers[key].kill
+			@schedulers.delete(key)
+		end
 	end
 
 	def start

@@ -7,7 +7,8 @@
 					<p class="member_name"><%%= user.username %></p>
 					<%% if (user.id != window.user_id) { %>
 						<ul class="user_menu">
-							<li><a href="#">See profile</a></li>
+							<li><a href="#user/<%%= user.id %>/show">See profile</a></li>
+							<li class="send_dm">Send DM</li>
 							<li class="challenge">Challenge</li>
 							<%% if (user.blocked) { %>
 								<li class="unblock">Unblock</li>
@@ -53,11 +54,11 @@
 
 	<span>
 		<%% if (challenge) { %>
-			<div class="challenge" data-message-id=" <%%= id %>">
+			<div class="challenge" data-message-id="<%%= id %>">
 				<div class="challenge_intro">Duel request (<span class="time_left"></span>)</div>
 				<div class="challenge_answers">
 					<%% if (challenge.user_id == window.user_id) { %>
-						<span class="loading">Waiting</span>
+						<div class="cancel">Cancel</div>
 					<%% } else { %>
 						<div class="challenge_answer accept">Accept</div>
 						<div class="challenge_answer decline">Decline</div>

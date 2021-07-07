@@ -166,13 +166,13 @@
   }
   .userMatchRow {
     & div {
-      width: 200px;
-    }
-    & div:first-child {
       width: 400px;
     }
     & div:last-child {
-      width: 400px;
+      width: 200px;
+    }
+    & div:nth-child(3) {
+      width: 200px;
     }
   }
   .guildMemberRow {

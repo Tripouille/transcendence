@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   def index
     @users = User.all.select(:id, :username, :guild_id).with_otp
     @guilds = Guild.all
-    @matches = Match.all.select(:id, :winner)
+    @matches = Match.all.where(status: "finished").select(:id, :winner)
     @result = @users.map { |i| i.attributes.merge({
       guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : "Not in a guild",
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   def show
     @users = User.all.select(:id, :username, :guild_id).with_otp
     @guilds = Guild.all
-    @matches = Match.all.select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc)
+    @matches = Match.all.where(status: "finished").select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc)
     @users = @users.map { |i| i.attributes.merge({
       score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
       })

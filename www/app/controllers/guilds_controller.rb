@@ -5,15 +5,16 @@ class GuildsController < ApplicationController
   def index
     @guilds = Guild.all
     @users = User.all.where.not(:guild_id => nil).select(:id, :username, :guild_id).with_otp
+    @matches = Match.all.where(status: "finished")
 
     @result = @guilds.map { |i| i.attributes.merge({
       owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
-      score: self.guild_score(i),
+      score: @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id)) }.length(),
       route: '#guilds/' + i.id.to_s,
       my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
       })
     }
-    @result.sort_by! { |res| -res[:score] }
+    # @result.sort_by! { |res| -res[:score] }
     @result = @result.map { |i| i.merge({ rank: @result.find_index{ |guild| guild["id"] == i["id"] }.to_i + 1 }) }
     respond_to do |format|
       format.html { }
@@ -27,10 +28,10 @@ class GuildsController < ApplicationController
       @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
       @users = User.all.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp
       @guilds = Guild.all
-      @allmatches = Match.all.select(:id, :winner) # to remove after
-      # @matches = Match.all.where(:left_guild => @guild[:id]).or(Match.all.where(:right_guild => @guild[:id]))
+      @allmatches = Match.all.where(status: "finished").select(:id, :winner) # to remove after
+      @matches = Match.all.where(status: "finished").where(left_guild_id: @guild[:id]).or(Match.all.where(right_guild_id: @guild[:id]))
       @guilds = @guilds.map { |i| i.attributes.merge({
-        score: self.guild_score(i)
+        score: @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id)) }.length()
         })
       }
       @guilds.sort_by! { |res| -res[:score] }
@@ -46,8 +47,8 @@ class GuildsController < ApplicationController
         "users" => @users.map { |i| i.attributes.merge({
           rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),
           score: (@allmatches.find_all{ |match| match.winner == i.id}) ? @allmatches.find_all{ |match| match.winner == i.id}.length() : 0,
-          contribution: @allmatches.find_all{ |match| match.winner == i.id }.length()
-          # contribution: @matches.find_all{ |match| (match.winner == i.id && match.left_guild != match.right_guild) }.length()
+          # contribution: @allmatches.find_all{ |match| match.winner == i.id }.length()
+          contribution: @matches.find_all{ |match| (match.winner == i.id && match.left_guild_id != match.right_guild_id) }.length()
           }) }.as_json
       })
     end
@@ -165,12 +166,6 @@ class GuildsController < ApplicationController
 
     def in_current_guild?
       return (User.find(params[:owner_id]) && User.find(params[:owner_id])[:guild_id] == @guild[:id]) ? true : false
-    end
-
-    def guild_score(guild)
-      # @matches = Match.all.where(:left_guild => guild.id).or(Match.all.where(:right_guild => guild.id))
-      # return @matches.find_all{ |match| ((match.winner == match.left_player && match.left_guild == guild.id) || (match.winner == match.right_player && match.right_guild == guild.id)) }.length()
-      return 10 # a enlever
     end
 
 end

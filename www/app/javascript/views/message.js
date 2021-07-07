@@ -17,7 +17,7 @@ let MessageView = Backbone.View.extend({
 			this.time_left = Math.round((deadline.getTime() - Date.now()) / 1000);
 			this.displayTimeLeft();
 			this.timeLeftInterval = setInterval(this.displayTimeLeft.bind(this), 1000);
-			this.$el.data('timeLeftInterval', this.timeLeftInterval);
+			this.$el.find('.challenge').data('timeLeftInterval', this.timeLeftInterval);
 		}
 		return this;
 	},
