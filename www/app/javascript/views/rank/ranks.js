@@ -18,7 +18,7 @@ export const RanksView = Backbone.View.extend({
             $('main#ranksAll').prepend(self.dynamicTemplate(myUserModel.toJSON()));
 
             $('div[data-href="#users/' + myUserModel.id + '"]').one("click", function () {
-                Backbone.history.navigate('#users/' + myUserModel.id, { trigger: true })
+                Backbone.history.navigate('#user/' + myUserModel.id + '/show', { trigger: true })
             });
 
             while (($(window).height() >= $(document).height()) && !self.allRendered)
@@ -44,7 +44,7 @@ export const RanksView = Backbone.View.extend({
                     $usersTable.append(this.dynamicTemplate(user.toJSON()));
 
                 $('div[data-href="#users/' + user.id + '"]').one("click", function () {
-                    Backbone.history.navigate('#users/' + user.id, { trigger: true })
+                    Backbone.history.navigate('#user/' + user.id + '/show', { trigger: true })
                 });
             }, this);
             $('#rank1').prepend('<img src="assets/gemstone-gold.svg" width="50" alt="gemstone gold">');

@@ -3,17 +3,6 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 @import "variables";
 
-/* ------------------ A SUPPRIMER CSS POUR LES /GUILDS /INVITES /USERS --------------------------- */
-/* -- */ html body {
-/* -- */   & > table {
-/* -- */     margin-top: 80px;
-/* -- */   }
-/* -- */   & > form {
-/* -- */     margin-top: 80px;
-/* -- */   }
-/* -- */ }
-/* ----------------------------------------------------------------------- */
-
 #guildsAll, #guildNew, #guildPage, #ranksAll, #rankPage {
   overflow: auto;
 
@@ -121,7 +110,7 @@
       text-overflow: ellipsis;
     }
   }
-  .button, .myGuildRow, .guildRow, .Destroy, .Leave, .back, .Cancel {
+  .button, .myGuildRow, .guildRow, .myUserRow, .userRow, .Destroy, .Leave, .back, .Cancel {
     &:hover {
     transition-delay: 0.3s;
     animation: pixelate 0.2s steps(8) forwards;

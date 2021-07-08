@@ -56,7 +56,7 @@ $(function () {
 			"guilds/new": "newguild",
 			"guilds/:id": "displayguild",
 			"users": "ranks",
-			"users/:id": "displayrank",
+			"user/:id/matchhistory": "matchhistory",
 			"user": "user",
 			"user/:id/show": "userShow",
 			"user/:id/edit": "updateUser",
@@ -95,7 +95,7 @@ $(function () {
 			$('#rank_link').addClass('selected');
 			this.ranksView.render();
 		},
-		displayrank: function (id) {
+		matchhistory: function (id) {
 			$('#rank_link').addClass('selected');
 			this.rankView.render(parseInt(id));
 		},

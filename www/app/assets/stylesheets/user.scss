@@ -11,7 +11,7 @@ $border-color: green;
 $border-width: $responsive-ratio;
 $link-border-width: calc(0.5 * #{$border-width});
 
-#user {
+#user, #userShow {
 
 	#errorPopUp {
 		display: none;

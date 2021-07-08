@@ -13,7 +13,7 @@ export const RankView = Backbone.View.extend({
 
 		$.when(this.user.fetch(), window.currentUser.fetch()).then(
 			function success() {
-				$('main#rankPage').prepend('<div id="guildNavbar"><a class="button Cancel" href="#users">Back</a></div>');
+				$('main#rankPage').prepend('<div id="guildNavbar"><a class="button Cancel" href="#user/' + userId + '/show">Back</a></div>');
 				$('main#rankPage').append(self.matchesView.render(self).el);
 			},
 			function error() {

@@ -14,9 +14,9 @@ export const UserShowView = Backbone.View.extend({
 		let _thisView = this;
 		this.model = new User({ id: id });
 
-		this.$el.attr({ id: 'user' });
-		this.$el.append('<div class="loading">Loading...</div>');
-		this.$el.append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
+		this.$el.attr({ id: 'userShow' });
+		$('main#userShow').append('<div class="loading">Loading...</div>');
+		$('main#userShow').append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
 		this.model.fetch().done(function () {
 			$.ajax({
 				type: "GET",
@@ -33,10 +33,12 @@ export const UserShowView = Backbone.View.extend({
 	},
 
 	chargePage: function (_thisView, src) {
-		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('main#userShow').html(_thisView.template(_thisView.model.attributes));
+		$('#boutton_show').one("click", function () {
+			Backbone.history.navigate('#user/' + _thisView.model.id + '/matchhistory', { trigger: true })
+		});
 		$('#avatar_profile').attr('src', src);
+
 		return _thisView;
-	},
-
-
+	}
 });
