@@ -6,7 +6,7 @@ $border-width: $responsive-ratio;
 $banners-height: calc(4.5 * #{$responsive-ratio});
 $banners-font-size: calc(2 * #{$responsive-ratio});
 $banners-padding-top: calc(0.2 * #{$banners-font-size});
-$aside-font-size: calc(2 * #{$responsive-ratio});
+$aside-font-size: calc(2.5 * #{$responsive-ratio});
 
 %bordered {
 	border-width: $border-width;
@@ -317,7 +317,7 @@ $chat-height: calc(100vh - #{$banners-height} - #{$friends-height});
 $chat-banner-offset: calc(-1 * #{$border-width});
 $chat-banner-width: calc(100% + 2 * #{$border-width});
 $chat-padding-top: calc(0.8 * #{$banners-height});
-$messages-font-size: calc(1.6 * #{$responsive-ratio});
+$messages-font-size: calc(2 * #{$responsive-ratio});
 $chat-body-padding: 5px;
 $chat-input-width: calc((#{$chat-width} - 2 * #{$border-width}) * 2 / 3 - #{$chat-body-padding});
 $chat-input-left: calc((#{$chat-width} - 2 * #{$border-width}) / 3 + #{$chat-body-padding} / 2);
