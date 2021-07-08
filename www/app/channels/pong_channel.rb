@@ -137,12 +137,16 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def setPlayers()
+		left_player = User.find(@match[:left_player])
+		right_player = User.find(@match[:right_player])
 		@players = {
 			left: {
-				username: User.find(@match[:left_player]).username
+				id: left_player.id,
+				username: left_player.username
 			},
 			right: {
-				username: User.find(@match[:right_player]).username
+				id: right_player.id,
+				username: right_player.username
 			}
 		}
 	end

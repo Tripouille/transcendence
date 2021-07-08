@@ -104,6 +104,8 @@ function initializeFromServer(data) {
 	// Initialize players infos
 	$('#player_infos_left .name').text(data.players.left.username);
 	$('#player_infos_right .name').text(data.players.right.username);
+	setPlayerImage(data.players.left.id, $('#player_infos_left img'));
+	setPlayerImage(data.players.right.id, $('#player_infos_right img'));
 	$('.player_infos p, .player_infos img').css('visibility', 'visible');
 
 	// Initialize paddle infos
@@ -123,6 +125,19 @@ function initializeFromServer(data) {
 		$(document).keyup(keyUpHandler);
 		status = "ready";
 	}
+}
+
+function setPlayerImage(user_id, $img) {
+	$.ajax({
+		type: "GET",
+		url: "users/" + user_id + "/avatar",
+		xhrFields: {responseType: 'blob'},
+	}).done(function(data) {
+		const url = window.URL || window.webkitURL;
+		const src = url.createObjectURL(data);
+		$img.attr('src', src);
+	});
+
 }
 
 function timerStart() {

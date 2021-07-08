@@ -18,8 +18,8 @@ class MatchesController < ApplicationController
 		match.save
 		render json: {
 			match_id: match.id,
-			left_player: User.select(:username).with_otp.find_by_id(match.left_player),
-			right_player: User.select(:username).with_otp.find_by_id(match.right_player)
+			left_player: User.select(:id, :username).with_otp.find_by_id(match.left_player),
+			right_player: User.select(:id, :username).with_otp.find_by_id(match.right_player)
 		}
 	end
 
@@ -27,8 +27,8 @@ class MatchesController < ApplicationController
 		match = Match.find(params[:id])
 		render json: {
 			match_id: match.id,
-			left_player: User.select(:username).with_otp.find_by_id(match.left_player),
-			right_player: User.select(:username).with_otp.find_by_id(match.right_player)
+			left_player: User.select(:id, :username).with_otp.find_by_id(match.left_player),
+			right_player: User.select(:id, :username).with_otp.find_by_id(match.right_player)
 		}
 	end
 
