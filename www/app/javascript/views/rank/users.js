@@ -1,6 +1,6 @@
 import { Users } from '../../collections/users';
 
-export const RanksView = Backbone.View.extend({
+export const UsersView = Backbone.View.extend({
     dynamicTemplate: _.template($('#userRow').html()),
     users: new Users(),
     allRendered: false,

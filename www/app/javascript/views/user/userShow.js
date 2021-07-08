@@ -6,10 +6,6 @@ export const UserShowView = Backbone.View.extend({
 	template: _.template($('#user-show-display').html()),
 	model: new User(),
 
-	initialize: function () {
-		console.log('User view has been initialized');
-	},
-
 	render: function (id) {
 		let _thisView = this;
 		this.model = new User({ id: id });
@@ -35,7 +31,7 @@ export const UserShowView = Backbone.View.extend({
 	chargePage: function (_thisView, src) {
 		$('main#userShow').html(_thisView.template(_thisView.model.attributes));
 		$('#boutton_show').one("click", function () {
-			Backbone.history.navigate('#user/' + _thisView.model.id + '/matchhistory', { trigger: true })
+			Backbone.history.navigate('#user/' + _thisView.model.id + '/matcheshistory', { trigger: true })
 		});
 		$('#avatar_profile').attr('src', src);
 

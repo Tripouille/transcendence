@@ -8,9 +8,9 @@ class InvitesController < ApplicationController
     if self.admin?
       @invites = Invite.all
     elsif self.check_user && self.check_no_guild
-      @invites = Invite.all.where(:user_id => session[:user_id])
+      @invites = Invite.where(:user_id => session[:user_id])
     elsif self.check_user && self.check_is_guild_owner
-      @invites = Invite.all.where(:guild_id => @guild[:id])
+      @invites = Invite.where(:guild_id => @guild[:id])
     end
   end
 
@@ -22,42 +22,16 @@ class InvitesController < ApplicationController
     end
   end
 
-  # GET /invites/new
-  def new
-    @invite = Invite.new
-  end
-
-  # GET /invites/1/edit
-  # def edit
-  # end
-
   # POST /invites or /invites.json
   def create
     @invite = Invite.new(invite_params)
 
-    respond_to do |format|
-      if (self.admin? || (self.check_user && self.check_no_guild && self.check_own_invite)) && @invite.save
-        format.html { redirect_to @invite, notice: "Invite was successfully created." }
-        format.json { render :show, status: :created, location: @invite }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @invite.errors, status: :unprocessable_entity }
-      end
+    if (self.admin? || (self.check_user && self.check_no_guild && self.check_own_invite)) && @invite.save
+      render json: @invite, status: :created
+    else
+      render json: @invite.errors, status: :unprocessable_entity
     end
   end
-
-  # PATCH/PUT /invites/1 or /invites/1.json
-  # def update
-  #   respond_to do |format|
-  #     if @invite.update(invite_params)
-  #       format.html { redirect_to @invite, notice: "Invite was successfully updated." }
-  #       format.json { render :show, status: :ok, location: @invite }
-  #     else
-  #       format.html { render :edit, status: :unprocessable_entity }
-  #       format.json { render json: @invite.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
 
   # Accept action and DELETE /invites/1/accept or /invites/1.json/accept
   def accept
@@ -69,10 +43,9 @@ class InvitesController < ApplicationController
       Invite.all.where(:user_id => @user[:id]).destroy_all
       @user.save
 
-      respond_to do |format|
-        format.html { redirect_to invites_url, notice: "Invite was successfully destroyed." }
-        format.json { head :no_content }
-      end
+      head :no_content
+    else
+      render json: { }, status: :unprocessable_entity
     end
   end
 
@@ -80,10 +53,9 @@ class InvitesController < ApplicationController
   def refuse
     if self.check_user && self.check_owner_user
       @invite.destroy
-      respond_to do |format|
-        format.html { redirect_to invites_url, notice: "Invite was successfully destroyed." }
-        format.json { head :no_content }
-      end
+      head :no_content
+    else
+      render json: { }, status: :unprocessable_entity
     end
   end
 
@@ -91,10 +63,9 @@ class InvitesController < ApplicationController
   def destroy
     if self.admin? || (self.check_user && self.check_own_invite)
       @invite.destroy
-      respond_to do |format|
-        format.html { redirect_to invites_url, notice: "Invite was successfully destroyed." }
-        format.json { head :no_content }
-      end
+      head :no_content
+    else
+      render json: { }, status: :unprocessable_entity
     end
   end
 
@@ -117,8 +88,10 @@ class InvitesController < ApplicationController
       return (session[:user_id] && User.find(session[:user_id])) ? 1 : nil
     end
 
+    # A function to give all the right for certain users for debug purposes
     def admin?
-      return (session[:user_id] && User.find(session[:user_id])[:login] == '') ? true : false
+      return false
+      # return (session[:user_id] && User.find(session[:user_id])[:login] == '') ? true : false
     end
 
     # # A function to check if user is authenticated and if the user doesn't have a guild yet

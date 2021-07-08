@@ -32,11 +32,25 @@ const MatchmakingView = Backbone.View.extend({
 		if (data.left_player) {
 			$('#left_player .player_name').removeClass('loading');
 			$('#left_player .player_name').text(data.left_player.username);
+			this.displayAvatar(data.left_player.id, this.$el.find('article#left_player > div'));
 		}
 		if (data.right_player) {
 			$('#right_player .player_name').removeClass('loading');
 			$('#right_player .player_name').text(data.right_player.username);
+			this.displayAvatar(data.right_player.id, this.$el.find('article#right_player > div'));
 		}
+	},
+	displayAvatar: function(user_id, $img_div) {
+		$.ajax({
+			type: "GET",
+			url: "users/" + user_id + "/avatar",
+			xhrFields: {responseType: 'blob'},
+		}).done(function(data) {
+			const url = window.URL || window.webkitURL;
+			const src = url.createObjectURL(data);
+			$img_div.empty();
+			$img_div.css('background-image', 'url(' + src + ')');
+		});
 	},
 
     timer: function(match_id) {

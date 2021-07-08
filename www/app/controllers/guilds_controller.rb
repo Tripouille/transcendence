@@ -3,65 +3,43 @@ class GuildsController < ApplicationController
 
   # GET /guilds or /guilds.json
   def index
-    @guilds = Guild.all
-    @users = User.all.where.not(:guild_id => nil).select(:id, :username, :guild_id).with_otp
-    @matches = Match.all.where(status: "finished")
-
-    @result = @guilds.map { |i| i.attributes.merge({
-      owner_name: @users.find{ |user| user.id == i.owner_id}[:username],
-      score: @matches.find_all{ |match| (match.left_guild_id != match.right_guild_id && ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id))) }.length(),
-      route: '#guilds/' + i.id.to_s,
-      my_guild: (@users.find{ |user| user.id == session[:user_id]} != nil && @users.find{ |user| user.id == session[:user_id]}[:guild_id] == i.id) ? true : false
+    @result = Guild.all.map { |guild| guild.as_json.merge({
+      owner_name: User.find(guild.owner_id)[:username],
+      score: Match.where(:status => "finished").where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
+      route: '#guilds/' + guild.id.to_s,
+      my_guild: (current_user && current_user.guild_id == guild.id) ? true : false
       })
     }
-    # @result.sort_by! { |res| -res[:score] }
+    @result.sort_by! { |res| -res[:score] }
     @result = @result.map { |i| i.merge({ rank: @result.find_index{ |guild| guild["id"] == i["id"] }.to_i + 1 }) }
-    respond_to do |format|
-      format.html { }
-      format.json { render json: @result.as_json }
-    end
+    render json: @result.as_json, status: :ok
   end
 
   # GET /guilds/1 or /guilds/1.json
   def show
     if (user_exists?)
-      @invites = (user_is_guild_owner?) ? Invite.all.where(:guild_id => @guild[:id]) : {}
-      @users = User.all.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp
-      @guilds = Guild.all
-      @allmatches = Match.all.where(status: "finished").select(:id, :winner) # to remove after
-      @matches = Match.all.where(status: "finished").where(left_guild_id: @guild[:id]).or(Match.all.where(right_guild_id: @guild[:id]))
-      @guilds = @guilds.map { |i| i.attributes.merge({
-        score: @matches.find_all{ |match| (match.left_guild_id != match.right_guild_id && ((match.winner == match.left_player && match.left_guild_id == i.id) || (match.winner == match.right_player && match.right_guild_id == i.id))) }.length()
+      @guilds = Guild.all.select(:id).map { |guild| guild.as_json.merge({
+        score: Match.where(:status => "finished").where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
         })
       }
       @guilds.sort_by! { |res| -res[:score] }
 
       render json: @guild.as_json.merge({
         "rank" => @guilds.find_index{ |guild| guild["id"] == @guild[:id]}.to_i + 1,
-        "active_members" => @users.length,
-        "owner_name" => @users.find{ |user| user.id == @guild[:owner_id]}[:username],
+        "active_members" => User.where(:guild_id => @guild[:id]).with_otp.size,
+        "owner_name" => User.find(@guild.owner_id)[:username],
         "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
-        "invites" => @invites.map { |i| i.attributes.merge({
-          username: User.find(i.user_id)[:username],
-          score: (@allmatches.find_all{ |match| match.winner == i.user_id}) ? @allmatches.find_all{ |match| match.winner == i.user_id}.length() : 0
+        "invites" => ((user_is_guild_owner?) ? Invite.where(:guild_id => @guild[:id]) : {}).map { |invite| invite.as_json.merge({
+          username: User.find(invite.user_id)[:username],
+          score: Match.where(winner: invite.user_id).size,
           }) }.as_json,
-        "users" => @users.map { |i| i.attributes.merge({
-          rank: ( i.id == @guild[:owner_id] ? "Owner" : "Officer"),
-          score: (@allmatches.find_all{ |match| match.winner == i.id}) ? @allmatches.find_all{ |match| match.winner == i.id}.length() : 0,
-          # contribution: @allmatches.find_all{ |match| match.winner == i.id }.length()
-          contribution: @matches.find_all{ |match| (match.winner == i.id && match.left_guild_id != match.right_guild_id) }.length()
+        "users" => User.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp.map { |user| user.as_json.merge({
+          rank: ( user.id == @guild[:owner_id] ? "Owner" : "Officer"),
+          score: Match.where(winner: user.id).size,
+          contribution: Match.where(status: "finished").where(left_guild_id: @guild[:id], left_player: user.id).or(Match.where(right_guild_id: @guild[:id], right_player: user.id)).where(winner: user.id).select(:left_guild_id, :right_guild_id).distinct.size
           }) }.as_json
-      })
+      }), status: :ok
     end
-  end
-
-  # GET /guilds/new
-  def new
-    @guild = Guild.new
-  end
-
-  # GET /guilds/1/edit
-  def edit
   end
 
   # POST /guilds or /guilds.json
@@ -73,40 +51,31 @@ class GuildsController < ApplicationController
     end
 
     @user = User.find(session[:user_id])
-    Invite.all.where(:user_id => @user[:id]).destroy_all
+    Invite.where(:user_id => @user[:id]).destroy_all
 
-    respond_to do |format|
-      if (self.admin? || (self.user_exists? && self.user_has_no_guild?)) && self.set_owner_id && @guild.save && self.set_guild_id
-        format.html { redirect_to @guild, notice: "Guild was successfully created." }
-        format.json { render json: { id: @guild.id }, status: :created }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @guild.errors, status: :unprocessable_entity }
-      end
+    if (self.admin? || (self.user_exists? && self.user_has_no_guild?)) && self.set_owner_id && @guild.save && self.set_guild_id
+      render json: { id: @guild.id }, status: :created
+    else
+      render json: @guild.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /guilds/1 or /guilds/1.json
   def update
-    respond_to do |format|
-      if (self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.in_current_guild?))
-        @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id]))
-        format.html { redirect_to @guild, notice: "Guild was successfully updated." }
-        format.json { render :show, status: :ok, location: @guild }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @guild.errors, status: :unprocessable_entity }
-      end
+    if ((self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.in_current_guild?)) \
+      && @guild.update(params.require(:guild).permit(:name, :anagram, [:id, :owner_id])))
+      render json: @guild.as_json, status: :ok
+    else
+      render json: @guild.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /guilds/1 or /guilds/1.json
   def destroy
     if (self.admin? || (self.user_exists? && self.user_is_guild_owner? && self.user_is_alone?)) && @guild.destroy
-      respond_to do |format|
-        format.html { redirect_to guilds_url, notice: "Guild was successfully destroyed." }
-        format.json { head :no_content }
-      end
+      head :no_content
+    else
+      render json: @guild.errors, status: :unprocessable_entity
     end
   end
 
@@ -129,7 +98,7 @@ class GuildsController < ApplicationController
 
     # A function to check if user is alone in the guild
     def user_is_alone?
-      return (User.all.where(:guild_id => @guild[:id]).with_otp.length == 1) ? true : false
+      return (User.where(:guild_id => @guild[:id]).with_otp.length == 1) ? true : false
     end
 
     # A function to check if user doesn't have a guild
@@ -142,8 +111,10 @@ class GuildsController < ApplicationController
       return (@guild[:owner_id] == session[:user_id]) ? true : false
     end
 
+    # A function to give all the right for certain users for debug purposes
     def admin?
-      return (session[:user_id] && User.find(session[:user_id])[:login] == "") ? true : false
+      return false
+      # return (session[:user_id] && User.find(session[:user_id])[:login] == "") ? true : false
     end
 
     # A function to set the owner_id corresponding to the current session user id

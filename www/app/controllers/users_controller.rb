@@ -1,49 +1,36 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[ show edit update destroy kick leave ]
+  before_action :set_user, only: %i[ show edit update destroy kick leave matcheshistory avatar_update ]
 
   # GET /users or /users.json
   def index
-    @users = User.all.select(:id, :username, :guild_id).with_otp
-    @guilds = Guild.all
-    @matches = Match.all.where(status: "finished").select(:id, :winner)
-    @result = @users.map { |i| i.attributes.merge({
-      guild_name: (@guilds.find{ |guild| guild.id == i.guild_id}) ? @guilds.find{ |guild| guild.id == i.guild_id}[:name] : "Not in a guild",
-      score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
-      route: '#users/' + i.id.to_s,
-      my_user: (i.id == session[:user_id]) ? true : false,
-      })
-    }
+    users = User.all.select(:id, :username, :guild_id).with_otp
+    @result = users.map{|user| user.as_json.merge({
+        guild_name: user.guild ? user.guild.name : "Not in a guild",
+        score: Match.where(winner: user.id).size,
+        my_user: (user == current_user),
+        route: '#users/' + user.id.to_s
+    })}
     @result.sort_by! { |res| -res[:score] }
     @result = @result.map { |i| i.merge({ rank: @result.find_index{ |user| user["id"] == i["id"] }.to_i + 1 }) }
-    respond_to do |format|
-      format.html { }
-      format.json { render json: @result.as_json }
-    end
+    render json: @result.as_json, status: :ok
   end
 
   # GET /users/1 or /users/1.json
   def show
-    @users = User.all.select(:id, :username, :guild_id).with_otp
-    @guilds = Guild.all
-    @matches = Match.all.where(status: "finished").select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc)
-    @users = @users.map { |i| i.attributes.merge({
-      score: (@matches.find_all{ |match| match.winner == i.id}) ? @matches.find_all{ |match| match.winner == i.id}.length() : 0,
-      })
-    }
-    @users.sort_by! { |res| -res[:score] }
-    @allmatches = @matches.map { |i| i.attributes.merge({
-      username_left: (@users.find{ |user| user["id"] == i.left_player}) ? @users.find{ |user| user["id"] == i.left_player}["username"] : "Deleted acount",
-      username_right: (@users.find{ |user| user["id"] == i.right_player}) ? @users.find{ |user| user["id"] == i.right_player}["username"] : "Deleted acount",
-      result: (@user[:id] == i.winner) ? "Win" : "Loss",
-      })
-    }
+    render json: @user.as_json, status: :ok
+  end
 
-    render json: @user.as_json.merge({
-      "rank" => @users.find_index{ |user| user["id"] == @user[:id]}.to_i + 1,
-      "guild_name" => (@guilds.find{ |guild| guild.id == @user[:guild_id]}) ? @guilds.find{ |guild| guild.id ==  @user[:guild_id]}[:name] : "Not in a guild",
-      "score" => (@matches.find_all{ |match| match.winner == @user[:id]}) ? @matches.find_all{ |match| match.winner == @user[:id]}.length() : 0,
-      "matches" => @allmatches.find_all{ |match| match["left_player"] == @user[:id] || match["right_player"] == @user[:id]}
-    })
+  def matcheshistory
+    @matches = Match.where(left_player: @user[:id]).or(Match.where(right_player: @user[:id])).where(status: "finished").select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc).map { |match| match.as_json.merge({
+      username_left: User.find_by_id(match.left_player) ? User.find(match.left_player)["username"] : "Deleted acount",
+      username_right: User.find_by_id(match.right_player) ? User.find(match.right_player)["username"] : "Deleted acount",
+      result: (@user[:id] == match.winner) ? "Win" : "Loss",
+      })
+    }
+    render json: {
+      id: @user[:id],
+      "matches" => @matches
+    }, status: :ok
   end
 
   # GET /users/new

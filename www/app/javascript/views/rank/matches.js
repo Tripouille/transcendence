@@ -5,18 +5,16 @@ export const MatchesView = Backbone.View.extend({
 	template: _.template($('#userMatchesTemplate').html()),
 	rowTemplate: _.template($('#userMatchRowTemplate').html()),
 
-	render: function (userView) {
+	render: function (matcheshistory) {
 		this.$el.empty();
 		let self = this;
-
-		let filteredCollection = new Matches(userView.user.get('matches'));
+		let filteredCollection = new Matches(matcheshistory.user.get('matches'));
 
 		if (filteredCollection) {
 			this.$el.html(this.template).ready(function () {
 				filteredCollection.forEach(function (match) {
 					match.set({ "date": (new Date(match.get("updated_at"))).toDateString() });
 					match.set({ "time": (new Date(match.get("updated_at"))).toLocaleTimeString() });
-					// match.set({ "time": (new Date(guildView.guild.get("updated_at"))).toDateString() });
 					$("#userMatchesBody").append(self.rowTemplate(match.toJSON()));
 				});
 			});

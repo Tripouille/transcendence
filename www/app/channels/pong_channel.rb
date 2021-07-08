@@ -42,7 +42,13 @@ class PongChannel < ApplicationCable::Channel
 		end
 
 		stream_for @match
-		User.find_by_id(connection.session[:user_id]).update(status: 'ingame')
+		current_user.update(status: 'ingame')
+		Friendship.where(friend: current_user).each do |friendship|
+			UserChannel.broadcast_to friendship.user, content: {
+				friend_id: current_user.id,
+				friend_status: 'ingame'
+			}
+		end
 		if ["lobby", "ready"].include? @match[:status]
 			if playerIsLeft()
 				registerLeftPlayer()
@@ -57,8 +63,15 @@ class PongChannel < ApplicationCable::Channel
 
 	def unsubscribed
 		#puts @SIDE.to_s + ' unsubscribing from pong channel'
-		user = User.find_by_id(connection.session[:user_id])
-		if user.status == "ingame" then user.update(status: 'online') end
+		if current_user.status == "ingame"
+			current_user.update(status: 'online')
+			Friendship.where(friend: current_user).each do |friendship|
+				UserChannel.broadcast_to friendship.user, content: {
+					friend_id: current_user.id,
+					friend_status: 'online'
+				}
+			end
+		end
 		updateMatchFromDB()
 		if @match[:status] != "finished"
 			@match[:status] = "finished"
@@ -74,11 +87,11 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def playerIsLeft
-		@match[:left_player] == connection.session[:user_id]
+		@match[:left_player] == current_user.id
 	end
 
 	def playerIsRight
-		@match[:right_player] == connection.session[:user_id]
+		@match[:right_player] == current_user.id
 	end
 
 	def registerLeftPlayer
@@ -93,7 +106,7 @@ class PongChannel < ApplicationCable::Channel
 		@SIDE_PADDLE_DIR = :right_paddle_dir
 		@match[:status] = "ready"
 		saveMatchToDB()
-		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '5s' do
+		@schedulers[:waitForOpponentRight] = Rufus::Scheduler.new.schedule_in '5s' do
 			updateMatchFromDB()
 			if @match[:status] == "ready"
 				@match[:status] = "finished"
@@ -124,12 +137,16 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def setPlayers()
+		left_player = User.find(@match[:left_player])
+		right_player = User.find(@match[:right_player])
 		@players = {
 			left: {
-				username: User.find(@match[:left_player]).username
+				id: left_player.id,
+				username: left_player.username
 			},
 			right: {
-				username: User.find(@match[:right_player]).username
+				id: right_player.id,
+				username: right_player.username
 			}
 		}
 	end
@@ -168,7 +185,9 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def launchTimer
-		@match.update_attribute(:status, "timer")
+		ActiveRecord::Base.connection_pool.with_connection do
+			@match.update_attribute(:status, "timer")
+		end
 		PongChannel.broadcast_to @match, content: {
 			act: 'launchTimer'
 		}

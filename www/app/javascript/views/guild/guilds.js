@@ -13,8 +13,6 @@ export const GuildsView = Backbone.View.extend({
         this.page = 1;
         let self = this;
         $('main#guildsAll').append('<div class="guildsTable"></div>')
-        // window.guild_fetch = this.guilds.fetch();
-        // $.when(window.currentUser.fetch(), window.guild_fetch).done(function () {
         $.when(window.currentUser.fetch(), this.guilds.fetch()).done(function () {
             if (!window.currentUser.has('guild_id'))
                 $('main#guildsAll').prepend(_.template($('#guildNewButton').html()));
@@ -26,8 +24,6 @@ export const GuildsView = Backbone.View.extend({
                     Backbone.history.navigate('#guilds/' + myGuildModel.id, { trigger: true })
                 });
             }
-            // while (!self.allRendered)
-            // self.renderPage();
             while (($(window).height() >= $(document).height()) && !self.allRendered)
                 self.renderPage();
             $(window).scroll(function () {

@@ -12,10 +12,6 @@ export const UserView = Backbone.View.extend({
 	template: _.template($('#user-display').html()),
 	model: new User({ id: initCurrentUserId }),
 
-	initialize: function () {
-		// console.log('User view has been initialized');
-	},
-
 	render: function () {
 		let _thisView = this;
 

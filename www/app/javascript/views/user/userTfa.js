@@ -11,10 +11,6 @@ export const UserTfaView = Backbone.View.extend({
 
 	model: new User({ id:initCurrentUserId }),
 
-	initialize: function() {
-		console.log('User Tfa View has been init')
-	},
-
 	render: function(id) {
 		if (initCurrentUserId == id) {
 			let _thisView = this;

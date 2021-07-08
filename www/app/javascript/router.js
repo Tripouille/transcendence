@@ -13,8 +13,8 @@ import GameView from 'views/game';
 import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
-import { RanksView } from 'views/rank/ranks';
-import { RankView } from 'views/rank/rank';
+import { UsersView } from 'views/rank/users';
+import { MatchesHistoryView } from 'views/rank/matchesHistory';
 
 import { UserView } from './views/user/user';
 import { UserShowView } from './views/user/userShow';
@@ -35,8 +35,8 @@ $(function () {
 		guildsView: new GuildsView({ el: $main }),
 		guildView: new GuildView({ el: $main }),
 		guildNewView: new GuildNewView({ el: $main }),
-		ranksView: new RanksView({ el: $main }),
-		rankView: new RankView({ el: $main }),
+		usersView: new UsersView({ el: $main }),
+		matchesHistoryView: new MatchesHistoryView({ el: $main }),
 		gameView: new GameView({ el: $main }),
 		matchmakingView: new MatchmakingView({ el: $main }),
 		selectModeView: new SelectModeView({ el: $main }),
@@ -55,8 +55,8 @@ $(function () {
 			"guilds": "guilds",
 			"guilds/new": "newguild",
 			"guilds/:id": "displayguild",
-			"users": "ranks",
-			"user/:id/matchhistory": "matchhistory",
+			"users": "users",
+			"user/:id/matcheshistory": "matcheshistory",
 			"user": "user",
 			"user/:id/show": "userShow",
 			"user/:id/edit": "updateUser",
@@ -91,13 +91,13 @@ $(function () {
 			$('#guild_link').addClass('selected');
 			this.guildNewView.render();
 		},
-		ranks: function () {
+		users: function () {
 			$('#rank_link').addClass('selected');
-			this.ranksView.render();
+			this.usersView.render();
 		},
-		matchhistory: function (id) {
+		matcheshistory: function (id) {
 			$('#rank_link').addClass('selected');
-			this.rankView.render(parseInt(id));
+			this.matchesHistoryView.render(parseInt(id));
 		},
 		selectMode: function () {
 			$('#game_link').addClass('selected');
@@ -148,19 +148,10 @@ function connectUserChannel() {
 			disconnected() { /*console.log('disconnected from user channel');*/ },
 			received(data) {
 				//console.log('Received data for user :', data.content);
-				if (data.content.room) {
-					data.content.room.silent = true;
-					window.chatRoomsView.chatRoomsCollection.add(data.content.room);
+				if (data.content.chatroom) {
+					data.content.chatroom.silent = true;
+					window.chatRoomsView.chatRoomsCollection.add(data.content.chatroom);
 				}
-				else if (data.content.challenge_accepted) {
-					const $message = $('#chat_body .challenge[data-message-id="' + data.content.message_id + ']');
-					clearInterval($message.data('timeLeftInterval'));
-					$message.find('span.time_left').text('accepted');
-					$message.find('.challenge_answers').remove();
-					Backbone.history.navigate("game/matchmaking/" + data.content.challenge_accepted, { trigger: true });
-				}
-				else if (data.content.chat_ban)
-					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
 				else if (data.content.remove_challenge) {
 					window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);
 					stopChallengeMessage(data.content.message_id, data.content.reason);
@@ -169,6 +160,8 @@ function connectUserChannel() {
 				}
 				else if (data.content.chat_ban)
 					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
+				else if (data.content.friend_status)
+					window.friendsListView.friendsCollection.get(data.content.friend_id).set('status', data.content.friend_status);
 			}
 		});
 }

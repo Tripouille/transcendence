@@ -8,9 +8,7 @@ export const Guild = Backbone.Model.extend({
 		score: 0
 	},
 	idAttribute: "id",
-	initialize: function () {
-		// console.log('Guild has been initialized');
-	},
+
 	validate: function (attr) {
 		if (attr.name == "" || attr.name.length < 2 || attr.name.length > 20)
 			return "Guild name must be 2 to 20 characters long.";

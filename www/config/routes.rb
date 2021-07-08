@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   resources :users
   patch '/users/:id/kick', to: 'users#kick', as: 'kick_user'
   patch '/users/:id/leave', to: 'users#leave', as: 'leave_user'
+  get '/users/:id/matcheshistory', to: 'users#matcheshistory', as: 'matcheshistory'
 
   # === Matches ===
   get '/matchmaking', to: 'matches#matchmaking', as: 'matchmaking'
@@ -35,17 +36,19 @@ Rails.application.routes.draw do
   post '/answer_challenge/:answer', to: 'matches#answer_challenge'
 
   # === Guilds ===
-  resources :guilds # TO REMOVE AT THE END
-  # get '/guilds', to: 'guilds#index', as: 'index'
-  # get '/guilds/new', to: 'guilds#new', as: 'new' => TO REMOVE AT THE END
-  # post '/guilds', to: 'guilds#create', as: 'create'
-  # get '/guilds/:id', to: 'guilds#show', as: 'show'
-  # get '/guilds/:id/edit', to: 'guilds#edit', as: 'edit' => TO REMOVE AT THE END
-  # patch '/guilds/:id', to: 'guilds#update', as: 'update'
-  # delete '/guilds/:id', to: 'guilds#destroy', as: 'destroy'
+  # resources :guilds # TO REMOVE AT THE END
+  get '/guilds', to: 'guilds#index'
+  post '/guilds', to: 'guilds#create'
+  get '/guilds/:id', to: 'guilds#show'
+  put '/guilds/:id', to: 'guilds#update'
+  delete '/guilds/:id', to: 'guilds#destroy'
 
   # === Invites ===
-  resources :invites # TO REMOVE AT THE END
+  # resources :invites # TO REMOVE AT THE END
+  get '/invites', to: 'invites#index'
+  post '/invites', to: 'invites#create'
+  get '/invites/:id', to: 'invites#show'
+  delete '/invites/:id', to: 'invites#destroy'
   delete '/invites/:id/accept', to: 'invites#accept', as: 'accept_invite'
   delete '/invites/:id/refuse', to: 'invites#refuse', as: 'refuse_invite'
 
