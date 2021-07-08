@@ -7,7 +7,7 @@ export const UserUpdateView = Backbone.View.extend({
 	events: {
 		'click #formSubmitUpdateUser input' : 'onFormSubmit',
 		'click .back-btn' : 'clickHandler',
-		'change .custom-file-input' : 'changeFileName'
+		'change .custom-file-input' : 'changeAvatar'
 	},
 
 	model: new User({ id:initCurrentUserId }),
@@ -108,9 +108,16 @@ export const UserUpdateView = Backbone.View.extend({
 		Backbone.history.navigate("user", { trigger: true })
 	},
 
-	changeFileName: function(e) {
-		const files = $('.custom-file-input')[0].files[0].name;
-		$('.custom-file-input').attr('name', files);
+	changeAvatar: function(e) {
+		const file = $('.custom-file-input')[0].files[0];
+		if (file) {
+			$('.custom-file-input').attr('name', file.name);
+			const url = window.URL || window.webkitURL;
+			const binaryData = [];
+			binaryData.push(file);
+			const fileURL = url.createObjectURL(new Blob(binaryData, {type: "application/zip"}));
+			$('#avatar_profile').attr('src', fileURL);
+		}
 	},
 
 	showPopUpError: function (error) {

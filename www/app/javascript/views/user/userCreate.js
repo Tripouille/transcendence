@@ -87,11 +87,6 @@ export const UserCreateView = Backbone.View.extend({
 		}
 	},
 
-	changeFileName: function(e) {
-		const files = $('.custom-file-input')[0].files[0].name;
-		$('.custom-file-input').attr('name', files);
-	},
-
 	showPopUpError: function (error) {
 		const $erroPopUp = $('#errorPopUp');
 
