@@ -11,7 +11,15 @@ class FriendshipsController < ApplicationController
 	end
 
 	def all
-		render json: current_user.friends.order(Arel.sql("status = 'offline', username")).select(:id, :username, :status).with_otp
+		render json: current_user.friends.order(Arel.sql("status = 'offline', username"))
+								.select(:id, :username, :status)
+								.with_otp
+								.map{|friend| friend.as_json().merge(
+									match_id: Match.order(created_at: :desc)
+													.where('left_player = ? OR right_player = ?', friend.id, friend.id)
+													.where.not(status: 'finished')
+													.pick(:id)
+								)}
 	end
 
 	def remove
