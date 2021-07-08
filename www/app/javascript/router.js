@@ -20,6 +20,8 @@ import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
 import { UserTfaView } from './views/user/userTfa';
 
+import RulesView from './views/rules';
+
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
 
@@ -42,6 +44,7 @@ $(function() {
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
 		userTfaView: new UserTfaView({ el: $main }),
+		rulesView: new RulesView({el: $main}),
 
 		routes: {
 			"": "selectMode",
@@ -58,6 +61,7 @@ $(function() {
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
 			"user/:id/tfa": "tfa",
+			"rules": "rules"
 		},
 
 		execute: function (callback, args, name) {
@@ -127,6 +131,10 @@ $(function() {
 		tfa: function(id) {
 			this.userTfaView.render(id);
 		},
+
+		rules: function() {
+			this.rulesView.render();
+		}
 
 	});
 	window.router = new myRouter();
