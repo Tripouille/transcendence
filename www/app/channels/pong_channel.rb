@@ -185,7 +185,9 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def launchTimer
-		@match.update_attribute(:status, "timer")
+		ActiveRecord::Base.connection_pool.with_connection do
+			@match.update_attribute(:status, "timer")
+		end
 		PongChannel.broadcast_to @match, content: {
 			act: 'launchTimer'
 		}

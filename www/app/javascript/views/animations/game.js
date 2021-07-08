@@ -9,9 +9,9 @@ const timerColors = {
 	1: 'lightgreen'
 };
 const timerSizes = {
-	3: '30vh',
-	2: '15vh',
-	1: '5vh'
+	3: '25vh',
+	2: '25vh',
+	1: '25vh'
 };
 
 let BH = {ball: null, angles: null};

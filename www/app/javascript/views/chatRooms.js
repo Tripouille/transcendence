@@ -91,7 +91,10 @@ const ChatRoomsView = Backbone.View.extend({
 				const messageView = new MessageView({model: message});
 				$('#chat_body').append(messageView.$el);
 				this.scrollBottom();
-				chatRoomView.markAsRead();
+				if (window.chat_out)
+					chatRoomView.markAsRead();
+				else
+					$('#chat_banner span.new_message').addClass('visible');
 			}
 		}
 		else {
@@ -310,10 +313,8 @@ const ChatRoomsView = Backbone.View.extend({
 	},
 	unfoldTchat: function() {
 		const activeChatRoomView = this.chatRoomViews[this.activeRoomId];
-		activeChatRoomView.$el.find('span.new_message').removeClass('visible');
-		activeChatRoomView.model.set('newMessages', false);
-		if (!this.$el.find('span.new_message:visible').length)
-			$('#chat_banner span.new_message').removeClass('visible');
+		activeChatRoomView.markAsRead();
+		setTimeout(function() {this.scrollBottom();}.bind(this), 400);
 	},
 
 	changeBlockedStatus: function(blocked_user_id, blocked) {
