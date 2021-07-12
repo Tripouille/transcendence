@@ -22,6 +22,8 @@ import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
 import { UserTfaView } from './views/user/userTfa';
 
+import RulesView from './views/rules';
+
 /* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
 
@@ -45,6 +47,7 @@ $(function () {
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
 		userTfaView: new UserTfaView({ el: $main }),
+		rulesView: new RulesView({el: $main}),
 
 		routes: {
 			"": "selectMode",
@@ -62,6 +65,7 @@ $(function () {
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
 			"user/:id/tfa": "tfa",
+			"rules": "rules"
 		},
 
 		execute: function (callback, args, name) {
@@ -136,6 +140,10 @@ $(function () {
 			this.userTfaView.render(id);
 		},
 
+		rules: function() {
+			this.rulesView.render();
+		}
+
 	});
 	window.router = new myRouter();
 	Backbone.history.start();
@@ -162,8 +170,23 @@ function connectUserChannel() {
 					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
 				else if (data.content.friend_status)
 					window.friendsListView.friendsCollection.get(data.content.friend_id).set('status', data.content.friend_status);
-			}
-		});
+			// }
+		// });
+				else if (data.content.remove_challenge) {
+					window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);
+					stopChallengeMessage(data.content.message_id, data.content.reason);
+					if (data.content.reason == 'accepted')
+						Backbone.history.navigate("game/matchmaking/" + data.content.match_id, {trigger: true});
+				}
+				else if (data.content.chat_ban)
+					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
+				else if (data.content.friend_status)
+					window.friendsListView.friendsCollection.get(data.content.friend_id).set({
+						status: data.content.friend_status,
+						match_id: data.content.match_id
+					});
+		}
+	});
 }
 
 function stopChallengeMessage(message_id, text) {

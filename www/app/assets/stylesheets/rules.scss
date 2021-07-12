@@ -1,0 +1,9 @@
+#rules {
+	width: 75%;
+	font-size: 1.5em;
+	overflow: auto;
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+}

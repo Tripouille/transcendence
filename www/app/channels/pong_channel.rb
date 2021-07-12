@@ -46,7 +46,8 @@ class PongChannel < ApplicationCable::Channel
 		Friendship.where(friend: current_user).each do |friendship|
 			UserChannel.broadcast_to friendship.user, content: {
 				friend_id: current_user.id,
-				friend_status: 'ingame'
+				friend_status: 'ingame',
+				match_id: @matchId
 			}
 		end
 		if ["lobby", "ready"].include? @match[:status]

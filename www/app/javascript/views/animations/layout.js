@@ -110,6 +110,13 @@ $(function() {
 			$friends_menu.css({top: 'calc(3.2 * ' + $friends_menu.css('font-size') + ' + ' + $this.position().top + 'px)'});
 			$friends_menu.show();
 			window.active_friend = this.id;
+			const friendModel = window.friendsListView.friendsCollection.get(this.id);
+			if (friendModel.get('status') == 'ingame') {
+				$friends_menu.find('.spectate').show();
+				$friends_menu.find('.spectate a').attr('href', '#game/' + friendModel.get('match_id'));
+			}
+			else
+				$friends_menu.find('.spectate').hide();
 		}
 	}).on('mousedown', function(e) {e.preventDefault();});
 
