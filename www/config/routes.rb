@@ -18,13 +18,12 @@ Rails.application.routes.draw do
   end
 
   # === Avatar ===
-  resources :users do
+  resources :users, only: [:index, :show, :update] do
     get :avatar, on: :member
     post :avatar_update, on: :member
   end
 
   # === Users ===
-  resources :users
   patch '/users/:id/kick', to: 'users#kick', as: 'kick_user'
   patch '/users/:id/leave', to: 'users#leave', as: 'leave_user'
   get '/users/:id/matcheshistory', to: 'users#matcheshistory', as: 'matcheshistory'

@@ -54,7 +54,7 @@ export const UserUpdateView = Backbone.View.extend({
 			this.model.save({ username: $('#username').val().trim() }, {
 				error: function (model, response, options) {
 					if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
-						_thisView.showPopUpError("Username already exist.");
+						_thisView.showPopUpError("Username already exists.");
 					else
 						_thisView.showPopUpError("Server error.");
 				}
