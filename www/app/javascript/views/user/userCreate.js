@@ -19,8 +19,18 @@ export const UserCreateView = Backbone.View.extend({
 				if (_thisView.model.get('username') !== _thisView.model.get('login')) {
 					Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 				} else {
-					_thisView.$el.empty();
-					_thisView.$el.append(_thisView.template(_thisView.model.attributes));
+					_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+					$.ajax({
+						type: "GET",
+						url: "users/" + initCurrentUserId + "/avatar",
+						xhrFields: {
+							responseType: 'blob'
+						},
+					}).done(function(data) {
+						const url = window.URL || window.webkitURL;
+						const src = url.createObjectURL(data);
+						$('#avatar_profile').attr('src', src);
+					});
 					return _thisView;
 				}
 			});

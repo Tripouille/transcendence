@@ -2,6 +2,8 @@ class Guild < ApplicationRecord
 	after_validation :sanitize_fields
 
 	has_one :user
+	has_many :matches_as_left, class_name: "Match", foreign_key: "left_guild_id", dependent: :nullify
+	has_many :matches_as_right, class_name: "Match", foreign_key: "right_guild_id", dependent: :nullify
 
 	validates :name,
 		presence: true,

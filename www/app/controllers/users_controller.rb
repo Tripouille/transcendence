@@ -17,7 +17,11 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
-    render json: @user.as_json, status: :ok
+	if self.user_owner?
+    	render json: @user.as_json(:only => [:id, :username, :login, :email, :guild_id]), status: :ok
+	else
+    	render json: @user.as_json(:only => [:id, :username, :login, :guild_id]), status: :ok
+	end
   end
 
   def matcheshistory

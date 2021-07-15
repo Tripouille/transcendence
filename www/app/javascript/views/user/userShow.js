@@ -16,7 +16,7 @@ export const UserShowView = Backbone.View.extend({
 		let _thisView = this;
 		this.model = new User({ id: id });
 
-		this.$el.attr({ id: 'userShow' });
+		this.$el.attr({ id: 'user' });
 		$('main#userShow').append('<div class="loading">Loading...</div>');
 		$('main#userShow').append('<div class="lds-ripple"><p>Loading</p><div></div><div></div></div>');
 		this.model.fetch().done(function () {

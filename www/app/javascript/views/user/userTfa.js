@@ -6,8 +6,7 @@ export const UserTfaView = Backbone.View.extend({
 
 	events: {
 		'click #formSubmitEnableOtp input' : 'onOtpFormSubmit',
-		'click .disable-btn' : 'disableOtp',
-		'click .back-btn' : 'clickHandler',
+		'click .disable-btn' : 'disableOtp'
 	},
 
 	model: new User({ id:initCurrentUserId }),
@@ -50,6 +49,7 @@ export const UserTfaView = Backbone.View.extend({
 		$('#my-svg').attr('src', url);
 		_thisView.$el.removeClass('loading');
 		_thisView.$el.removeClass('lds-ripple');
+		this.$el.find('.back-btn').on('click', this.back);
 		return _thisView;
 	},
 
@@ -109,7 +109,7 @@ export const UserTfaView = Backbone.View.extend({
 		}, 4000);
 	},
 
-	clickHandler: function(e) {
+	back: function(e) {
 		e.preventDefault()
 		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
 	}

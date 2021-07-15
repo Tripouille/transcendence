@@ -6,7 +6,6 @@ export const UserUpdateView = Backbone.View.extend({
 
 	events: {
 		'click #formSubmitUpdateUser input' : 'onFormSubmit',
-		'click .back-btn' : 'clickHandler',
 		'change .custom-file-input' : 'changeAvatar'
 	},
 
@@ -42,6 +41,7 @@ export const UserUpdateView = Backbone.View.extend({
 		$('#avatar_profile').attr('src', src);
 		_thisView.$el.removeClass('loading');
 		_thisView.$el.removeClass('lds-ripple');
+		this.$el.find('.back-btn').on('click', this.back);
 		return _thisView;
 	},
 
@@ -103,7 +103,7 @@ export const UserUpdateView = Backbone.View.extend({
 		}
 	},
 
-	clickHandler: function(e){
+	back: function(e){
 		e.preventDefault()
 		Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 	},
