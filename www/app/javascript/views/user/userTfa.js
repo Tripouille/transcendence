@@ -7,6 +7,7 @@ export const UserTfaView = Backbone.View.extend({
 	events: {
 		'click #formSubmitEnableOtp input' : 'onOtpFormSubmit',
 		'click .disable-btn' : 'disableOtp',
+		'click .back-btn' : 'clickHandler',
 	},
 
 	model: new User({ id:initCurrentUserId }),
@@ -106,6 +107,11 @@ export const UserTfaView = Backbone.View.extend({
 				$erroPopUp.css("display", "none");
 			});
 		}, 4000);
+	},
+
+	clickHandler: function(e) {
+		e.preventDefault()
+		Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
 	}
 
 });
