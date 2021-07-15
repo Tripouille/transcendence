@@ -1,5 +1,7 @@
 @import "variables";
 
+$screen-width: Max(500px, calc(0.5 * #{$main-width}));
+
 #user {
 
 	#errorPopUp {
@@ -71,7 +73,9 @@
 	.screen-top {
 		margin-left: auto;
 		margin-right: auto;
-		width: $main-width / 2;
+		width: $screen-width;
+		min-width: calc(275px + 2em);
+		max-width: 90vw;
 		display: flex;
 		flex-direction: column;
 		flex-grow: 0;
@@ -88,8 +92,9 @@
 	.screen {
 		margin-left: auto;
 		margin-right: auto;
-		width: $main-width / 2;
+		width: $screen-width;
 		min-width: min-content;
+		max-width: 90vw;
 		display: flex;
 		flex-direction: column;
 		flex-grow: 0;
@@ -112,6 +117,7 @@
 			max-height: 200px;
 			width: auto;
 			height: auto;
+			margin: auto;
 		}
 
 		.user_button {
@@ -163,6 +169,11 @@
 				font-size: 1.5em;
 				padding-left: 1em;
 				line-height: 1.75em;
+				width: $screen-width;
+				display: table;
+				table-layout: fixed;
+				width: 100%;
+				word-wrap: break-word;
 			}
 		}
 		#otp {
@@ -173,6 +184,20 @@
 			padding: 1em;
 			#otp_text {
 				font-size: 1.5em;
+			}
+		}
+
+		#otp_code {
+			display: flex;
+			flex-direction:row;
+			font-size: 1.5em;
+			margin-bottom: 1em;
+			div {
+				padding-left: 1em;
+				display: table;
+				table-layout: fixed;
+				width: 70%;
+				word-wrap: break-word;
 			}
 		}
 
@@ -206,12 +231,12 @@
 				color: transparent;
 				margin-left: auto;
 				display: flex;
-				max-width: 22%;
 				max-height: 10%;
 				width: auto;
 				height: auto;
 
 				&:before  {
+					text-align: center;
 					font-family: 'screen';
 					content: attr(name);
 					display: inline-block;
