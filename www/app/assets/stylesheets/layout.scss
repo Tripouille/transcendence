@@ -646,7 +646,7 @@ $chat-input-padding: calc(0.03 * #{$chat-height}) 3px;
 				border-color: white;
 			}
 			&.room_name {
-				width: calc(100% - 15 * #{$responsive-ratio});
+				width: calc(100% - 0.55 * #{$chat-width});
 				margin-left: 2%;
 			}
 			&.room_password, &#login_to_dm {

@@ -53,18 +53,18 @@
 
 	@keyframes lds-ripple {
 		0% {
-		top: 36px;
-		left: 36px;
-		width: 0;
-		height: 0;
-		opacity: 1;
+			top: 36px;
+			left: 36px;
+			width: 0;
+			height: 0;
+			opacity: 1;
 		}
 		100% {
-		top: 0px;
-		left: 0px;
-		width: 72px;
-		height: 72px;
-		opacity: 0;
+			top: 0px;
+			left: 0px;
+			width: 72px;
+			height: 72px;
+			opacity: 0;
 		}
 	}
 
@@ -89,6 +89,7 @@
 		margin-left: auto;
 		margin-right: auto;
 		width: $main-width / 2;
+		min-width: min-content;
 		display: flex;
 		flex-direction: column;
 		flex-grow: 0;
@@ -98,6 +99,12 @@
 		border-style: ridge groove groove ridge;
 		background-color: $verydarkgreen;
 		text-decoration: none;
+		max-height: 100%;
+		overflow: auto;
+		scrollbar-width: none;
+		&::-webkit-scrollbar {
+			width: 0;
+		}
 
 		#my-svg {
 			background: white;
@@ -108,10 +115,8 @@
 		}
 
 		.user_button {
-			margin-top: auto;
 			margin-left: auto;
 			margin-right: auto;
-			padding-bottom: 5%;
 			&.button_show {
 				display: flex;
 				flex-direction: column;
@@ -125,7 +130,7 @@
 				border: 2px solid rgba(0, 128, 0, 0.75);
 				border-radius: 3px;
 				padding: 5px 8px;
-				margin-bottom: 5%;
+				margin-bottom: 4%;
 				white-space: nowrap;
 				cursor: pointer;
 				font-size: 15pt;
@@ -165,6 +170,7 @@
 			flex-direction:row;
 			margin-right: auto;
 			padding-top: 0.5em;
+			padding: 1em;
 			#otp_text {
 				font-size: 1.5em;
 			}
@@ -245,6 +251,16 @@
 				text-decoration: none;
 				box-sizing: border-box;
 				width: 30%;
+			}
+		}
+
+		form {
+			padding: 1em;
+			#formSubmitUpdateUser {
+				padding-top: 1em;
+				input {
+					margin-bottom: 0;
+				}
 			}
 		}
 

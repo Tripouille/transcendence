@@ -17,12 +17,12 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
-	user_completed = @user.as_json(:only => [:id, :username, :login, :email, :guild_id])
+	user_completed = @user.as_json(:only => [:id, :username, :login, :email, :guild_id, :otp_secret, :otp_required_for_login])
 						.merge(guild: @user.guild)
 	if self.user_owner?
     	render json: user_completed, status: :ok
 	else
-    	render json: user_completed.except(:email), status: :ok
+    	render json: user_completed.except(:email, :otp_required_for_login), status: :ok
 	end
   end
 
