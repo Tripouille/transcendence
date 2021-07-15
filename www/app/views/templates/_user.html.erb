@@ -111,20 +111,30 @@
 
 		<br />
 
-		<div id="login">
+		<div class="user_info">
 			<label>Login:</label>
-			<div id="login_text"><%%= login %></div>
+			<div><%%= login %></div>
 		</div>
-		<div id="username">
+		<div class="user_info">
 			<label>Username:</label>
-			<div id="username_text"><%%= username %></div>
+			<div><%%= username %></div>
 		</div>
 		<%% if (id == window.user_id) { %>
-			<div id="email">
+			<div class="user_info">
 				<label>Email:</label>
-				<div id="email_text"><%%= email %></div>
+				<div><%%= email %></div>
 			</div>
 		<%% } %>
+		<div class="user_info">
+			<label>Guild:</label>
+			<div>
+				<%% if (guild) { %>
+					<a href="#guilds/<%%= guild.id %>"><%%= guild.name + ' [' + guild.anagram + ']' %></a>
+				<%% } else { %>
+					None
+				<%% } %>
+			</div>
+		</div>
 
 		<br />
 

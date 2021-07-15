@@ -146,7 +146,7 @@
 			}
 		}
 
-		#login {
+		.user_info {
 			display: flex;
 			flex-direction:row;
 			margin-right: auto;
@@ -154,35 +154,7 @@
 			label {
 				font-size: 2em;
 			}
-			#login_text {
-				font-size: 1.5em;
-				padding-left: 1em;
-				line-height: 1.75em;
-			}
-		}
-		#username {
-			display: flex;
-			flex-direction:row;
-			margin-right: auto;
-			padding-top: 0.5em;
-			label {
-				font-size: 2em;
-			}
-			#username_text {
-				font-size: 1.5em;
-				padding-left: 1em;
-				line-height: 1.75em;
-			}
-		}
-		#email {
-			display: flex;
-			flex-direction:row;
-			margin-right: auto;
-			padding-top: 0.5em;
-			label {
-				font-size: 2em;
-			}
-			#email_text {
+			div {
 				font-size: 1.5em;
 				padding-left: 1em;
 				line-height: 1.75em;
