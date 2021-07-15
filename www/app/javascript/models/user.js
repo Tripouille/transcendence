@@ -13,11 +13,6 @@ export const User = Backbone.Model.extend({
 
 	idAttribute: "id",
 
-	constructor: function () {
-		// console.log("Constructor User has been called")
-		Backbone.Model.apply(this, arguments);
-	},
-
 	/* A function to call to kick members from their guild: modification of their own guild_id value */
 	kick: function (evt) {
 		if (confirm("You are about to kick " + evt.data.model.get('username') + ". Are you sure ?")) {
@@ -49,5 +44,11 @@ export const User = Backbone.Model.extend({
 			error: function () {
 			}
 		})
+	},
+
+	toJSONDecorated: function() {
+		const result = this.toJSON();
+		result.isMyFriend = window.friendsListView.friendsCollection.get(result.id) ? true : false;
+		return result;
 	}
 });

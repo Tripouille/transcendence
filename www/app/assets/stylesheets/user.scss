@@ -1,16 +1,5 @@
 @import "variables";
 
-@font-face{
-	font-family : "handwriting";
-	src: url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap')
-  }
-
-$link-width: calc(0.5 * #{$main-width});
-$link-height: calc(0.4 * #{$main-height});
-$border-color: green;
-$border-width: $responsive-ratio;
-$link-border-width: calc(0.5 * #{$border-width});
-
 #user, #userShow {
 
 	#errorPopUp {
@@ -40,8 +29,8 @@ $link-border-width: calc(0.5 * #{$border-width});
 
 	.lds-ripple {
 		position: fixed;
-		margin-left:  $main-width / 2;
-		margin-top:  $main-width / 3;
+		margin-left: $main-width / 2;
+		margin-top: $main-width / 3;
 		width: 80px;
 		height: 80px;
 		font-size: 1.5em;
@@ -109,7 +98,6 @@ $link-border-width: calc(0.5 * #{$border-width});
 		border-style: ridge groove groove ridge;
 		background-color: $verydarkgreen;
 		text-decoration: none;
-		//height: $link-height;
 
 		#my-svg {
 			background: white;
@@ -119,11 +107,15 @@ $link-border-width: calc(0.5 * #{$border-width});
 			height: auto;
 		}
 
-		#boutton_show {
+		.user_button {
 			margin-top: auto;
 			margin-left: auto;
 			margin-right: auto;
 			padding-bottom: 5%;
+			&.button_show {
+				display: flex;
+				flex-direction: column;
+			}
 			input {
 				font-family: 'screen';
 				background-color: rgba(0, 0, 0, 0);
@@ -133,6 +125,7 @@ $link-border-width: calc(0.5 * #{$border-width});
 				border: 2px solid rgba(0, 128, 0, 0.75);
 				border-radius: 3px;
 				padding: 5px 8px;
+				margin-bottom: 5%;
 				white-space: nowrap;
 				cursor: pointer;
 				font-size: 15pt;

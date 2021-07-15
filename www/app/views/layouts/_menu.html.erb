@@ -9,7 +9,7 @@
 				<% if current_user then %>
 					<div class="option">
 						<div class="ball_selector"></div>
-						<%= link_to "Modify account", "#user" %>
+						<%= link_to "Profile", "#user/" + current_user.id.to_s + "/show" %>
 					</div>
 					<div class="option">
 						<div class="ball_selector"></div>

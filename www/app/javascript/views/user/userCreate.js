@@ -17,7 +17,7 @@ export const UserCreateView = Backbone.View.extend({
 			this.$el.attr({ id: 'user' });
 			this.model.fetch().done(function () {
 				if (_thisView.model.get('username') !== _thisView.model.get('login')) {
-					Backbone.history.navigate("user", { trigger: true });
+					Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 				} else {
 					_thisView.$el.empty();
 					_thisView.$el.append(_thisView.template(_thisView.model.attributes));
@@ -25,7 +25,7 @@ export const UserCreateView = Backbone.View.extend({
 				}
 			});
 		} else {
-			Backbone.history.navigate("user", { trigger: true })
+			Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 		}
 	},
 

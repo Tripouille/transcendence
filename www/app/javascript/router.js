@@ -1,4 +1,5 @@
 import consumer from "channels/consumer";
+
 import FriendsListView from 'views/friendsList';
 import ChatRoomsView from 'views/chatRooms';
 
@@ -10,13 +11,11 @@ import * as GC from 'views/garbage_collector';
 import SelectModeView from 'views/selectMode';
 import MatchmakingView from 'views/matchmaking';
 import GameView from 'views/game';
-import { User } from 'models/user';
 import * as Pong from 'views/animations/game';
 
+import { User } from 'models/user';
 import { UsersView } from 'views/rank/users';
 import { MatchesHistoryView } from 'views/rank/matchesHistory';
-
-import { UserView } from './views/user/user';
 import { UserShowView } from './views/user/userShow';
 import { UserUpdateView } from './views/user/userUpdate';
 import { UserCreateView } from './views/user/userCreate';
@@ -24,7 +23,6 @@ import { UserTfaView } from './views/user/userTfa';
 
 import RulesView from './views/rules';
 
-/* a voir pour supprimer plus tard */
 window.currentUser = new User({ id: initCurrentUserId });
 
 $(function () {
@@ -42,7 +40,6 @@ $(function () {
 		gameView: new GameView({ el: $main }),
 		matchmakingView: new MatchmakingView({ el: $main }),
 		selectModeView: new SelectModeView({ el: $main }),
-		userView: new UserView({ el: $main }),
 		userShowView: new UserShowView({ el: $main }),
 		userUpdateView: new UserUpdateView({ el: $main }),
 		userCreateView: new UserCreateView({ el: $main }),
@@ -60,7 +57,6 @@ $(function () {
 			"guilds/:id": "displayguild",
 			"users": "users",
 			"user/:id/matcheshistory": "matcheshistory",
-			"user": "user",
 			"user/:id/show": "userShow",
 			"user/:id/edit": "updateUser",
 			"user/:id/create": "createUser",
@@ -118,10 +114,6 @@ $(function () {
 				return;
 			}
 			this.gameView.render(id);
-		},
-
-		user: function () {
-			this.userView.render();
 		},
 
 		userShow: function (id) {

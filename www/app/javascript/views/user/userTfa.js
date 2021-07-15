@@ -73,7 +73,7 @@ export const UserTfaView = Backbone.View.extend({
 			}
 		}).done(function(response) {
 			if(response != 0){
-				Backbone.history.navigate("user", { trigger: true })
+				Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 			}
 		});
 
@@ -91,7 +91,7 @@ export const UserTfaView = Backbone.View.extend({
 				'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
 			}
 		}).done(function(response) {
-			Backbone.history.navigate("user", { trigger: true })
+			Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 		});
 	},
 

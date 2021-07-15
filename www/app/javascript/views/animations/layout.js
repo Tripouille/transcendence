@@ -7,7 +7,7 @@ export function foldFriends() {
 	friends_out = false;
 }
 
-function unfoldFriends() {
+export function unfoldFriends() {
 	$friends.removeClass('folded');
 	friends_out = true;
 }

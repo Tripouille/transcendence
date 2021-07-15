@@ -33,7 +33,7 @@ export const UserUpdateView = Backbone.View.extend({
 				});
 			});
 		} else {
-			Backbone.history.navigate("user", { trigger: true });
+			Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 		}
 	},
 
@@ -59,7 +59,7 @@ export const UserUpdateView = Backbone.View.extend({
 						_thisView.showPopUpError("Server error.");
 				}
 			}).done(function() {
-				Backbone.history.navigate("user", { trigger: true });
+			Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 				$('nav #account_div p.username').text(_thisView.model.get('username'));	
 			});
 		}
@@ -105,7 +105,7 @@ export const UserUpdateView = Backbone.View.extend({
 
 	clickHandler: function(e){
 		e.preventDefault()
-		Backbone.history.navigate("user", { trigger: true })
+		Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
 	},
 
 	changeAvatar: function(e) {

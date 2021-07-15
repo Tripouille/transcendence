@@ -1,45 +1,8 @@
-<script id="user-display" type="text/template">
-	<div class="screen">
-		<div id="avatar">
-			<img id="avatar_profile" alt="<%%= login %> Profile Picture" />
-		</div>
-
-		<br />
-
-		<div id="login">
-			<label>login:</label>
-			<div id="login_text"><%%= login %></div>
-		</div>
-		<div id="username">
-			<label>Username:</label>
-			<div id="username_text"><%%= username %></div>
-		</div>
-		<div id="email">
-			<label>Email:</label>
-			<div id="email_text"><%%= email %></div>
-		</div>
-		<div id="otp">
-			<div id="boutton_show"><%%= otp_required_for_login?
-				'<button type="button" class="tfa-enable-btn">Disable TFA</button>'
-				: '<button type="button" class="tfa-disable-btn">Enable TFA</button>'
-			  %>
-			</div>
-		</div>
-
-		<br />
-
-		<div id="boutton_show">
-			<button type="button" class="edit-btn">Edit Profil</button>
-		</div>
-	</div>
-
-</script>
-
 <script id="user-modify" type="text/template">
 
 	<div id="errorPopUp"></div>
 	<div class="screen-top header-user">
-		<h1>Modification utilisateur</h1>
+		<h1>Profile edition</h1>
 	</div>
 
 	<div class="screen">
@@ -55,12 +18,17 @@
 				<input type="text" id="username" name="username" placeholder="Username" value="<%%= username %>" required >
 			</div>
 			<div id="formSubmitUpdateUser" class="actions" style="padding: 1em;">
-				<div id="boutton_show">
+				<div class="user_button">
 					<input type="submit" value="Update" />
 				</div>
 			</div>
 		</form>
-		<div id="boutton_show">
+		<div id="otp">
+			<div class="boutton_show user_button">
+				<button type="button" class="tfa-btn"><%%= otp_required_for_login ? 'Disable' : 'Enable'%> TFA</button>
+			</div>
+		</div>
+		<div class="button_show user_button" >
 			<button type="button" class="back-btn">Back</button>
 		</div>
 	</div>
@@ -88,11 +56,16 @@
 				<input type="text" id="username" name="username" placeholder="Username" required>
 			</div>
 			<div id="formSubmitCreateUser" class="actions" style="padding: 1em;">
-				<div id="boutton_show">
+				<div class="boutton_show user_button">
 					<input type="submit" value="Create User" />
 				</div>
 			</div>
 		</form>
+		<div id="otp">
+			<div class="boutton_show user_button">
+				<button type="button" class="tfa-btn"><%%= otp_required_for_login ? 'Disable' : 'Enable'%> TFA</button>
+			</div>
+		</div>
 	</div>
 
 </script>
@@ -112,7 +85,7 @@
 				<input type="text" id="code" name="code" placeholder="Code" required>
 			</div>
 			<div id="formSubmitEnableOtp" class="actions" style="padding: 1em;">
-				<div id="boutton_show">
+				<div class="button_show user_button">
 					<input type="submit" value="Confirm and Enable OTP" />
 				</div>
 			</div>
@@ -123,7 +96,7 @@
 
 <script id="user-tfa-disable" type="text/template">
 	<div class="screen">
-		<div id="boutton_show">
+		<div class="button_show user_button">
 			<button type="button" class="disable-btn">Confirm and disable OTP</button>
 		</div>
 	</div>
@@ -140,23 +113,30 @@
 		<br />
 
 		<div id="login">
-			<label>login:</label>
+			<label>Login:</label>
 			<div id="login_text"><%%= login %></div>
 		</div>
 		<div id="username">
 			<label>Username:</label>
 			<div id="username_text"><%%= username %></div>
 		</div>
-		<div id="email">
-			<label>Email:</label>
-			<div id="email_text"><%%= email %></div>
-		</div>
+		<%% if (id == window.user_id) { %>
+			<div id="email">
+				<label>Email:</label>
+				<div id="email_text"><%%= email %></div>
+			</div>
+		<%% } %>
 
 		<br />
 
-		<div id="boutton_show">
-			<button type="button" class="mhistory-btn">Show matches history</button>
+		<div class="button_show user_button">
+			<button type="button" class="mhistory-btn">Show match history</button>
+			<%% if (id == window.user_id) { %>
+				<button type="button" class="edit-btn">Edit Profile</button>
+			<%% } else { %>
+				<button type="button" class="friend-btn"><%%= isMyFriend ? 'Remove' : 'Add' %> friend</button>
+				<button type="button" class="challenge-btn">Challenge</button>
+			<%% } %>
 		</div>
 	</div>
-
 </script>
