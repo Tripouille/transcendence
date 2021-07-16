@@ -29,6 +29,7 @@ $(function () {
 	connectUserChannel();
 	window.friendsListView = new FriendsListView();
 	window.chatRoomsView = new ChatRoomsView();
+	window.achievmentQueue = [];
 
 	const $main = $('main');
 	const myRouter = Backbone.Router.extend({
@@ -165,10 +166,8 @@ function connectUserChannel() {
 						status: data.content.friend_status,
 						match_id: data.content.match_id
 					});
-				else if (data.content.achievment) {
-					console.log('received achievment : ' + data.content.achievment);
-					displayAchievment(data.content.achievment);
-				}
+				else if (data.content.achievment)
+					newAchievment(data.content.achievment);
 		}
 	});
 }
@@ -180,8 +179,19 @@ function stopChallengeMessage(message_id, text) {
 	$message.find('.challenge_answers').remove();
 }
 
+function newAchievment(description) {
+	window.achievmentQueue.push(description);
+	if ($('#achievmentPopUp').length == 0)
+		displayAchievment(window.achievmentQueue.shift());
+}
+
 function displayAchievment(description) {
 	const template = _.template($('#achievmentPopUpTemplate').html());
 	$(document.body).append(template({description: description}));
-	$('#achievmentPopUp').on('click', function() {$('#achievmentPopUp').remove()});
+	$('#achievmentPopUp').on('click', function() {
+		$('#achievmentPopUp').remove();
+		if (window.achievmentQueue.length > 0)
+			displayAchievment(window.achievmentQueue.shift());
+	});
+
 }
