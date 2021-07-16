@@ -156,18 +156,6 @@ function connectUserChannel() {
 					window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);
 					stopChallengeMessage(data.content.message_id, data.content.reason);
 					if (data.content.reason == 'accepted')
-						Backbone.history.navigate("game/matchmaking/" + data.content.match_id, { trigger: true });
-				}
-				else if (data.content.chat_ban)
-					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
-				else if (data.content.friend_status)
-					window.friendsListView.friendsCollection.get(data.content.friend_id).set('status', data.content.friend_status);
-			// }
-		// });
-				else if (data.content.remove_challenge) {
-					window.chatRoomsView.chatRoomViews[data.content.chatroom_id].removeChallenge(data.content.message_id);
-					stopChallengeMessage(data.content.message_id, data.content.reason);
-					if (data.content.reason == 'accepted')
 						Backbone.history.navigate("game/matchmaking/" + data.content.match_id, {trigger: true});
 				}
 				else if (data.content.chat_ban)
