@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     users = User.all.select(:id, :username, :guild_id).with_otp
     @result = users.map{|user| user.as_json.merge({
         guild_name: user.guild ? user.guild.name : "Not in a guild",
-        score: Match.where(winner: user.id).size,
+        score: Match.where(status: "finished", challenged: false, winner: user.id).size,
         my_user: (user == current_user),
         route: '#users/' + user.id.to_s
     })}
@@ -21,7 +21,7 @@ class UsersController < ApplicationController
   end
 
   def matcheshistory
-    @matches = Match.where(left_player: @user[:id]).or(Match.where(right_player: @user[:id])).where(status: "finished").select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc).map { |match| match.as_json.merge({
+    @matches = Match.where(left_player: @user[:id]).or(Match.where(right_player: @user[:id])).where(status: "finished", challenged: false).select(:id, :left_player, :right_player, :winner, :updated_at).order(updated_at: :desc).map { |match| match.as_json.merge({
       username_left: User.find_by_id(match.left_player) ? User.find(match.left_player)["username"] : "Deleted acount",
       username_right: User.find_by_id(match.right_player) ? User.find(match.right_player)["username"] : "Deleted acount",
       result: (@user[:id] == match.winner) ? "Win" : "Loss",
