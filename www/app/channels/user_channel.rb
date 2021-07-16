@@ -1,7 +1,7 @@
 class UserChannel < ApplicationCable::Channel
 	def subscribed
 		@schedulers = {}
-		if current_user
+		if current_user.present?
 			stream_for current_user
 			current_user.update(status: 'online')
 			Friendship.where(friend: current_user).each do |friendship|

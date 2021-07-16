@@ -136,6 +136,13 @@
 			</div>
 		</div>
 
+		<%% _.each(achievments, function(achievment) { %>
+			<div class="user_info">
+				<label><%= image_tag 'achievment.png', width: 100, height: 100, alt: 'Achievment image' %></label>
+				<div><%%= achievment.description %></div>
+			</div>
+		<%% }); %>
+
 		<br />
 
 		<div class="button_show user_button">

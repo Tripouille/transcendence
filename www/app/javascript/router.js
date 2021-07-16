@@ -165,6 +165,9 @@ function connectUserChannel() {
 						status: data.content.friend_status,
 						match_id: data.content.match_id
 					});
+				else if (data.content.achievment) {
+					console.log('received achievment : ' + data.content.achievment);
+				}
 		}
 	});
 }
