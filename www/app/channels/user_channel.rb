@@ -1,7 +1,7 @@
 class UserChannel < ApplicationCable::Channel
 	def subscribed
 		@schedulers = {}
-		if current_user
+		if defined?(current_user)
 			stream_for current_user
 			current_user.update(status: 'online')
 			Friendship.where(friend: current_user).each do |friendship|
@@ -16,21 +16,23 @@ class UserChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		current_user.update(status: 'offline')
-		DuelRequest.where(user: current_user).each do |duel_request|
-			UserChannel.broadcast_to duel_request.opponent, content: {
-				remove_challenge: true,
-				reason: 'canceled',
-				chatroom_id: duel_request.message.chat_room.id,
-				message_id: duel_request.message.id
-			}
-			duel_request.destroy
-		end
-		Friendship.where(friend: current_user).each do |friendship|
-			UserChannel.broadcast_to friendship.user, content: {
-				friend_id: current_user.id,
-				friend_status: 'offline'
-			}
+		if defined?(current_user)
+			current_user.update(status: 'offline')
+			DuelRequest.where(user: current_user).each do |duel_request|
+				UserChannel.broadcast_to duel_request.opponent, content: {
+					remove_challenge: true,
+					reason: 'canceled',
+					chatroom_id: duel_request.message.chat_room.id,
+					message_id: duel_request.message.id
+				}
+				duel_request.destroy
+			end
+			Friendship.where(friend: current_user).each do |friendship|
+				UserChannel.broadcast_to friendship.user, content: {
+					friend_id: current_user.id,
+					friend_status: 'offline'
+				}
+			end
 		end
 		stop_stream_for current_user
 	end
