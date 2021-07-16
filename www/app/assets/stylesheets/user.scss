@@ -74,7 +74,7 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 		margin-left: auto;
 		margin-right: auto;
 		width: $screen-width;
-		min-width: calc(275px + 2em);
+		min-width: calc(250px + 2em);
 		max-width: 90vw;
 		display: flex;
 		flex-direction: column;
@@ -95,6 +95,7 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 		width: $screen-width;
 		min-width: min-content;
 		max-width: 90vw;
+		padding: 1vmin;
 		display: flex;
 		flex-direction: column;
 		flex-grow: 0;
@@ -167,7 +168,7 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 			}
 			div {
 				font-size: 1.5em;
-				padding-left: 1em;
+				padding-left: 1vw;
 				line-height: 1.75em;
 				width: $screen-width;
 				display: table;
@@ -175,13 +176,26 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 				width: 100%;
 				word-wrap: break-word;
 			}
+
+			&.achievment {
+				label {
+					display: flex;
+					margin-right: 12px;
+					img {
+						width: 1em;
+						height: auto;
+					}
+				}
+				div {
+					line-height: 1.75em;
+				}
+			}
 		}
 		#otp {
 			display: flex;
 			flex-direction:row;
 			margin-right: auto;
 			padding-top: 0.5em;
-			padding: 1em;
 			#otp_text {
 				font-size: 1.5em;
 			}
@@ -280,7 +294,6 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 		}
 
 		form {
-			padding: 1em;
 			#formSubmitUpdateUser {
 				padding-top: 1em;
 				input {
