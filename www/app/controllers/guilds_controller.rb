@@ -5,7 +5,7 @@ class GuildsController < ApplicationController
   def index
     @result = Guild.all.map { |guild| guild.as_json.merge({
       owner_name: User.find(guild.owner_id)[:username],
-      score: Match.where(:status => "finished").where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
+      score: Match.where(:status => "finished", :challenged => false).where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
       route: '#guilds/' + guild.id.to_s,
       my_guild: (current_user && current_user.guild_id == guild.id) ? true : false
       })
@@ -19,7 +19,7 @@ class GuildsController < ApplicationController
   def show
     if (user_exists?)
       @guilds = Guild.all.select(:id).map { |guild| guild.as_json.merge({
-        score: Match.where(:status => "finished").where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
+        score: Match.where(:status => "finished", :challenged => false).where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
         })
       }
       @guilds.sort_by! { |res| -res[:score] }
@@ -31,12 +31,12 @@ class GuildsController < ApplicationController
         "invite_sent" => Invite.find_by(user_id: session[:user_id], guild_id: @guild[:id]).as_json,
         "invites" => ((user_is_guild_owner?) ? Invite.where(:guild_id => @guild[:id]) : {}).map { |invite| invite.as_json.merge({
           username: User.find(invite.user_id)[:username],
-          score: Match.where(winner: invite.user_id).size,
+          score: Match.where(challenged: false, winner: invite.user_id).size,
           }) }.as_json,
         "users" => User.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp.map { |user| user.as_json.merge({
           rank: ( user.id == @guild[:owner_id] ? "Owner" : "Officer"),
-          score: Match.where(winner: user.id).size,
-          contribution: Match.where(status: "finished").where(left_guild_id: @guild[:id], left_player: user.id).or(Match.where(right_guild_id: @guild[:id], right_player: user.id)).where(winner: user.id).select(:left_guild_id, :right_guild_id).distinct.size
+          score: Match.where(challenged: false, winner: user.id).size,
+          contribution: Match.where(challenged: false, status: "finished").where(left_guild_id: @guild[:id], left_player: user.id).or(Match.where(right_guild_id: @guild[:id], right_player: user.id)).where(winner: user.id).select(:left_guild_id, :right_guild_id).distinct.size
           }) }.as_json
       }), status: :ok
     end
