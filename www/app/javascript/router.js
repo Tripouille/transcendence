@@ -167,6 +167,7 @@ function connectUserChannel() {
 					});
 				else if (data.content.achievment) {
 					console.log('received achievment : ' + data.content.achievment);
+					displayAchievment(data.content.achievment);
 				}
 		}
 	});
@@ -177,4 +178,10 @@ function stopChallengeMessage(message_id, text) {
 	clearInterval($message.data('timeLeftInterval'));
 	$message.find('span.time_left').text(text);
 	$message.find('.challenge_answers').remove();
+}
+
+function displayAchievment(description) {
+	const template = _.template($('#achievmentPopUpTemplate').html());
+	$(document.body).append(template({description: description}));
+	$('#achievmentPopUp').on('click', function() {$('#achievmentPopUp').remove()});
 }

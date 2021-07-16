@@ -6,7 +6,7 @@ class Match < ApplicationRecord
 
 	def checkAchievments
 		winner = User.find_by_id(self.winner)
-		winner.achievments << Achievment.second
+		#winner.achievments << Achievment.second
 		UserChannel.broadcast_to winner, content: {
 			achievment: Achievment.second.description
 		}
