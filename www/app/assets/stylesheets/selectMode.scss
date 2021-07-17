@@ -17,7 +17,7 @@ $link-hover-border-width: calc(2 * #{$link-border-width});
 		border-width: $link-border-width;
 		border-color: lightgreen;
 		border-style: ridge groove groove ridge;
-		background-color: $verydarkgreen;
+		background-color: $veryverydarkgreen;
 		text-decoration: none;
 		border-radius: calc(0.1 * Min(#{$link-height}, #{$link-width}));
 		height: $link-height;
@@ -27,6 +27,14 @@ $link-hover-border-width: calc(2 * #{$link-border-width});
 		&:hover {
 			border-width: $link-hover-border-width;
 			line-height: calc(#{$link-height} - calc(2 * #{$link-hover-border-width}));
+			animation: pixelate 0.2s steps(8) forwards;
+			background: $verydarkgreen url(pixel_darkgreen.svg);
+			background-size: auto 800px;
+			transition-delay: 0.2s;
+		}
+		@keyframes pixelate {
+			0% { background-position-y: 0; }
+			100% { background-position-y: 100%; }
 		}
 	}
 }
