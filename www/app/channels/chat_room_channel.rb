@@ -44,7 +44,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 				if membership.hidden
 					membership.update_attribute(:hidden, false)
 					UserChannel.broadcast_to membership.user, content: {
-						room: @chatRoom.complete_infos(current_user)
+						chatroom: @chatRoom.complete_infos(current_user)
 					}
 				end
 			end
