@@ -125,6 +125,8 @@ function initializeFromServer(data) {
 		$(document).keyup(keyUpHandler);
 		status = "ready";
 	}
+	if (data.match.status == "playing")
+		$ball.show();
 }
 
 function setPlayerImage(user_id, $img) {

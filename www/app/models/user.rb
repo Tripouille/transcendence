@@ -20,7 +20,6 @@ class User < ApplicationRecord
 
   has_and_belongs_to_many :achievments
 
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :omniauthable, omniauth_providers: [:marvin]
@@ -34,6 +33,8 @@ class User < ApplicationRecord
     length: { in: 2..20 }
 
   scope :with_otp, -> { select(:encrypted_otp_secret, :encrypted_otp_secret_iv, :encrypted_otp_secret_salt) }
+
+	after_save :checkAchievments, if: :saved_change_to_guild_id
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
@@ -90,5 +91,9 @@ class User < ApplicationRecord
     self.username = self.username.strip unless self.username.nil?
     self.username = ActionController::Base.helpers.sanitize(self.username, tags: [], attributes: [])
   end
+
+	def checkAchievments
+		checkAchievment(self, 'join_guild', self.guild_id.present? && Guild.find_by_id(self.guild_id)[:owner_id] != self.id)
+	end
 
 end

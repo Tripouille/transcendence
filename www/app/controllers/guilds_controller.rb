@@ -5,7 +5,11 @@ class GuildsController < ApplicationController
   def index
     @result = Guild.all.map { |guild| guild.as_json.merge({
       owner_name: User.find(guild.owner_id)[:username],
-      score: Match.where(:status => "finished", :challenged => false).where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
+      score: Match.where("winner = left_player and left_guild_id = ?", guild.id)
+                  .or(Match.where("winner = right_player and right_guild_id = ?", guild.id))
+                  .where(:status => "finished", :challenged => false)
+                  .where("left_guild_id IS DISTINCT FROM right_guild_id").size,
+      # score: Match.where(winner: left_player, left_guild_id: guild.id).or(Match.where(winner: right_player, right_guild_id: guild.id)).where(:status => "finished", :challenged => false).select(:left_guild_id, :right_guild_id).distinct.size,
       route: '#guilds/' + guild.id.to_s,
       my_guild: (current_user && current_user.guild_id == guild.id) ? true : false
       })
@@ -19,7 +23,10 @@ class GuildsController < ApplicationController
   def show
     if (user_exists?)
       @guilds = Guild.all.select(:id).map { |guild| guild.as_json.merge({
-        score: Match.where(:status => "finished", :challenged => false).where("winner = left_player and left_guild_id = ?", guild.id).or(Match.where("winner = right_player and right_guild_id = ?", guild.id)).select(:left_guild_id, :right_guild_id).distinct.size,
+        score: Match.where("winner = left_player and left_guild_id = ?", guild.id)
+                    .or(Match.where("winner = right_player and right_guild_id = ?", guild.id))
+                    .where(:status => "finished", :challenged => false)
+                    .where("left_guild_id IS DISTINCT FROM right_guild_id").size,
         })
       }
       @guilds.sort_by! { |res| -res[:score] }
@@ -36,7 +43,10 @@ class GuildsController < ApplicationController
         "users" => User.where(:guild_id => @guild[:id]).select(:id, :username, :guild_id).with_otp.map { |user| user.as_json.merge({
           rank: ( user.id == @guild[:owner_id] ? "Owner" : "Officer"),
           score: Match.where(challenged: false, winner: user.id).size,
-          contribution: Match.where(challenged: false, status: "finished").where(left_guild_id: @guild[:id], left_player: user.id).or(Match.where(right_guild_id: @guild[:id], right_player: user.id)).where(winner: user.id).select(:left_guild_id, :right_guild_id).distinct.size
+          contribution: Match.where(left_player: user.id, left_guild_id: @guild[:id])
+                              .or(Match.where(right_player: user.id, right_guild_id: @guild[:id]))
+                              .where("left_guild_id IS DISTINCT FROM right_guild_id")
+                              .where(winner: user.id, challenged: false, status: "finished").size
           }) }.as_json
       }), status: :ok
     end

@@ -2,7 +2,7 @@ class ChatRoomChannel < ApplicationCable::Channel
 	def subscribed
 		@roomId = params["room_id"]
 		@chatRoom = ChatRoom.find_by_id(@roomId)
-		if @chatRoom and current_user
+		if @chatRoom and defined?(current_user)
 			stream_for @chatRoom
 
 			ChatRoomChannel.broadcast_to @chatRoom, content: {
@@ -19,9 +19,11 @@ class ChatRoomChannel < ApplicationCable::Channel
 	end
 
 	def unsubscribed
-		ChatRoomChannel.broadcast_to @chatRoom, content: {
-			memberLeaving: current_user.id
-		}
+		if defined?(current_user)
+			ChatRoomChannel.broadcast_to @chatRoom, content: {
+				memberLeaving: current_user.id
+			}
+		end
 		stop_stream_for @chatRoom
 	end
 

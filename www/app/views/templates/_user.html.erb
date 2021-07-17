@@ -8,7 +8,8 @@
 	<div class="screen">
 		<form id="updateUserForm" name="updateuserform">
 			<div id="avatar" class="field">
-				<img id="avatar_profile" alt="<%%= login %> Profile Picture" /></br>
+				<%= image_tag 'default.png', id: 'avatar_profile', alt: "Profile Picture", size: 100 %>
+				</br>
 				<span class="file-input btn btn-block btn-primary btn-file">
 					<input class="custom-file-input" type="file" name="Select image" accept="image/*" >
 				</span>
@@ -106,7 +107,7 @@
 <script id="user-show-display" type="text/template">
 	<div class="screen">
 		<div id="avatar">
-			<img id="avatar_profile" alt="<%%= login %> Profile Picture" />
+			<%= image_tag 'default.png', id: 'avatar_profile', alt: "Profile Picture", size: 100 %>
 		</div>
 
 		<br />

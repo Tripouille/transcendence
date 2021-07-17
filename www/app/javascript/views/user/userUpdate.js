@@ -37,12 +37,11 @@ export const UserUpdateView = Backbone.View.extend({
 	},
 
 	chargePage: function(_thisView, src) {
-		console.log(this.model.attributes);
-		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('#user').html(_thisView.template(_thisView.model.attributes));
 		$('#avatar_profile').attr('src', src);
-		_thisView.$el.removeClass('loading');
-		_thisView.$el.removeClass('lds-ripple');
-		this.$el.find('.back-btn').on('click', this.back);
+		$('#user').removeClass('loading');
+		$('#user').removeClass('lds-ripple');
+		$('#user').find('.back-btn').on('click', this.back);
 		return _thisView;
 	},
 

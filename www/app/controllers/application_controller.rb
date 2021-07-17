@@ -14,6 +14,8 @@ class ApplicationController < ActionController::Base
 		@otp = session[:otp]
 		unless @session && @otp
 			redirect_to login_path(:anchor => "")
+		else
+			@current_user = User.find(session[:user_id])
 		end
 	end
 

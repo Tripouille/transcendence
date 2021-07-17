@@ -35,8 +35,8 @@ export const UserShowView = Backbone.View.extend({
 	},
 
 	chargePage: function (_thisView, src) {
-		this.$el.html(this.template(this.model.toJSONDecorated()));
-		this.$el.find('.mhistory-btn').on("click", function () {
+		$('#user').html(this.template(this.model.toJSONDecorated()));
+		$('#user').find('.mhistory-btn').on("click", function () {
 			Backbone.history.navigate('#user/' + _thisView.model.id + '/matcheshistory', { trigger: true })
 		});
 		$('#avatar_profile').attr('src', src);

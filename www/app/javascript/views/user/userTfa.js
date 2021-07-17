@@ -45,11 +45,11 @@ export const UserTfaView = Backbone.View.extend({
 	},
 
 	chargePage: function(_thisView, url) {
-		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
+		$('#user').html(_thisView.template(_thisView.model.attributes));
 		$('#my-svg').attr('src', url);
-		_thisView.$el.removeClass('loading');
-		_thisView.$el.removeClass('lds-ripple');
-		this.$el.find('.back-btn').on('click', this.back);
+		$('#user').removeClass('loading');
+		$('#user').removeClass('lds-ripple');
+		$('#user').find('.back-btn').on('click', this.back);
 		return _thisView;
 	},
 
