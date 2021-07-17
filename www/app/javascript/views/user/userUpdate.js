@@ -37,7 +37,6 @@ export const UserUpdateView = Backbone.View.extend({
 	},
 
 	chargePage: function(_thisView, src) {
-		console.log(this.model.attributes);
 		_thisView.$el.html(_thisView.template(_thisView.model.attributes));
 		$('#avatar_profile').attr('src', src);
 		_thisView.$el.removeClass('loading');
