@@ -9,9 +9,9 @@
 		<form id="updateUserForm" name="updateuserform">
 			<div id="avatar" class="field">
 				<%= image_tag 'default.png', id: 'avatar_profile', alt: "Profile Picture", size: 100 %>
-				</br>
 				<span class="file-input btn btn-block btn-primary btn-file">
-					<input class="custom-file-input" type="file" name="Select image" accept="image/*" >
+					<label for="avatar_selection_input">Select image</label>
+					<input id="avatar_selection_input" class="custom-file-input" type="file" accept="image/*" >
 				</span>
 			</div>
 			<div id="username-edit" class="field">
@@ -47,9 +47,10 @@
 	<div class="screen">
 		<form id="newUserForm" name="newuserform">
 			<div id="avatar" class="field">
-				<img id="avatar_profile" src="<%%= pictures %>" alt="<%%= login%> Profile Picture" /></br>
+				<img id="avatar_profile" src="<%%= pictures %>" alt="<%%= login%> Profile Picture" />
 				<span class="file-input btn btn-block btn-primary btn-file">
-					<input class="custom-file-input" type="file" name="Select image" accept="image/*" >
+					<label for="avatar_selection_input">Select image</label>
+					<input id="avatar_selection_input" class="custom-file-input" type="file" name="Select image" accept="image/*" >
 				</span>
 			</div>
 			<div id="name" class="field" style="padding: 1em;">

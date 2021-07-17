@@ -111,12 +111,12 @@ export const UserUpdateView = Backbone.View.extend({
 	changeAvatar: function(e) {
 		const file = $('.custom-file-input')[0].files[0];
 		if (file) {
-			$('.custom-file-input').attr('name', file.name);
 			const url = window.URL || window.webkitURL;
 			const binaryData = [];
 			binaryData.push(file);
 			const fileURL = url.createObjectURL(new Blob(binaryData, {type: "application/zip"}));
 			$('#avatar_profile').attr('src', fileURL);
+			$('span.file-input label').text(file.name);
 		}
 	},
 
