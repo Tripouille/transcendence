@@ -319,6 +319,10 @@ const ChatRoomsView = Backbone.View.extend({
 			activeChatRoomView.markAsRead();
 			setTimeout(function() {this.scrollBottom();}.bind(this), 400);
 		}
+		else if (this.chatRoomsCollection.length) {
+			this.activeRoomId = this.chatRoomsCollection.at(0).id;
+			this.chatRoomViews[this.activeRoomId].selectRoomAndRenderMessages();
+		}
 	},
 
 	changeBlockedStatus: function(blocked_user_id, blocked) {
