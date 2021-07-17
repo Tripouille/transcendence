@@ -51,6 +51,7 @@ export const GuildNewView = Backbone.View.extend({
 			else {
 				let template = _.template($('#guildNewStatic').html());
 				$('main#guildNew').html(template);
+				$('main#guildNew input#name').focus();
 			}
 			return this;
 		});

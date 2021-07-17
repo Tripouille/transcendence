@@ -30,6 +30,7 @@ export const UserCreateView = Backbone.View.extend({
 						const url = window.URL || window.webkitURL;
 						const src = url.createObjectURL(data);
 						$('#avatar_profile').attr('src', src);
+						_thisView.$el.find('input#username').focus();
 					});
 					return _thisView;
 				}

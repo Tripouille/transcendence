@@ -29,6 +29,7 @@ export const UserUpdateView = Backbone.View.extend({
 					const url = window.URL || window.webkitURL;
 					const src = url.createObjectURL(data);
 					_thisView.chargePage(_thisView, src)
+					_thisView.$el.find('input#username').focus();
 				});
 			});
 		} else {
