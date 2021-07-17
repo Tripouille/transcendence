@@ -10,11 +10,12 @@ class ApplicationController < ActionController::Base
 	private
 
 	def require_login
-		@current_user = User.find(session[:user_id])
 		@session = session[:user_id]
 		@otp = session[:otp]
 		unless @session && @otp
 			redirect_to login_path(:anchor => "")
+		else
+			@current_user = User.find(session[:user_id])
 		end
 	end
 
