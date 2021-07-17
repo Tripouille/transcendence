@@ -125,8 +125,11 @@ function initializeFromServer(data) {
 		$(document).keyup(keyUpHandler);
 		status = "ready";
 	}
-	if (data.match.status == "playing")
+	else if (data.match.status == "playing") {
+		setMatchFromServer(data.match);
 		$ball.show();
+		ballInterval = GC.addInterval(moveBall, 10);
+	}
 }
 
 function setPlayerImage(user_id, $img) {
@@ -383,13 +386,21 @@ function endMatch(data) {
 
 function endMatchMessage(data) {
 	$timer.hide();
-	if (!data.normal)
-		$('#message_quit').show();
-	if (side == 'left' && data.match.winner == data.match.left_player
-	|| side == 'right' && data.match.winner == data.match.right_player)
-		$('#message').text('You won !');
-	else
-		$('#message').text('You lost !');
+	if (isPlayer()) {
+		if (!data.normal)
+			$('#message_quit').show();
+		if (side == 'left' && data.match.winner == data.match.left_player
+		|| side == 'right' && data.match.winner == data.match.right_player)
+			$('#message').text('You won !');
+		else
+			$('#message').text('You lost !');
+	}
+	else {
+		if (data.match.winner == data.match.left_player)
+			$('#message').text($('#player_infos_left .name').text() + ' won !');
+		else
+			$('#message').text($('#player_infos_right .name').text() + ' won !');
+	}
 	$('#message').show();
 }
 
