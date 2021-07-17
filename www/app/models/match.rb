@@ -4,15 +4,6 @@ class Match < ApplicationRecord
 
 	after_save :checkAchievments, if: :saved_change_to_winner
 
-	# def checkAchievment(tag, valid)
-	# 	if valid && !@winner.achievments.find_by_tag(tag)
-	# 		@winner.achievments << Achievment.find_by_tag(tag)
-	# 		UserChannel.broadcast_to @winner, content: {
-	# 			achievment: Achievment.find_by_tag(tag).description
-	# 		}
-	# 	end
-	# end
-
 	def check_top(rank)
 		users = User.all.select(:id).with_otp
 		if users.size > rank

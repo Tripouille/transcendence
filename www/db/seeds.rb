@@ -12,7 +12,6 @@ Achievment.create(:tag => 'contribute_10', :description => 'Give 10 points to yo
 Achievment.create(:tag => 'challenge_1', :description => 'Challenge someone and win')
 Achievment.create(:tag => 'be_top_3', :description => 'Rank up in the top 3')
 Achievment.create(:tag => 'be_first', :description => 'Rank up to be the best player !')
-
 Achievment.create(:tag => '3_winning_streak', :description => 'Be on a 3 game winning streak')
 Achievment.create(:tag => '10_winning_streak', :description => 'Be on a 10 game winning streak')
 Achievment.create(:tag => 'join_guild', :description => 'Join a guild')
