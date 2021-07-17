@@ -14,12 +14,13 @@ class ApplicationController < ActionController::Base
 		@otp = session[:otp]
 		unless @session && @otp
 			redirect_to login_path(:anchor => "")
-		else
-			@current_user = User.find(session[:user_id])
 		end
 	end
 
 	def set_online
+		if session[:user_id]
+			@current_user = User.find(session[:user_id])
+		end
 		if current_user and current_user.status == 'offline'
 			current_user.update(status: 'online')
 		end
