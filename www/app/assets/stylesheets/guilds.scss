@@ -6,6 +6,11 @@
 #guildsAll, #guildNew, #guildPage, #ranksAll, #rankPage {
   overflow: auto;
 
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+	  width: 0;
+  }
+
   #guildNavbar {
     display: flex;
     align-items: center;
