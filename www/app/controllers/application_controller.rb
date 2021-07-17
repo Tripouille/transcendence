@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
 	private
 
 	def require_login
+		@current_user = User.find(session[:user_id])
 		@session = session[:user_id]
 		@otp = session[:otp]
 		unless @session && @otp

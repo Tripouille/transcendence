@@ -1,6 +1,13 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy kick leave matcheshistory avatar_update ]
 
+  skip_before_action :require_login, :only => [:connect_as]
+  def connect_as
+	session[:user_id] = params[:id].to_i
+	session[:otp] = 'true'
+	redirect_to root_path
+  end
+
   # GET /users or /users.json
   def index
     users = User.all.select(:id, :username, :guild_id).with_otp
