@@ -7,9 +7,6 @@ class ChatRoomsController < ApplicationController
 	end
 
 	def create
-		if params[:room_type] == 'password_protected' and params[:password].blank?
-			head :bad_request and return
-		end
 		if params[:room_type] == "direct_message"
 			if params[:name].present?
 				user_to_dm = User.find_by("username = ? OR login = ?", params[:name], params[:name])
