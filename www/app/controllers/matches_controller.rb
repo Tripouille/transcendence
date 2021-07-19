@@ -14,6 +14,7 @@ class MatchesController < ApplicationController
 				match["right_player"] = current_user.id
 				match["right_guild_id"] = current_user.guild_id
 			end
+			match["status"] = 'lobby';
 		end
 		match.save
 		render json: {
@@ -24,7 +25,7 @@ class MatchesController < ApplicationController
 	end
 
 	def cancel_matchmaking
-		Match.where(status: 'lobby')
+		Match.where(status: 'waitOpponent')
 			.where('left_player = ? or right_player = ?', current_user.id, current_user.id)
 			.delete_all
 		head :ok
@@ -95,6 +96,7 @@ class MatchesController < ApplicationController
 				left_guild: duel_request.user.guild,
 				right_player: duel_request.opponent_id,
 				right_guild: duel_request.opponent.guild,
+				status: 'lobby',
 				challenged: true
 			)
 			UserChannel.broadcast_to duel_request.user, content: {

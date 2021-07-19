@@ -33,8 +33,8 @@ class UserChannel < ApplicationCable::Channel
 					friend_status: 'offline'
 				}
 			end
+			stop_stream_for current_user
 		end
-		stop_stream_for current_user
 	end
 
 	def receive(data)

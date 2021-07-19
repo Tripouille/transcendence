@@ -88,6 +88,8 @@ export function cancelMatchmaking() {
 		url: '/cancel_matchmaking',
 		headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')}
 	});
+	GC.cleanInterval(window.waitOpponentInterval);
+	window.waitOpponentInterval = null;
 }
 
 export default MatchmakingView;
