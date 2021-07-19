@@ -2,8 +2,10 @@
 
 $ball-color: $veryverydarkgreen;
 $border-color: green;
+$border-width: calc(2 * Min(1vh, 1vw));
 $paddle-color: white;
 $background-color: black;
+$ratio: Min(1vh, 2vw);
 
 #game,
 #game #game_container {
@@ -26,12 +28,12 @@ $background-color: black;
 			margin-bottom: 1%;
 			display: flex;
 			justify-content: space-between;
-			font-size: 6vmin;
-		
+			font-size: Min(3vw, 5vh);
+
 			.player_infos {
 				flex: 0.49;
 				text-align: center;
-				border-width: 0.5vw;
+				border-width: $border-width;
 				border-color: $border-color;
 				border-style: solid;
 				display: flex;
@@ -42,6 +44,10 @@ $background-color: black;
 			
 				p {
 					visibility: hidden;
+					max-width: 10ch;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
 				}
 				img {
 					visibility: hidden;
@@ -56,7 +62,7 @@ $background-color: black;
 			box-sizing: border-box;
 			height: 75%;
 			width: 100%;
-			border: 1vw solid $border-color;
+			border: $border-width solid $border-color;
 			position: relative;
 			display: flex;
 			align-items: center;
@@ -116,7 +122,7 @@ $background-color: black;
 			#timer {
 				color: green;
 				text-align: center;
-				font-size: 30vh;
+				font-size: Min(50vh, 25vw);
 				line-height: 100%;
 			}
 			#message {
