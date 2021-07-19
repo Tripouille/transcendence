@@ -28,6 +28,12 @@ $img-side: Min(17vw, #{$players-height} - #{$name-height} * #{$players-height});
 				height: calc(#{$name-height} * #{$img-side});
 				font-size: calc(0.2 * #{$img-side});
 				text-align: center;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				width: 150%;
+				position: relative;
+				left: -25%;
 				&.loading:after {
 					overflow: hidden;
 					display: inline-block;
