@@ -6,8 +6,8 @@ services:
     env_file:
       - .environment/default.env
       - .environment/production.env #Uncomment for production mode
-    volumes:
-      - ./www:/www
+    #volumes:
+      #- ./www:/www
       #- ./data:/var/lib/postgresql/11/main #Uncomment to bind database
     ports:
       - "80:3000" #Puma
