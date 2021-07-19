@@ -52,17 +52,22 @@ export const UserUpdateView = Backbone.View.extend({
 		if ($('#username').val().trim().length < 2 || $('#username').val().trim().length > 20) {
 			_thisView.showPopUpError("Invalid len Username Min 2 - Max 20");
 		} else {
-			this.model.save({ username: $('#username').val().trim() }, {
-				error: function (model, response, options) {
-					if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
-						_thisView.showPopUpError("Username already exists.");
-					else
-						_thisView.showPopUpError("Server error.");
-				}
-			}).done(function() {
-			Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
-				$('nav #account_div p.username').text(_thisView.model.get('username'));	
-			});
+			let regex = new RegExp('^([a-zA-Z0-9]){3,20}$');
+			if (!regex.test($('#username').val().trim())) {
+				_thisView.showPopUpError("Username contains a invalid character.");
+			} else {
+				this.model.save({ username: $('#username').val().trim() }, {
+					error: function (model, response, options) {
+						if (response.responseText.includes('PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_username\"\n'))
+							_thisView.showPopUpError("Username already exists.");
+						else
+							_thisView.showPopUpError("Server error. Username is not valide");
+					}
+				}).done(function() {
+				Backbone.history.navigate("user/" + initCurrentUserId + "/show", { trigger: true });
+					$('nav #account_div p.username').text(_thisView.model.get('username'));
+				});
+			}
 		}
 	},
 
@@ -95,8 +100,7 @@ export const UserUpdateView = Backbone.View.extend({
 						}
 					});
 				} else {
-					console.log('Error');
-					Backbone.history.navigate("user/" + initCurrentUserId + "/edit", { trigger: true });
+					_thisView.showPopUpError("Your file failed to upload. Please try again");
 				}
 			} else {
 				this.updateProfil();
