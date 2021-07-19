@@ -26,7 +26,7 @@ USER root
 RUN aptitude install -y redis
 
 #[Dependencies]
-COPY www /
+COPY www /www
 WORKDIR /www
 
 RUN bundle install --jobs 42
@@ -35,6 +35,7 @@ ENV REDIS_DB 0
 ENV REDIS_URL redis://127.0.0.1
 ENV REDIS_PORT 6379
 RUN bundle exec rake webpacker:install
+COPY www/config/webpack/environment.js /www/config/webpack/environment.js
 RUN EDITOR=vi rails credentials:edit
 
 COPY srcs/start.sh /

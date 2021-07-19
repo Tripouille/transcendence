@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
 
 	def set_online
 		if session[:user_id]
-			@current_user = User.find(session[:user_id])
+			@current_user = User.find_by_id(session[:user_id])
 		end
 		if current_user and current_user.status == 'offline'
 			current_user.update(status: 'online')
