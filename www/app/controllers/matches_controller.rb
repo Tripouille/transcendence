@@ -23,6 +23,13 @@ class MatchesController < ApplicationController
 		}
 	end
 
+	def cancel_matchmaking
+		Match.where(status: 'lobby')
+			.where('left_player = ? or right_player = ?', current_user.id, current_user.id)
+			.delete_all
+		head :ok
+	end
+
 	def show
 		match = Match.find(params[:id])
 		render json: {
