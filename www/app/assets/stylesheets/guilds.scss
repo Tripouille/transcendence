@@ -147,6 +147,11 @@
   .kickButton {
     padding: 0 25px;
   }
+  .guildInvitesRow {
+    & .cursorButton {
+      width: 150px;
+    }
+  }
   .guildRow, .myGuildRow, .userRow, .myUserRow, .guildFigures, .guildInvitesRow, .guildMemberRow, .userMatchRow {
     display: flex;
     justify-content: space-between;

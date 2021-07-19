@@ -3,11 +3,7 @@ import { Guild } from '../../models/guild';
 export const GuildNewView = Backbone.View.extend({
 	events: {
 		'click #formSubmitNewGuild a': 'onFormSubmit',
-		'click #formCancelNewGuild a': 'onFormCancel',
-		'blur input[required]': 'onInputChange',
-		'focus input[required]': function (e) {
-			this.resetInputErrors(e.target.name);
-		}
+		'click #formCancelNewGuild a': 'onFormCancel'
 	},
 	templates: {
 		'error': _.template('<span class="error"><%=error%></span>')
@@ -42,6 +38,7 @@ export const GuildNewView = Backbone.View.extend({
 	render: function () {
 		this.$el.empty();
 		this.$el.attr({ id: 'guildNew' });
+		let self = this;
 
 		window.currentUser.fetch().done(function () {
 			let guildId = window.currentUser.get('guild_id');
@@ -52,6 +49,9 @@ export const GuildNewView = Backbone.View.extend({
 				let template = _.template($('#guildNewStatic').html());
 				$('main#guildNew').html(template);
 				$('main#guildNew input#name').focus();
+				$('main#guildNew input[required]').blur(function (e) {
+					self.onInputChange(e);
+				});
 			}
 			return this;
 		});
@@ -75,6 +75,7 @@ export const GuildNewView = Backbone.View.extend({
 	onInputChange: function (e) {
 		var result = this.validateOnChange(e.target);
 
+		this.resetInputErrors(e.target.name);
 		if (result !== true)
 			this.showInputErrors(result, e.target.name);
 	},
