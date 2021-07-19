@@ -1,6 +1,6 @@
 import * as GC from './garbage_collector';
 
-const MatchmakingView = Backbone.View.extend({
+export const MatchmakingView = Backbone.View.extend({
 	template: _.template($('#matchmakingTemplate').html()),
 
     render: function(match_id) {
@@ -67,18 +67,27 @@ const MatchmakingView = Backbone.View.extend({
     },
 
     wait: function(data) {
-        const waitInterval = GC.addInterval(function() {
+        window.waitOpponentInterval = GC.addInterval(function() {
             $.ajax('matches/' + data.match_id, {
                 success: function(data) {
                     if (data.left_player != null && data.right_player != null) {
 						this.displayPlayers(data);
                         this.timer(data.match_id);
-                        GC.cleanInterval(waitInterval);
+                        GC.cleanInterval(window.waitOpponentInterval);
+						window.waitOpponentInterval = null;
                     }
                 }.bind(this)
             });
         }.bind(this), 500);
     }
 });
+
+export function cancelMatchmaking() {
+	$.ajax({
+		type: 'POST',
+		url: '/cancel_matchmaking',
+		headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')}
+	});
+}
 
 export default MatchmakingView;

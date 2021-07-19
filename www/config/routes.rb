@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   get '/matchside/:id', to: 'matches#side'
   get '/matches/:id', to: 'matches#show'
   post '/answer_challenge/:answer', to: 'matches#answer_challenge'
+  post '/cancel_matchmaking', to: 'matches#cancel_matchmaking'
 
   # === Guilds ===
   # resources :guilds # TO REMOVE AT THE END

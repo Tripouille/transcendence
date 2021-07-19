@@ -9,7 +9,7 @@ import { GuildNewView } from 'views/guild/guildNew';
 
 import * as GC from 'views/garbage_collector';
 import SelectModeView from 'views/selectMode';
-import MatchmakingView from 'views/matchmaking';
+import { MatchmakingView, cancelMatchmaking } from 'views/matchmaking';
 import GameView from 'views/game';
 import * as Pong from 'views/animations/game';
 
@@ -73,6 +73,8 @@ $(function () {
 		},
 		clearAnimations: function () {
 			Pong.removeSubscription();
+			if (window.waitOpponentInterval)
+				cancelMatchmaking();
 			GC.clearTimeoutsIntervals();
 			$(document).off("keydown");
 			$(document).off("keyup");
