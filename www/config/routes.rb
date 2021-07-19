@@ -2,8 +2,6 @@ Rails.application.routes.draw do
   root to:'application#index'
   get '/login', to: 'login#index'
 
-  get '/connect_as/:id', to: 'users#connect_as'
-
   # === Root for devise connect account ===
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks"
