@@ -184,6 +184,7 @@ $screen-width: Max(500px, calc(0.5 * #{$main-width}));
 					img {
 						width: 1em;
 						height: auto;
+						align-self: flex-start;
 					}
 				}
 				div {
