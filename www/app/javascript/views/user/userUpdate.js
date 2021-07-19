@@ -52,7 +52,7 @@ export const UserUpdateView = Backbone.View.extend({
 		if ($('#username').val().trim().length < 2 || $('#username').val().trim().length > 20) {
 			_thisView.showPopUpError("Invalid len Username Min 2 - Max 20");
 		} else {
-			let regex = new RegExp('^([a-zA-Z0-9]){3,20}$');
+			let regex = new RegExp('^([a-zA-Z0-9]){2,20}$');
 			if (!regex.test($('#username').val().trim())) {
 				_thisView.showPopUpError("Username contains a invalid character.");
 			} else {
