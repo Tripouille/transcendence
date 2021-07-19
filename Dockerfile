@@ -28,10 +28,13 @@ RUN aptitude install -y redis
 #[Dependencies]
 COPY www /
 WORKDIR /www
+
 RUN bundle install --jobs 42
+RUN rm -f config/master.key config/credentials.yml.enc
 ENV REDIS_DB 0
 ENV REDIS_URL redis://127.0.0.1
 ENV REDIS_PORT 6379
 RUN bundle exec rake webpacker:install
+RUN EDITOR=vi rails credentials:edit
 
 COPY srcs/start.sh /

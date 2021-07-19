@@ -15,8 +15,6 @@ redis-server --daemonize yes
 #Rails
 cd /www
 bundle install --jobs 42
-rm -f /www/config/credentials.yml.enc
-EDITOR=vi rails credentials:edit
 rails db:migrate
 rails db:seed
 rails assets:precompile
