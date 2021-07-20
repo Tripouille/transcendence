@@ -10,7 +10,8 @@ const ChatRoom = Backbone.Model.extend({
 		if (result.room_type == 'direct_message')
 			result.name = this.name;
 		const me = result.users.find(user => user.id == window.user_id);
-		result.admin = me.admin;
+		if (me)
+			result.admin = me.admin;
 		return result;
 	}
 });

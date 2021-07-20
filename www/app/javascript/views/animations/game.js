@@ -46,7 +46,7 @@ export function connect(matchId, serverSide) {
 		connected() {/*console.log('connected');*/},
 		disconnected() {/*console.log('disconnected');*/},
 		received(data) {
-			//console.log('Received data from pong channel : ', data.content);
+			console.log('Received data from pong channel : ', data.content);
 			if (data.content.act == "initialize")
 				initializeFromServer(data.content);
 			else if (data.content.act == "launchTimer")

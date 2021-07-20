@@ -165,7 +165,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def killScheduler(key)
-		if key.present?
+		if key.present? and defined?(@schedulers[key]) and @schedulers[key]
 			@schedulers[key].unschedule
 			@schedulers[key].kill
 			@schedulers.delete(key)
@@ -202,12 +202,13 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def resetMatch
+		puts '============RESET MATCH============='
 		updateMatchFromDB()
 		launchTimer()
-		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3s' do
-			@schedulers.delete(:timer)
+		@schedulers[:timer] = Rufus::Scheduler.new.schedule_in '3.2s' do
 			resetGame()
 			broadcastGameStart()
+			@schedulers.delete(:timer)
 		end
 	end
 
@@ -251,6 +252,7 @@ class PongChannel < ApplicationCable::Channel
 	def gameLoop
 		@schedulers[:gameLoop] = Rufus::Scheduler.new.schedule_every('0.3s') do
 			updateMatchFromDB()
+			puts '==== GAME LOOP, status = ' + @match[:status].to_s + '==========='
 			if @match[:status] == "playing"
 				updateMatch()
 			elsif @match[:status] == "finished"
@@ -418,6 +420,7 @@ class PongChannel < ApplicationCable::Channel
 	end
 
 	def score()
+		puts '============SCORE============='
 		if @match[:ball_x] < 50.0 then @match[:right_score] += 1 else @match[:left_score] += 1 end
 		saveMatchToDB()
 		PongChannel.broadcast_to @match, content: {
@@ -425,6 +428,7 @@ class PongChannel < ApplicationCable::Channel
 			match: @match
 		}
 		if @match[:left_score] >= 3 or @match[:right_score] >= 3
+			puts '============FINISHED============='
 			@match[:status] = "finished"
 			@match[:winner] = @match[:left_score] >= 3 ? @match[:left_player] : @match[:right_player]
 			saveMatchToDB()

@@ -34,7 +34,7 @@ main {
 		text-decoration: none;
 		border-radius: calc(0.1 * Min(#{$link-height}, #{$link-width}));
 		height: $link-height;
-		line-height: calc(#{$link-height} - 10px);
+		line-height: calc(calc(0.2 * calc(105vh - calc(10 * #{$responsive-ratio}))));
 		font-size: $link-font-size;
 		text-transform: uppercase;
 		transition: transform 1000ms;
