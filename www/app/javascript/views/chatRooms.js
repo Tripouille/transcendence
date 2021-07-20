@@ -305,6 +305,12 @@ const ChatRoomsView = Backbone.View.extend({
 					if (answer == 'accepted')
 						Backbone.history.navigate("game/matchmaking/" + response.match_id, {trigger: true});
 				}
+				else {
+					this.chatRoomViews[response.chatroom_id].removeChallenge(response.message_id);
+					clearInterval($challenge_message.data('timeLeftInterval'));
+					$challenge_message.find('span.time_left').text('expired');
+					$challenge_message.find('.challenge_answers').remove();
+				}
 			}.bind(this)
 		});
 	},
