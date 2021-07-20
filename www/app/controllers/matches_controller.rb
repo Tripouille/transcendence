@@ -83,12 +83,14 @@ class MatchesController < ApplicationController
 			when 'canceled'
 				cancel_challenge()
 			end
+		else
+			render json: {error: "Bad request"}
 		end
 	end
 
 	def accept_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
-		if duel_request.opponent == current_user
+		if duel_request and duel_request.opponent == current_user
 			duel_request.destroy
 			cancel_all_challenges
 			match = Match.create(
@@ -118,7 +120,7 @@ class MatchesController < ApplicationController
 
 	def decline_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
-		if duel_request.opponent == current_user
+		if duel_request and duel_request.opponent == current_user
 			duel_request.destroy
 			UserChannel.broadcast_to duel_request.user, content: {
 				remove_challenge: true,
@@ -137,7 +139,7 @@ class MatchesController < ApplicationController
 
 	def cancel_challenge
 		duel_request = DuelRequest.find_by_message_id(params['message_id'])
-		if duel_request.user == current_user
+		if duel_request and duel_request.user == current_user
 			duel_request.destroy
 			UserChannel.broadcast_to duel_request.opponent, content: {
 				remove_challenge: true,

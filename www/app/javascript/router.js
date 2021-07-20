@@ -163,7 +163,8 @@ function connectUserChannel() {
 				}
 				else if (data.content.chat_ban)
 					window.chatRoomsView.chatRoomViews[data.content.chat_ban].removeRoom();
-				else if (data.content.friend_status)
+				else if (data.content.friend_status
+				&& window.friendsListView.friendsCollection.get(data.content.friend_id))
 					window.friendsListView.friendsCollection.get(data.content.friend_id).set({
 						status: data.content.friend_status,
 						match_id: data.content.match_id

@@ -61,7 +61,7 @@ class UserChannel < ApplicationCable::Channel
 			chatroom: message.chat_room.complete_infos(current_user)
 		}
 
-		@schedulers[:challenge] = Rufus::Scheduler.new.schedule_in '60s' do
+		@schedulers[:challenge] = Rufus::Scheduler.new.schedule_in '70s' do
 			@duelrequest.destroy
 		end
 	end
